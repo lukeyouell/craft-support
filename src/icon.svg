@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 480">
+  <defs>
+    <style>
+      .ticket-cls-1 { fill: #03363d; }
+      .ticket-cls-2 { fill: #fff; }
+    </style>
+  </defs>
+  <title>ticket-icon</title>
+  <circle class="ticket-cls-1" cx="240" cy="240" r="240"/>
+  <path class="ticket-cls-2" d="M330,190H310v90H180v20a10,10,0,0,0,10,10H300l40,40V200A10,10,0,0,0,330,190Zm-40,60V160a10,10,0,0,0-10-10H150a10,10,0,0,0-10,10V300l40-40H280A10,10,0,0,0,290,250Z"/>
+</svg>

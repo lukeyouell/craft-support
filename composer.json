@@ -1,0 +1,43 @@
+{
+    "name": "lukeyouell/craft-support",
+    "description": "Simple support system for tracking, prioritising and solving customer support tickets.",
+    "type": "craft-plugin",
+    "version": "1.0.0",
+    "keywords": [
+        "craft",
+        "cms",
+        "craftcms",
+        "craft-plugin",
+        "support"
+    ],
+    "support": {
+        "docs": "https://github.com/lukeyouell/craft-support/blob/master/README.md",
+        "issues": "https://github.com/lukeyouell/craft-support/issues"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Luke Youell",
+            "homepage": "https://github.com/lukeyouell"
+        }
+    ],
+    "require": {
+        "craftcms/cms": "^3.0.0"
+    },
+    "autoload": {
+        "psr-4": {
+          "lukeyouell\\support\\": "src/"
+        }
+    },
+    "extra": {
+        "name": "Support",
+        "handle": "support",
+        "hasCpSettings": true,
+        "hasCpSection": true,
+        "changelogUrl": "https://raw.githubusercontent.com/lukeyouell/craft-support/master/CHANGELOG.md",
+        "components": {
+            "supportService": "lukeyouell\\support\\services\\SupportService"
+        },
+        "class": "lukeyouell\\support\\Support"
+    }
+}
