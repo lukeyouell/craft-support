@@ -1,5 +1,18 @@
+/* Craft overrides */
+
+#main-container #main #main-content #content-container #content {
+  padding: 0;
+}
+
+/* Plugin css */
+
+.new-message {
+  background: #f8fafc;
+  padding: 24px;
+}
+
 .messages {
-  margin: 2rem 0 0;
+  padding: 24px;
 }
 
 .message {
