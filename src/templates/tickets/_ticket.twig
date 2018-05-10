@@ -56,7 +56,7 @@
 
 <div class="messages">
   {% for message in messages %}
-    <div class="message flex">
+    <div class="message flex {#{{ message.authorId == currentUser.id ? 'current-user' }}#}">
       <div class="message-photo">
         {% if message.author.getPhoto %}
           <img src="{{ message.author.getPhoto.url}}">
