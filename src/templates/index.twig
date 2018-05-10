@@ -18,8 +18,8 @@
 
 {% set title = "Tickets" %}
 
-{% if crumbs is not defined %}
-    {% set crumbs = [
-        { label: "Support", url: url('support') }
-    ] %}
-{% endif %}
+{% block actionButton %}
+  <div class="btngroup">
+    <a class="btn submit add icon" href="{{ cpUrl('support/tickets/new-ticket') }}">New ticket</a>
+  </div>
+{% endblock %}

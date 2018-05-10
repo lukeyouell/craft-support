@@ -1,0 +1,47 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{#
+/**
+ * Support plugin for Craft CMS 3.x
+ *
+ * Support index.twig
+ *
+ * @author    Luke Youell
+ * @copyright Copyright (c) 2018 Luke Youell
+ * @link      https://github.com/lukeyouell
+ * @package   Support
+ * @since     1.0.0
+ */
+#}
+
+{% extends "_layouts/cp" %}
+
+{% set title = ticket.subject %}
+
+{% block content %}
+  {{ d(author) }}
+{% endblock %}
+
+{% block details %}
+  <div class="meta">
+    <div class="field">
+      <div class="heading">
+        Ticket ID
+      </div>
+      <div class="input ltr">
+        #{{ ticket.id }}
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="heading">
+        Author
+      </div>
+      <div class="input ltr">
+        <a href="{{ cpUrl('users/'~author.id) }}">{{ author.name ?? author.username }}</a>
+        <div>
+          <code>{{ author.email }}</code>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

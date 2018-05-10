@@ -79,6 +79,10 @@ class Ticket extends Element
 
     public $subject;
 
+    public $attachmentIds;
+
+    public $authorId;
+
     // Static Methods
     // =========================================================================
 
@@ -148,6 +152,7 @@ class Ticket extends Element
     protected static function defineActions(string $source = null): array
     {
         $actions = [];
+
         $actions[] = Craft::$app->getElements()->createAction([
             'type'                => Delete::class,
             'confirmationMessage' => Craft::t('support', 'Are you sure you want to delete the selected tickets?'),
@@ -201,6 +206,16 @@ class Ticket extends Element
         return parent::tableAttributeHtml($attribute);
     }
 
+    protected static function defineSortOptions(): array
+    {
+        $sortOptions = [
+            'support_tickets.dateCreated' => 'Date Created',
+            'support_tickets.dateUpdated' => 'Date Updated',
+        ];
+
+        return $sortOptions;
+    }
+
     // Events
     // -------------------------------------------------------------------------
 
@@ -209,14 +224,17 @@ class Ticket extends Element
         if ($isNew) {
             Craft::$app->db->createCommand()
                 ->insert('{{%support_tickets}}', [
-                    'id'        => $this->id,
-                    'subject'   => $this->subject,
+                    'id'            => $this->id,
+                    'subject'       => $this->subject,
+                    'authorId'      => $this->authorId,
+                    'attachmentIds' => $this->attachmentIds,
                 ])
                 ->execute();
         } else {
             Craft::$app->db->createCommand()
                 ->update('{{%support_tickets}}', [
                     'subject'   => $this->subject,
+                    'attachmentIds' => $this->attachmentIds,
                 ], ['id' => $this->id])
                 ->execute();
         }

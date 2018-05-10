@@ -9,9 +9,27 @@ class TicketQuery extends ElementQuery
 {
     public $subject;
 
+    public $authorId;
+
+    public $attachmentIds;
+
     public function subject($value)
     {
         $this->subject = $value;
+
+        return $this;
+    }
+
+    public function authorId($value)
+    {
+        $this->authorId = $value;
+
+        return $this;
+    }
+
+    public function attachmentIds($value)
+    {
+        $this->attachmentIds = $value;
 
         return $this;
     }
@@ -24,10 +42,20 @@ class TicketQuery extends ElementQuery
         // select the columns
         $this->query->select([
             'support_tickets.subject',
+            'support_tickets.authorId',
+            'support_tickets.attachmentIds',
         ]);
 
         if ($this->subject) {
             $this->subQuery->andWhere(Db::parseParam('support_tickets.subject', $this->subject));
+        }
+
+        if ($this->authorId) {
+            $this->subQuery->andWhere(Db::parseParam('support_tickets.authorId', $this->authorId));
+        }
+
+        if ($this->attachmentIds) {
+            $this->subQuery->andWhere(Db::parseParam('support_tickets.attachmentIds', $this->attachmentIds));
         }
 
         return parent::beforePrepare();

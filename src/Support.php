@@ -16,12 +16,13 @@ use lukeyouell\support\elements\Ticket as TicketElement;
 
 use Craft;
 use craft\base\Plugin;
-use craft\services\Plugins;
 use craft\events\PluginEvent;
-use craft\web\UrlManager;
-use craft\services\Elements;
 use craft\events\RegisterComponentTypesEvent;
 use craft\events\RegisterUrlRulesEvent;
+use craft\helpers\UrlHelper;
+use craft\services\Elements;
+use craft\services\Plugins;
+use craft\web\UrlManager;
 
 use yii\base\Event;
 
@@ -90,6 +91,7 @@ class Support extends Plugin
             UrlManager::class,
             UrlManager::EVENT_REGISTER_CP_URL_RULES,
             function (RegisterUrlRulesEvent $event) {
+                $event->rules['support/tickets/new-ticket'] = 'support/tickets/new-ticket';
                 $event->rules['support/tickets/<ticketId:\d+>'] = 'support/tickets/show-ticket';
             }
         );
@@ -109,7 +111,7 @@ class Support extends Plugin
             Plugins::EVENT_AFTER_INSTALL_PLUGIN,
             function (PluginEvent $event) {
                 if ($event->plugin === $this) {
-                    // We were just installed
+                    Craft::$app->getResponse()->redirect(UrlHelper::cpUrl('settings/plugins/support'))->send();
                 }
             }
         );
@@ -163,10 +165,17 @@ class Support extends Plugin
      */
     protected function settingsHtml(): string
     {
+        // Get and pre-validate the settings
+        $settings = $this->getSettings();
+        $settings->validate();
+        // Get the settings that are being defined by the config file
+        $overrides = Craft::$app->getConfig()->getConfigFromFile(strtolower($this->handle));
+
         return Craft::$app->view->renderTemplate(
             'support/settings',
             [
-                'settings' => $this->getSettings()
+                'settings' => $settings,
+                'overrides' => array_keys($overrides)
             ]
         );
     }

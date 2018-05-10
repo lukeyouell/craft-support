@@ -14,6 +14,7 @@ use lukeyouell\support\Support;
 
 use Craft;
 use craft\base\Model;
+use craft\base\VolumeInterface;
 
 /**
  * Support Settings Model
@@ -34,12 +35,13 @@ class Settings extends Model
     // Public Properties
     // =========================================================================
 
-    /**
-     * Some field model attribute
-     *
-     * @var string
-     */
-    public $someAttribute = 'Some Default';
+    public $email = true;
+
+    public $toEmail;
+
+    public $volumeId;
+
+    public $volumeSubpath;
 
     // Public Methods
     // =========================================================================
@@ -57,8 +59,20 @@ class Settings extends Model
     public function rules()
     {
         return [
-            ['someAttribute', 'string'],
-            ['someAttribute', 'default', 'value' => 'Some Default'],
+            [['email'], 'boolean'],
+            [['toEmail', 'volumeSubpath'], 'string'],
+            [['volumeId'], 'number', 'integerOnly' => true]
         ];
+    }
+
+    /**
+     * @return VolumeInterface|null
+     */
+    public function getVolume()
+    {
+        if ($this->volumeId === null) {
+            return new Temp();
+        }
+        return Craft::$app->getVolumes()->getVolumeById($this->volumeId);
     }
 }

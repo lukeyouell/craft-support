@@ -1,0 +1,68 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{#
+/**
+ * Support plugin for Craft CMS 3.x
+ *
+ * Support index.twig
+ *
+ * @author    Luke Youell
+ * @copyright Copyright (c) 2018 Luke Youell
+ * @link      https://github.com/lukeyouell
+ * @package   Support
+ * @since     1.0.0
+ */
+#}
+
+{% extends "_layouts/cp" %}
+
+{% import "_includes/forms" as forms %}
+
+{% set title = "Create a new ticket" %}
+{% set plugin = craft.app.plugins.getPlugin('support') %}
+{% set settings = plugin.settings %}
+{% set volumeId = settings.volumeId %}
+{% set fullPageForm = true %}
+
+{% do view.registerAssetBundle("craft\\web\\assets\\fileupload\\FileUploadAsset") %}
+
+{% block content %}
+  {{ forms.hidden({
+      name: 'action',
+      value: 'support/tickets/create-ticket',
+  })}}
+
+  {{ redirectInput('support') }}
+
+  {{ forms.textField({
+      first: true,
+      required: true,
+      label: 'Subject',
+      id: 'subject',
+      name: 'subject',
+      placeholder: 'Subject',
+  })}}
+
+  {{ forms.textareaField({
+      required: true,
+      label: 'Message',
+      id: 'message',
+      name: 'message',
+      placeholder: 'Message',
+      rows: 8
+  })}}
+
+  {% if volumeId %}
+    {% include "_components/fieldtypes/Assets/input" with {
+      id: 'attachments',
+      fieldId: 'attachments',
+      name: 'attachments',
+      selectionLabel: 'Add attachment',
+      elementType: elementType,
+      sourceElementId: volumeId,
+      viewMode: 'list',
+      limit: 4,
+      defaultFieldLayoutId: volume.fieldLayoutId,
+      hideSidebar: true,
+    } %}
+  {% endif %}
+{% endblock %}
