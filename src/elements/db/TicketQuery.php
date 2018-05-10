@@ -19,8 +19,6 @@ class TicketQuery extends ElementQuery
 
     public $authorId;
 
-    public $attachmentIds;
-
     public function subject($value)
     {
         $this->subject = $value;
@@ -35,13 +33,6 @@ class TicketQuery extends ElementQuery
         return $this;
     }
 
-    public function attachmentIds($value)
-    {
-        $this->attachmentIds = $value;
-
-        return $this;
-    }
-
     protected function beforePrepare(): bool
     {
         // join in the products table
@@ -51,7 +42,6 @@ class TicketQuery extends ElementQuery
         $this->query->select([
             'support_tickets.subject',
             'support_tickets.authorId',
-            'support_tickets.attachmentIds',
         ]);
 
         if ($this->subject) {
@@ -60,10 +50,6 @@ class TicketQuery extends ElementQuery
 
         if ($this->authorId) {
             $this->subQuery->andWhere(Db::parseParam('support_tickets.authorId', $this->authorId));
-        }
-
-        if ($this->attachmentIds) {
-            $this->subQuery->andWhere(Db::parseParam('support_tickets.attachmentIds', $this->attachmentIds));
         }
 
         return parent::beforePrepare();

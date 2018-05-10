@@ -101,6 +101,7 @@ class Support extends Plugin
             Elements::class,
             Elements::EVENT_REGISTER_ELEMENT_TYPES,
             function (RegisterComponentTypesEvent $event) {
+                $event->types[] = MessageElement::class;
                 $event->types[] = TicketElement::class;
             }
         );

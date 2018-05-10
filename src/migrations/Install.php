@@ -110,8 +110,21 @@ class Install extends Migration
                     // Custom columns in the table
                     'subject'       => $this->string()->notNull(),
                     'authorId'      => $this->integer(),
+                ]
+            );
+
+            $this->createTable(
+                '{{%support_messages}}',
+                [
+                    'id'            => $this->primaryKey(),
+                    'dateCreated'   => $this->dateTime()->notNull(),
+                    'dateUpdated'   => $this->dateTime()->notNull(),
+                    'uid'           => $this->uid(),
+                    // Custom columns in the table
+                    'ticketId'      => $this->integer(),
+                    'authorId'      => $this->integer(),
                     'attachmentIds' => $this->text(),
-                    'assigneeId'    => $this->integer(),
+                    'content'       => $this->text()->notNull(),
                 ]
             );
         }
@@ -130,6 +143,17 @@ class Install extends Migration
         $this->addForeignKey(
             $this->db->getForeignKeyName('{{%support_tickets}}', 'id'),
             '{{%support_tickets}}',
+            'id',
+            '{{%elements}}',
+            'id',
+            'CASCADE',
+            null
+        );
+
+        // support_messages table
+        $this->addForeignKey(
+            $this->db->getForeignKeyName('{{%support_messages}}', 'id'),
+            '{{%support_messages}}',
             'id',
             '{{%elements}}',
             'id',
@@ -156,5 +180,6 @@ class Install extends Migration
     {
         // support_tickets table
         $this->dropTableIfExists('{{%support_tickets}}');
+        $this->dropTableIfExists('{{%support_messages}}');
     }
 }

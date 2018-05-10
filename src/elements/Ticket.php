@@ -79,11 +79,7 @@ class Ticket extends Element
 
     public $subject;
 
-    public $attachmentIds;
-
     public $authorId;
-
-    public $assigneeId;
 
     // Static Methods
     // =========================================================================
@@ -229,16 +225,12 @@ class Ticket extends Element
                     'id'            => $this->id,
                     'subject'       => $this->subject,
                     'authorId'      => $this->authorId,
-                    'attachmentIds' => $this->attachmentIds,
-                    'assigneeId'    => $this->assigneeId,
                 ])
                 ->execute();
         } else {
             Craft::$app->db->createCommand()
                 ->update('{{%support_tickets}}', [
                     'subject'   => $this->subject,
-                    'attachmentIds' => $this->attachmentIds,
-                    'assigneeId'    => $this->assigneeId,
                 ], ['id' => $this->id])
                 ->execute();
         }

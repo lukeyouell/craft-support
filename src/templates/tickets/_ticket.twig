@@ -26,49 +26,58 @@
 {% do view.registerAssetBundle("lukeyouell\\support\\assetbundles\\TicketBundle") %}
 
 {% block content %}
-  <div class="message flex">
-    <div class="message-photo">
-      {% if author.getPhoto %}
-        <img src="{{ author.getPhoto.url}}">
-      {% else  %}
-        {% include "support/icons/face.svg" ignore missing %}
-      {% endif %}
-    </div>
-    <div class="flex-grow">
-      <div class="message-body">
-        <div class="message-details">
-          <span class="message-user">{{ author.name }}</span>
-          <span class="message-date">5/10/2018, 2:08 PM</span>
-        </div>
-        <div>
-          Hi,<br>
-          I can't access entries after updating my password.<br>
-          Pls send help.
-        </div>
-      </div>
-    </div>
-  </div>
+<div class="new-message">
+  <form method="post">
+    {{ csrfInput() }}
 
-  <div class="message current-user flex">
-    <div class="flex-grow">
-      <div class="message-body">
-        <div class="message-details">
-          <span class="message-user">Me</span>
-          <span class="message-date">5/10/2018, 2:08 PM</span>
-        </div>
-        <div>
-          You're on your own pal.
+    {{ forms.hidden({
+        name: 'action',
+        value: 'support/tickets/create-message',
+    })}}
+
+    {{ forms.hidden({
+        name: 'ticketId',
+        value: ticket.id|hash,
+    })}}
+
+    {{ forms.textareaField({
+        first: true,
+        required: true,
+        label: 'Message',
+        id: 'message',
+        name: 'message',
+        placeholder: 'Message',
+        rows: 4
+    })}}
+
+    <input class="btn submit" type="submit" value="Send">
+  </form>
+</div>
+
+<div class="messages">
+  {% for message in messages %}
+    <div class="message flex">
+      <div class="message-photo">
+        {% if message.author.getPhoto %}
+          <img src="{{ message.author.getPhoto.url}}">
+        {% else  %}
+          {% include "support/icons/face.svg" ignore missing %}
+        {% endif %}
+      </div>
+      <div class="flex-grow">
+        <div class="message-body">
+          <div class="message-details">
+            <span class="message-user">{{ message.author.name }}</span>
+            <span class="message-date">{{ message.dateCreated|datetime('short') }}</span>
+          </div>
+          <div>
+            {{ message.content }}
+          </div>
         </div>
       </div>
     </div>
-    <div class="message-photo">
-      {% if currentUser.getPhoto %}
-        <img src="{{ currentUser.getPhoto.url}}">
-      {% else  %}
-        {{ svg('support/icons/face.svg') }}
-      {% endif %}
-    </div>
-  </div>
+  {% endfor %}
+</div>
 {% endblock %}
 
 {% block details %}
