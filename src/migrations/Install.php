@@ -109,8 +109,9 @@ class Install extends Migration
                     'uid'           => $this->uid(),
                     // Custom columns in the table
                     'subject'       => $this->string()->notNull(),
-                    'authorId'      => $this->uid(),
+                    'authorId'      => $this->integer(),
                     'attachmentIds' => $this->text(),
+                    'assigneeId'    => $this->integer(),
                 ]
             );
         }

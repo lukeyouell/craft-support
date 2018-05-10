@@ -32,8 +32,12 @@ class TicketsController extends Controller
         $ticket = $query->one();
 
         $variables = [
-            'ticket' => $ticket,
-            'author' => $ticket->authorId ? Craft::$app->users->getUserById($ticket->authorId) : null,
+            'ticket'          => $ticket,
+            'author'          => $ticket->authorId ? Craft::$app->users->getUserById($ticket->authorId) : null,
+            'userElementType' => User::class,
+            'assigneeOptionCriteria' => [
+                'can' => 'accessPlugin-'.Support::$plugin->handle,
+            ],
         ];
 
         return $this->renderTemplate('support/tickets/_ticket', $variables);

@@ -15,33 +15,96 @@
 
 {% extends "_layouts/cp" %}
 
+{% import "_includes/forms" as forms %}
+
 {% set title = ticket.subject %}
 
 {% block content %}
-  {{ d(author) }}
+  <div style="display:none">
+    {{ d(ticket) }}
+  </div>
+
+  <div style="margin-bottom:1rem">
+    <div style="display:inline-block;background:#f8fafc;padding:1.5rem;line-height:1.6;text-align:left;border-radius:.25rem">
+      <div style="margin-bottom:.25rem">
+        <strong>James Youell</strong> <span class="light" style="font-size:80%">5/10/2018, 2:08 PM</span>
+      </div>
+      <div>
+        Hi,<br>
+        I can't access entries after updating my password.<br>
+        Pls send help.
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:right;margin-bottom:1rem">
+    <div style="display:inline-block;background:#eff8ff;padding:1.5rem;line-height:1.6;text-align:left;border-radius:.25rem">
+      <div style="margin-bottom:.25rem">
+        <strong>Me</strong> <span class="light" style="font-size:80%">5/10/2018, 2:08 PM</span>
+      </div>
+      <div>
+        You're on your own pal.
+      </div>
+    </div>
+  </div>
 {% endblock %}
 
 {% block details %}
   <div class="meta">
-    <div class="field">
+    {{ forms.elementSelectField({
+        label: "Assigned to",
+        id: 'assignedTo',
+        name: 'assignedTo',
+        elementType: userElementType,
+        selectionLabel: "Choose",
+        criteria: assigneeOptionCriteria,
+        limit: 1,
+        elements: (ticket.assigneeId is defined and ticket.assigneeId ? [ticket.assigneeId])
+    }) }}
+  </div>
+
+  <hr>
+
+  <div class="meta read-only">
+    <div class="data">
       <div class="heading">
         Ticket ID
       </div>
-      <div class="input ltr">
+      <div class="value">
         #{{ ticket.id }}
       </div>
     </div>
 
-    <div class="field">
+    <div class="data">
       <div class="heading">
         Author
       </div>
-      <div class="input ltr">
+      <div class="value">
         <a href="{{ cpUrl('users/'~author.id) }}">{{ author.name ?? author.username }}</a>
         <div>
           <code>{{ author.email }}</code>
         </div>
       </div>
     </div>
+
+    <div class="data">
+      <div class="heading">
+        Created at
+      </div>
+      <div class="value">
+        {{ ticket.dateCreated|datetime('short') }}
+      </div>
+    </div>
+
+    <div class="data">
+      <div class="heading">
+        Updated at
+      </div>
+      <div class="value">
+        {{ ticket.dateUpdated|datetime('short') }}
+      </div>
+    </div>
   </div>
+
+  <hr>
 {% endblock %}

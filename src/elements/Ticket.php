@@ -83,6 +83,8 @@ class Ticket extends Element
 
     public $authorId;
 
+    public $assigneeId;
+
     // Static Methods
     // =========================================================================
 
@@ -228,6 +230,7 @@ class Ticket extends Element
                     'subject'       => $this->subject,
                     'authorId'      => $this->authorId,
                     'attachmentIds' => $this->attachmentIds,
+                    'assigneeId'    => $this->assigneeId,
                 ])
                 ->execute();
         } else {
@@ -235,6 +238,7 @@ class Ticket extends Element
                 ->update('{{%support_tickets}}', [
                     'subject'   => $this->subject,
                     'attachmentIds' => $this->attachmentIds,
+                    'assigneeId'    => $this->assigneeId,
                 ], ['id' => $this->id])
                 ->execute();
         }
