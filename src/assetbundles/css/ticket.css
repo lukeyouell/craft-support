@@ -1,0 +1,50 @@
+.message {
+  margin: 0 0 1rem;
+}
+
+.message-body {
+  display: inline-block;
+  background: #f8fafc;
+  padding: 1.5rem;
+  line-height: 1.5;
+  text-align: left;
+  border-radius: .25rem;
+}
+
+.message-details {
+  margin: 0 0 .25rem;
+}
+
+.message-user {
+  font-weight: 700;
+}
+
+.message-date {
+  font-size: 80%;
+  color: #8795a1;
+}
+
+.message-photo img {
+  display: block;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+
+.message-photo svg {
+  width: 50px;
+  height: 50px;
+  fill: #8795a1;
+}
+
+.message.current-user {
+  text-align: right;
+}
+
+.message.current-user .message-body {
+  background: #eff8ff;
+}
+
+.message.current-user .message-photo svg {
+  fill: #6cb2eb;
+}

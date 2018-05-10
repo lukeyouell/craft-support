@@ -19,52 +19,59 @@
 
 {% set title = ticket.subject %}
 
-{% block content %}
-  <div style="display:none">
-    {{ d(ticket) }}
-  </div>
+{% set crumbs = [
+    { label: 'Tickets', url: cpUrl('support') }
+] %}
 
-  <div style="margin-bottom:1rem">
-    <div style="display:inline-block;background:#f8fafc;padding:1.5rem;line-height:1.6;text-align:left;border-radius:.25rem">
-      <div style="margin-bottom:.25rem">
-        <strong>James Youell</strong> <span class="light" style="font-size:80%">5/10/2018, 2:08 PM</span>
-      </div>
-      <div>
-        Hi,<br>
-        I can't access entries after updating my password.<br>
-        Pls send help.
+{% do view.registerAssetBundle("lukeyouell\\support\\assetbundles\\TicketBundle") %}
+
+{% block content %}
+  <div class="message flex">
+    <div class="message-photo">
+      {% if author.getPhoto %}
+        <img src="{{ author.getPhoto.url}}">
+      {% else  %}
+        {% include "support/icons/face.svg" ignore missing %}
+      {% endif %}
+    </div>
+    <div class="flex-grow">
+      <div class="message-body">
+        <div class="message-details">
+          <span class="message-user">{{ author.name }}</span>
+          <span class="message-date">5/10/2018, 2:08 PM</span>
+        </div>
+        <div>
+          Hi,<br>
+          I can't access entries after updating my password.<br>
+          Pls send help.
+        </div>
       </div>
     </div>
   </div>
 
-  <div style="text-align:right;margin-bottom:1rem">
-    <div style="display:inline-block;background:#eff8ff;padding:1.5rem;line-height:1.6;text-align:left;border-radius:.25rem">
-      <div style="margin-bottom:.25rem">
-        <strong>Me</strong> <span class="light" style="font-size:80%">5/10/2018, 2:08 PM</span>
+  <div class="message current-user flex">
+    <div class="flex-grow">
+      <div class="message-body">
+        <div class="message-details">
+          <span class="message-user">Me</span>
+          <span class="message-date">5/10/2018, 2:08 PM</span>
+        </div>
+        <div>
+          You're on your own pal.
+        </div>
       </div>
-      <div>
-        You're on your own pal.
-      </div>
+    </div>
+    <div class="message-photo">
+      {% if currentUser.getPhoto %}
+        <img src="{{ currentUser.getPhoto.url}}">
+      {% else  %}
+        {{ svg('support/icons/face.svg') }}
+      {% endif %}
     </div>
   </div>
 {% endblock %}
 
 {% block details %}
-  <div class="meta">
-    {{ forms.elementSelectField({
-        label: "Assigned to",
-        id: 'assignedTo',
-        name: 'assignedTo',
-        elementType: userElementType,
-        selectionLabel: "Choose",
-        criteria: assigneeOptionCriteria,
-        limit: 1,
-        elements: (ticket.assigneeId is defined and ticket.assigneeId ? [ticket.assigneeId])
-    }) }}
-  </div>
-
-  <hr>
-
   <div class="meta read-only">
     <div class="data">
       <div class="heading">
