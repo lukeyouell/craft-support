@@ -50,7 +50,6 @@
         rows: 4
     })}}
 
-    <input class="btn submit" type="submit" value="Post message">
     {% if volume %}
       {% include "_components/fieldtypes/Assets/input" with {
         id: 'attachments',
@@ -65,6 +64,8 @@
         hideSidebar: true,
       } %}
     {% endif %}
+
+    <input class="btn submit" type="submit" value="Post message">
   </form>
 </div>
 

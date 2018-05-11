@@ -11,8 +11,12 @@
   padding: 24px;
 }
 
+.new-message .field {
+  margin: 0 0 1rem;
+}
+
 .new-message .elementselect {
-  margin: .5rem 0 0;
+  margin: 0 0 1rem;
 }
 
 .messages {
