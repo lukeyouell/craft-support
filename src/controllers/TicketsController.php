@@ -11,83 +11,71 @@
 namespace lukeyouell\support\controllers;
 
 use lukeyouell\support\Support;
-use lukeyouell\support\elements\Message;
-use lukeyouell\support\elements\db\MessageQuery;
-use lukeyouell\support\elements\Ticket;
-use lukeyouell\support\elements\db\TicketQuery;
+use lukeyouell\support\services\MessageService;
+use lukeyouell\support\services\TicketService;
 
 use Craft;
 use craft\elements\Asset;
-use craft\elements\User;
-use craft\helpers\ArrayHelper;
-use craft\helpers\Json;
 use craft\web\Controller;
 
 use yii\base\InvalidConfigException;
 
 class TicketsController extends Controller
 {
+    // Public Properties
+    // =========================================================================
+
+    public $settings;
+
+    // Public Methods
+    // =========================================================================
+
+    public function init()
+    {
+        parent::init();
+
+        $this->settings = Support::$plugin->getSettings();
+        if (!$this->settings->validate()) {
+            throw new InvalidConfigException('Support settings don’t validate.');
+        }
+    }
+
     public function actionShowTicket(string $ticketId = null)
     {
-        $query = new TicketQuery(Ticket::class);
-        $query->id = $ticketId;
-
-        $ticket = $query->one();
-
-        $query = new MessageQuery(Message::class);
-        $query->ticketId = $ticket->id;
-
-        $messageResults = $query->all();
-
-        $messages = [];
-
-        foreach ($messageResults as $message) {
-          $message = ArrayHelper::toArray($message);
-
-          $messages[] = array_merge($message, [
-            'author' => $message['authorId'] ? Craft::$app->users->getUserById($message['authorId']) : null,
-          ]);
-        }
+        $ticket = TicketService::getTicketById($ticketId);
+        $messages = MessageService::getMessagesByTicketId($ticket->id);
 
         $variables = [
             'ticket'   => $ticket,
             'author'   => $ticket->authorId ? Craft::$app->users->getUserById($ticket->authorId) : null,
             'messages' => $messages,
+            'volume' => $this->settings->volumeId ? Craft::$app->getVolumes()->getVolumeById($this->settings->volumeId) : null,
+            'assetElementType' => Asset::class,
         ];
 
-        return $this->renderTemplate('support/tickets/_ticket', $variables);
+        return $this->renderTemplate('support/_tickets/ticket', $variables);
     }
 
-    public function actionNewTicket()
+    public function actionNewTicketTemplate()
     {
-        // Get the plugin settings and make sure they validate before doing anything
-        $settings = Support::$plugin->getSettings();
-        if (!$settings->validate()) {
-            throw new InvalidConfigException('Support settings don’t validate.');
-        }
-
         $variables = [
-            'volume' => $settings->volumeId ? Craft::$app->getVolumes()->getVolumeById($settings->volumeId) : null,
+            'volume' => $this->settings->volumeId ? Craft::$app->getVolumes()->getVolumeById($this->settings->volumeId) : null,
             'elementType' => Asset::class,
         ];
 
-        return $this->renderTemplate('support/tickets/_new', $variables);
+        return $this->renderTemplate('support/_tickets/new', $variables);
     }
 
-    public function actionCreateTicket()
+    public function actionNewTicket()
     {
         $this->requirePostRequest();
 
         $request = Craft::$app->getRequest();
 
         // First create ticket
-        $ticket = new Ticket();
-        $ticket->subject = $request->post('subject');
-        $ticket->authorId = Craft::$app->getUser()->getIdentity()->id;
+        $ticket = TicketService::createTicket($request);
 
-        $res = Craft::$app->getElements()->saveElement($ticket, true, false);
-
-        if (!$res) {
+        if (!$ticket) {
             if ($request->getAcceptsJson()) {
                 return $this->asJson([
                     'success' => false,
@@ -104,13 +92,7 @@ class TicketsController extends Controller
         } else {
 
             // Ticket created, now create message
-            $message = new Message();
-            $message->ticketId = $ticket->id;
-            $message->authorId = Craft::$app->getUser()->getIdentity()->id;
-            $message->attachmentIds = Json::encode($request->post('attachments'));
-            $message->content = $request->post('message');
-
-            $res = Craft::$app->getElements()->saveElement($message, true, false);
+            $message = MessageService::createMessage($ticket->id, $request);
 
             if ($request->getAcceptsJson()) {
                 return $this->asJson([
@@ -122,41 +104,5 @@ class TicketsController extends Controller
 
             return $this->redirectToPostedUrl();
         }
-    }
-
-    public function actionCreateMessage()
-    {
-        $this->requirePostRequest();
-
-        $request = Craft::$app->getRequest();
-
-        $ticketId = Craft::$app->security->validateData($request->post('ticketId'));
-
-        // First check ticket exists
-        $query = new TicketQuery(Ticket::class);
-        $query->id = $ticketId;
-
-        $ticket = $query->one();
-
-        if (!$ticket) {
-            Craft::$app->getSession()->setError('Couldn’t find the ticket.');
-        } else {
-            // Ticket exists, now create message
-            $message = new Message();
-            $message->ticketId = $ticket->id;
-            $message->authorId = Craft::$app->getUser()->getIdentity()->id;
-            $message->attachmentIds = Json::encode($request->post('attachments'));
-            $message->content = $request->post('message');
-
-            $res = Craft::$app->getElements()->saveElement($message, true, false);
-
-            if (!$res) {
-                Craft::$app->getSession()->setError('Couldn’t send the message.');
-            } else {
-                Craft::$app->getSession()->setNotice('Message sent.');
-            }
-        }
-
-        return $this->redirectToPostedUrl();
     }
 }

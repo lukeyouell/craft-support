@@ -11,18 +11,28 @@
   padding: 24px;
 }
 
+.new-message .elementselect {
+  margin: .5rem 0 0;
+}
+
 .messages {
   padding: 24px;
 }
 
 .message {
+  font-size: 14px;
   margin: 0 0 1rem;
 }
 
-.message-body {
+.message-container,
+.message-inner {
   display: inline-block;
+}
+
+.message-body {
   background: #f8fafc;
-  padding: 1.5rem;
+  min-width: 150px;
+  padding: 1rem;
   line-height: 1.5;
   text-align: left;
   border-radius: .25rem;
@@ -34,11 +44,6 @@
 
 .message-user {
   font-weight: 700;
-}
-
-.message-date {
-  font-size: 80%;
-  color: #8795a1;
 }
 
 .message-photo img {
@@ -54,14 +59,21 @@
   fill: #8795a1;
 }
 
+.message-date {
+  font-size: 11px;
+  color: #8795a1;
+  text-align: right;
+}
+
 .message.current-user {
   text-align: right;
 }
 
 .message.current-user .message-body {
-  background: #eff8ff;
+  background: #3490dc;
+  color: #fff;
 }
 
-.message.current-user .message-photo svg {
-  fill: #6cb2eb;
+.message.current-user .message-date {
+  text-align: left;
 }

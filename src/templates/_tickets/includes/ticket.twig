@@ -1,0 +1,45 @@
+{% macro message(message) %}
+  {% import _self as blocks %}
+
+  {% set author = craft.app.users.getUserById(message.authorId) %}
+  {% set attachments = craft.assets.id(message.attachmentIds).all() %}
+
+  <div class="message {{ message.authorId == currentUser.id ? 'current-user' }}">
+    <div class="message-container">
+      <div class="flex">
+        {% if message.authorId != currentUser.id %}
+          {{ blocks.authorPhoto(author.getPhoto) }}
+        {% endif %}
+        <div class="flex-grow">
+          <div class="message-inner">
+            <div class="message-body">
+              <div class="message-details">
+                <span class="message-user">{{ author.name|default('Undefined') }}</span>
+              </div>
+              <div>
+                {{ message.content }}
+              </div>
+              {% if attachments %}
+                Attachments!
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        {% if message.authorId == currentUser.id %}
+          {{ blocks.authorPhoto(author.getPhoto) }}
+        {% endif %}
+      </div>
+      <div class="message-date">{{ message.dateCreated|datetime('short') }}</div>
+    </div>
+  </div>
+{% endmacro %}
+
+{% macro authorPhoto(photo) %}
+  <div class="message-photo">
+    {% if photo %}
+      <img src="{{ photo.url}}">
+    {% else  %}
+      {% include "support/icons/face.svg" ignore missing %}
+    {% endif %}
+  </div>
+{% endmacro %}

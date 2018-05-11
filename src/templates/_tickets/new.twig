@@ -18,9 +18,6 @@
 {% import "_includes/forms" as forms %}
 
 {% set title = "Create a new ticket" %}
-{% set plugin = craft.app.plugins.getPlugin('support') %}
-{% set settings = plugin.settings %}
-{% set volumeId = settings.volumeId %}
 {% set fullPageForm = true %}
 
 {% do view.registerAssetBundle("craft\\web\\assets\\fileupload\\FileUploadAsset") %}
@@ -28,7 +25,7 @@
 {% block content %}
   {{ forms.hidden({
       name: 'action',
-      value: 'support/tickets/create-ticket',
+      value: 'support/tickets/new-ticket',
   })}}
 
   {{ redirectInput('support') }}
@@ -51,14 +48,14 @@
       rows: 8
   })}}
 
-  {% if volumeId %}
+  {% if volume %}
     {% include "_components/fieldtypes/Assets/input" with {
       id: 'attachments',
       fieldId: 'attachments',
       name: 'attachments',
       selectionLabel: 'Add attachment',
       elementType: elementType,
-      sourceElementId: volumeId,
+      sourceElementId: volume.id,
       viewMode: 'list',
       limit: 4,
       defaultFieldLayoutId: volume.fieldLayoutId,

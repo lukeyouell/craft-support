@@ -16,6 +16,7 @@
 {% extends "_layouts/cp" %}
 
 {% import "_includes/forms" as forms %}
+{% import "support/_tickets/includes/ticket" as macros %}
 
 {% set title = ticket.subject %}
 
@@ -32,7 +33,7 @@
 
     {{ forms.hidden({
         name: 'action',
-        value: 'support/tickets/create-message',
+        value: 'support/messages/new-message',
     })}}
 
     {{ forms.hidden({
@@ -50,31 +51,26 @@
     })}}
 
     <input class="btn submit" type="submit" value="Post message">
+    {% if volume %}
+      {% include "_components/fieldtypes/Assets/input" with {
+        id: 'attachments',
+        fieldId: 'attachments',
+        name: 'attachments',
+        selectionLabel: 'Add attachment',
+        elementType: assetElementType,
+        sourceElementId: volume.id,
+        viewMode: 'list',
+        limit: 4,
+        defaultFieldLayoutId: volume.fieldLayoutId,
+        hideSidebar: true,
+      } %}
+    {% endif %}
   </form>
 </div>
 
 <div class="messages">
   {% for message in messages %}
-    <div class="message flex {#{{ message.authorId == currentUser.id ? 'current-user' }}#}">
-      <div class="message-photo">
-        {% if message.author.getPhoto %}
-          <img src="{{ message.author.getPhoto.url}}">
-        {% else  %}
-          {% include "support/icons/face.svg" ignore missing %}
-        {% endif %}
-      </div>
-      <div class="flex-grow">
-        <div class="message-body">
-          <div class="message-details">
-            <span class="message-user">{{ message.author.name }}</span>
-            <span class="message-date">{{ message.dateCreated|datetime('short') }}</span>
-          </div>
-          <div>
-            {{ message.content }}
-          </div>
-        </div>
-      </div>
-    </div>
+    {{ macros.message(message) }}
   {% endfor %}
 </div>
 {% endblock %}

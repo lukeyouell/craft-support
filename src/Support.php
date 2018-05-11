@@ -91,7 +91,7 @@ class Support extends Plugin
             UrlManager::class,
             UrlManager::EVENT_REGISTER_CP_URL_RULES,
             function (RegisterUrlRulesEvent $event) {
-                $event->rules['support/tickets/new-ticket'] = 'support/tickets/new-ticket';
+                $event->rules['support/tickets/new-ticket'] = 'support/tickets/new-ticket-template';
                 $event->rules['support/tickets/<ticketId:\d+>'] = 'support/tickets/show-ticket';
             }
         );
