@@ -26,12 +26,12 @@ class TicketStatusService extends Component
             [
                 'handle' => 'new',
                 'name'   => 'New',
-                'colour' => 'orange',
+                'colour' => 'blue',
             ],
             [
                 'handle' => 'in-progress',
                 'name'   => 'In Progress',
-                'colour' => 'blue',
+                'colour' => 'orange',
             ],
             [
                 'handle' => 'solved',
@@ -43,6 +43,26 @@ class TicketStatusService extends Component
                 'name'   => 'Closed',
                 'colour' => 'red',
             ],
+            [
+                'handle' => 'archived',
+                'name'   => 'Archived',
+                'colour' => 'grey',
+            ],
         ];
+    }
+
+    public static function getStatusByHandle($handle = null)
+    {
+        if ($handle) {
+            $statuses = self::getStatuses();
+
+            foreach ($statuses as $status) {
+                if ($status['handle'] === $handle) {
+                    return $status;
+                }
+            }
+        }
+
+        return null;
     }
 }

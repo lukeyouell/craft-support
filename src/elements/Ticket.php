@@ -67,10 +67,17 @@ class Ticket extends Element
         $sources = [
             '*' => [
                 'key'         => '*',
-                'label'       => 'All tickets',
+                'label'       => 'All Tickets',
                 'criteria'    => [],
                 'defaultSort' => ['dateCreated', 'desc'],
             ],
+        ];
+
+        $sources[] = [
+            'key'         => 'myTickets',
+            'label'       => 'My Tickets',
+            'criteria'    => ['authorId' => Craft::$app->getUser()->getIdentity()->id],
+            'defaultSort' => ['dateCreated', 'desc'],
         ];
 
         $sources[] = ['heading' => 'Ticket Status'];
@@ -92,7 +99,7 @@ class Ticket extends Element
 
     protected static function defineSearchableAttributes(): array
     {
-        return ['title'];
+        return ['title', 'status'];
     }
 
     protected static function defineActions(string $source = null): array
@@ -111,7 +118,8 @@ class Ticket extends Element
     protected static function defineTableAttributes(): array
     {
         $attributes = [
-            'title'     => Craft::t('support', 'Title'),
+            'title'       => Craft::t('support', 'Title'),
+            'status'      => Craft::t('support', 'Status'),
             'dateCreated' => Craft::t('support', 'Date Created'),
             'dateUpdated' => Craft::t('support', 'Date Updated'),
         ];
@@ -121,9 +129,24 @@ class Ticket extends Element
 
     protected static function defineDefaultTableAttributes(string $source): array
     {
-        $attributes = ['title', 'dateCreated', 'dateUpdated'];
+        $attributes = ['title', 'status', 'dateCreated', 'dateUpdated'];
 
         return $attributes;
+    }
+
+    public function getTableAttributeHtml(string $attribute): string
+    {
+        switch ($attribute) {
+            case 'status':
+                {
+                    $status = TicketStatusService::getStatusByHandle($this->status);
+                    return '<span class="status '.$status['colour'].'"></span>'.$status['name'];
+                }
+            default:
+                {
+                    return parent::tableAttributeHtml($attribute);
+                }
+        }
     }
 
     // Public Methods
