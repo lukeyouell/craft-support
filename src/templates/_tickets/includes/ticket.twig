@@ -1,13 +1,42 @@
 {% macro message(message) %}
   {% import _self as blocks %}
+  {% import "_includes/forms" as forms %}
 
+  {% set isUsersMessage = message.authorId == currentUser.id ? true : false %}
   {% set author = craft.app.users.getUserById(message.authorId) %}
   {% set attachments = message.attachmentIds ? craft.assets.id(message.attachmentIds).all() : null %}
 
-  <div class="message {{ message.authorId == currentUser.id ? 'current-user' }}">
+  <div class="message {{ isUsersMessage ? 'current-user' }}">
     <div class="message-container">
+      {% if isUsersMessage %}
+        <div class="message-controls">
+          <form method="post">
+            {{ csrfInput() }}
+
+            {{ forms.hidden({
+                name: 'action',
+                value: 'support/messages/controls',
+            })}}
+
+            {{ forms.hidden({
+                name: 'messageId',
+                value: message.id|hash,
+            })}}
+
+            <div class="flex">
+              <div>
+                <button class="message-control-button" type="submit" name="event" value="delete" title="Delete">
+                  {% include "support/_icons/delete.svg" ignore missing %}
+                </button>
+              </div>
+            </div>
+
+          </form>
+        </div>
+      {% endif %}
+
       <div class="flex">
-        {% if message.authorId != currentUser.id %}
+        {% if not isUsersMessage %}
           {{ blocks.authorPhoto(author.getPhoto) }}
         {% endif %}
         <div class="flex-grow">
@@ -18,7 +47,7 @@
               </div>
 
               <div>
-                {{ message.content }}
+                {{ message.content|nl2br }}
               </div>
             </div>
 
@@ -33,7 +62,7 @@
             {% endif %}
           </div>
         </div>
-        {% if message.authorId == currentUser.id %}
+        {% if isUsersMessage %}
           {{ blocks.authorPhoto(author.getPhoto) }}
         {% endif %}
       </div>
@@ -48,7 +77,7 @@
     {% if photo %}
       <img src="{{ photo.url}}">
     {% else  %}
-      {% include "support/icons/face.svg" ignore missing %}
+      {% include "support/_icons/face.svg" ignore missing %}
     {% endif %}
   </div>
 {% endmacro %}

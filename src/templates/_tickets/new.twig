@@ -33,10 +33,10 @@
   {{ forms.textField({
       first: true,
       required: true,
-      label: 'Subject',
-      id: 'subject',
-      name: 'subject',
-      placeholder: 'Subject',
+      label: 'Title',
+      id: 'title',
+      name: 'title',
+      placeholder: 'Title',
   })}}
 
   {{ forms.textareaField({
@@ -53,7 +53,7 @@
       id: 'attachments',
       fieldId: 'attachments',
       name: 'attachments',
-      selectionLabel: 'Add attachment',
+      selectionLabel: 'Attachment',
       elementType: elementType,
       sourceElementId: volume.id,
       viewMode: 'list',

@@ -18,7 +18,7 @@
 {% import "_includes/forms" as forms %}
 {% import "support/_tickets/includes/ticket" as macros %}
 
-{% set title = ticket.subject %}
+{% set title = ticket.title %}
 
 {% set crumbs = [
     { label: 'Tickets', url: cpUrl('support') }
@@ -56,7 +56,7 @@
         id: 'attachments',
         fieldId: 'attachments',
         name: 'attachments',
-        selectionLabel: 'Add attachment',
+        selectionLabel: 'Attachment',
         elementType: assetElementType,
         sourceElementId: volume.id,
         viewMode: 'list',

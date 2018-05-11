@@ -11,18 +11,10 @@
 namespace lukeyouell\support\controllers;
 
 use lukeyouell\support\Support;
-use lukeyouell\support\elements\Message;
-use lukeyouell\support\elements\db\MessageQuery;
-use lukeyouell\support\elements\Ticket;
-use lukeyouell\support\elements\db\TicketQuery;
 use lukeyouell\support\services\MessageService;
 use lukeyouell\support\services\TicketService;
 
 use Craft;
-use craft\elements\Asset;
-use craft\elements\User;
-use craft\helpers\ArrayHelper;
-use craft\helpers\Json;
 use craft\web\Controller;
 
 use yii\base\InvalidConfigException;
@@ -69,6 +61,30 @@ class MessagesController extends Controller
             } else {
                 Craft::$app->getSession()->setNotice('Message sent.');
             }
+        }
+
+        return $this->redirectToPostedUrl();
+    }
+
+    public function actionControls()
+    {
+        $this->requirePostRequest();
+
+        $request = Craft::$app->getRequest();
+        $messageId = Craft::$app->security->validateData($request->post('messageId'));
+        $event = $request->post('event');
+
+        switch ($request->post('event')) {
+            case 'delete':
+                $res = MessageService::deleteMessage($messageId);
+
+                if (!$res) {
+                    Craft::$app->getSession()->setError('Couldn’t delete the message.');
+                } else {
+                    Craft::$app->getSession()->setNotice('Message deleted.');
+                }
+
+                break;
         }
 
         return $this->redirectToPostedUrl();

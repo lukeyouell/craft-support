@@ -25,7 +25,8 @@ class TicketService extends Component
     public static function createTicket($submission = null) {
         if ($submission) {
           $ticket = new Ticket();
-          $ticket->subject = $submission->post('subject');
+          $ticket->status = 'new';
+          $ticket->title = $submission->post('title');
           $ticket->authorId = Craft::$app->getUser()->getIdentity()->id;
 
           $res = Craft::$app->getElements()->saveElement($ticket, true, false);

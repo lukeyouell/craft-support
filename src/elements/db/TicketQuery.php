@@ -15,13 +15,13 @@ use craft\helpers\Db;
 
 class TicketQuery extends ElementQuery
 {
-    public $subject;
+    public $status;
 
     public $authorId;
 
-    public function subject($value)
+    public function status($status)
     {
-        $this->subject = $value;
+        $this->status = $value;
 
         return $this;
     }
@@ -40,12 +40,12 @@ class TicketQuery extends ElementQuery
 
         // select the columns
         $this->query->select([
-            'support_tickets.subject',
+            'support_tickets.status',
             'support_tickets.authorId',
         ]);
 
-        if ($this->subject) {
-            $this->subQuery->andWhere(Db::parseParam('support_tickets.subject', $this->subject));
+        if ($this->status) {
+            $this->subQuery->andWhere(Db::parseParam('support_tickets.status', $this->status));
         }
 
         if ($this->authorId) {

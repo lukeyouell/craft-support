@@ -11,14 +11,13 @@
 namespace lukeyouell\support\elements;
 
 use lukeyouell\support\Support;
+use lukeyouell\support\elements\db\MessageQuery;
 
 use Craft;
 use craft\base\Element;
 use craft\elements\actions\Delete;
 use craft\elements\db\ElementQueryInterface;
 use craft\helpers\UrlHelper;
-
-use lukeyouell\support\elements\db\MessageQuery;
 
 class Message extends Element
 {

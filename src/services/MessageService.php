@@ -23,6 +23,18 @@ class MessageService extends Component
     // Static Methods
     // =========================================================================
 
+    public static function getMessageById($messageId = null)
+    {
+        if ($messageId) {
+          $query = new MessageQuery(Message::class);
+          $query->id = $messageId;
+
+          return $query->one();
+        }
+
+        return null;
+    }
+
     public static function getMessagesByTicketId($ticketId = null)
     {
         if ($ticketId) {
@@ -55,5 +67,36 @@ class MessageService extends Component
         }
 
         return null;
+    }
+
+    public static function deleteMessage($messageId = null)
+    {
+        if ($messageId) {
+            $message = self::getMessageById($messageId);
+
+            if ($message) {
+                // Check user is message author
+                $owner = self::isMessageAuthor($message->authorId, Craft::$app->getUser()->getIdentity()->id);
+
+                if ($owner) {
+                    Craft::$app->getElements()->deleteElement($message);
+
+                    return true;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public static function isMessageAuthor($authorId = null, $userId = null)
+    {
+        if ($authorId and $userId) {
+            if ($authorId === $userId) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

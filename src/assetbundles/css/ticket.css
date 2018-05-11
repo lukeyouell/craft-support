@@ -21,7 +21,7 @@
 
 .message {
   font-size: 14px;
-  margin: 0 0 1rem;
+  margin: 0 0 .5rem;
 }
 
 .message-container,
@@ -31,6 +31,27 @@
 
 .message-container .flex {
   align-items: flex-start;
+}
+
+.message-controls {
+  visibility: hidden;
+}
+
+.message:hover .message-controls {
+  visibility: visible;
+}
+
+.message-control-button {
+  background: none;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+}
+
+.message-control-button svg {
+  display: block;
+  height: 12px;
+  fill: #8795a1;
 }
 
 .message-body {

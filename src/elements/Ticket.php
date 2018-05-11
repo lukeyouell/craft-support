@@ -11,6 +11,8 @@
 namespace lukeyouell\support\elements;
 
 use lukeyouell\support\Support;
+use lukeyouell\support\elements\db\TicketQuery;
+use lukeyouell\support\services\TicketStatusService;
 
 use Craft;
 use craft\base\Element;
@@ -18,22 +20,12 @@ use craft\elements\actions\Delete;
 use craft\elements\db\ElementQueryInterface;
 use craft\helpers\UrlHelper;
 
-use lukeyouell\support\elements\db\TicketQuery;
-
 class Ticket extends Element
 {
-    // Constants
-    // =========================================================================
-
-    const STATUS_NEW = 'new';
-    const STATUS_IN_PROGRESS = 'inProgress';
-    const STATUS_SOLVED = 'solved';
-    const STATUS_CLOSED = 'closed';
-
     // Public Properties
     // =========================================================================
 
-    public $subject;
+    public $status;
 
     public $authorId;
 
@@ -57,27 +49,12 @@ class Ticket extends Element
 
     public static function hasTitles(): bool
     {
-        return false;
+        return true;
     }
 
     public static function isLocalized(): bool
     {
         return true;
-    }
-
-    public static function hasStatuses(): bool
-    {
-        return true;
-    }
-
-    public static function statuses(): array
-    {
-        return [
-            self::STATUS_NEW => Craft::t('support', 'New'),
-            self::STATUS_IN_PROGRESS => Craft::t('support', 'In Progress'),
-            self::STATUS_SOLVED => Craft::t('support', 'Solved'),
-            self::STATUS_CLOSED => Craft::t('support', 'Closed')
-        ];
     }
 
     public static function find(): ElementQueryInterface
@@ -88,19 +65,34 @@ class Ticket extends Element
     protected static function defineSources(string $context = null): array
     {
         $sources = [
-            [
-                'key'      => '*',
-                'label'    => 'All tickets',
-                'criteria' => [],
+            '*' => [
+                'key'         => '*',
+                'label'       => 'All tickets',
+                'criteria'    => [],
+                'defaultSort' => ['dateCreated', 'desc'],
             ],
         ];
+
+        $sources[] = ['heading' => 'Ticket Status'];
+
+        $statuses = TicketStatusService::getStatuses();
+
+        foreach ($statuses as $status) {
+            $sources[] = [
+                'key'         => 'status:'.$status['handle'],
+                'status'      => $status['colour'],
+                'label'       => $status['name'],
+                'criteria'    => ['status' => $status['handle']],
+                'defaultSort' => ['dateCreated', 'desc'],
+            ];
+        }
 
         return $sources;
     }
 
     protected static function defineSearchableAttributes(): array
     {
-        return ['subject'];
+        return ['title'];
     }
 
     protected static function defineActions(string $source = null): array
@@ -119,8 +111,7 @@ class Ticket extends Element
     protected static function defineTableAttributes(): array
     {
         $attributes = [
-            'id'     => Craft::t('support', 'ID'),
-            'subject'     => Craft::t('support', 'Subject'),
+            'title'     => Craft::t('support', 'Title'),
             'dateCreated' => Craft::t('support', 'Date Created'),
             'dateUpdated' => Craft::t('support', 'Date Updated'),
         ];
@@ -130,7 +121,7 @@ class Ticket extends Element
 
     protected static function defineDefaultTableAttributes(string $source): array
     {
-        $attributes = ['id', 'subject', 'dateCreated', 'dateUpdated'];
+        $attributes = ['title', 'dateCreated', 'dateUpdated'];
 
         return $attributes;
     }
@@ -151,15 +142,6 @@ class Ticket extends Element
     // Indexes, etc.
     // -------------------------------------------------------------------------
 
-    protected function tableAttributeHtml(string $attribute): string
-    {
-        switch ($attribute) {
-            case 'subject':
-                $author = $this->subject;
-        }
-        return parent::tableAttributeHtml($attribute);
-    }
-
     protected static function defineSortOptions(): array
     {
         $sortOptions = [
@@ -178,15 +160,15 @@ class Ticket extends Element
         if ($isNew) {
             Craft::$app->db->createCommand()
                 ->insert('{{%support_tickets}}', [
-                    'id'            => $this->id,
-                    'subject'       => $this->subject,
-                    'authorId'      => $this->authorId,
+                    'id'       => $this->id,
+                    'status'   => $this->status,
+                    'authorId' => $this->authorId,
                 ])
                 ->execute();
         } else {
             Craft::$app->db->createCommand()
                 ->update('{{%support_tickets}}', [
-                    'subject'   => $this->subject,
+                    'status'  => $this->status,
                 ], ['id' => $this->id])
                 ->execute();
         }
