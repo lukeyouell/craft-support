@@ -13,7 +13,6 @@ namespace lukeyouell\support\services;
 use lukeyouell\support\Support;
 use lukeyouell\support\elements\Message;
 use lukeyouell\support\elements\db\MessageQuery;
-use lukeyouell\support\services\AttachmentService;
 use lukeyouell\support\services\TicketService;
 
 use Craft;
@@ -30,16 +29,7 @@ class MessageService extends Component
           $query = new MessageQuery(Message::class);
           $query->ticketId = $ticketId;
 
-          $messages = $query->all();
-
-          if ($messages) {
-              // Convert attachment id's back to an array
-              foreach ($messages as $message) {
-                //$message->attachmentIds = AttachmentService::getMessageAttachments($message->attachmentIds);
-              }
-
-              return $messages;
-          }
+          return $query->all();
         }
 
         return null;
@@ -51,7 +41,7 @@ class MessageService extends Component
             $message = new Message();
             $message->ticketId = $ticketId;
             $message->authorId = Craft::$app->getUser()->getIdentity()->id;
-            $message->attachmentIds = implode(',', $submission->post('attachments'));
+            $message->attachmentIds = $submission->post('attachments') ? implode(',', $submission->post('attachments')) : null;
             $message->content = $submission->post('message');
 
             $res = Craft::$app->getElements()->saveElement($message, true, false);

@@ -150,12 +150,42 @@ class Install extends Migration
             null
         );
 
+        $this->addForeignKey(
+            $this->db->getForeignKeyName('{{%support_tickets}}', 'authorId'),
+            '{{%support_tickets}}',
+            'authorId',
+            '{{%users}}',
+            'id',
+            'CASCADE',
+            null
+        );
+
         // support_messages table
         $this->addForeignKey(
             $this->db->getForeignKeyName('{{%support_messages}}', 'id'),
             '{{%support_messages}}',
             'id',
             '{{%elements}}',
+            'id',
+            'CASCADE',
+            null
+        );
+
+        $this->addForeignKey(
+            $this->db->getForeignKeyName('{{%support_messages}}', 'ticketId'),
+            '{{%support_messages}}',
+            'ticketId',
+            '{{%support_tickets}}',
+            'id',
+            'CASCADE',
+            null
+        );
+
+        $this->addForeignKey(
+            $this->db->getForeignKeyName('{{%support_messages}}', 'authorId'),
+            '{{%support_messages}}',
+            'authorId',
+            '{{%users}}',
             'id',
             'CASCADE',
             null
