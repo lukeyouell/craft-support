@@ -69,8 +69,10 @@ class TicketsController extends Controller
 
     public function actionNewTicketTemplate()
     {
+        $volume = $this->settings->volumeId ? Craft::$app->getVolumes()->getVolumeById($this->settings->volumeId) : null;
+
         $variables = [
-            'volume' => $this->settings->volumeId ? Craft::$app->getVolumes()->getVolumeById($this->settings->volumeId) : null,
+            'volume' => $volume,
             'elementType' => Asset::class,
             'settings' => $this->settings,
         ];
