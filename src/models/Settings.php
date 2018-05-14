@@ -66,15 +66,4 @@ class Settings extends Model
             [['volumeId'], 'number', 'integerOnly' => true]
         ];
     }
-
-    /**
-     * @return VolumeInterface|null
-     */
-    public function getVolume()
-    {
-        if ($this->volumeId === null) {
-            return new Temp();
-        }
-        return Craft::$app->getVolumes()->getVolumeById($this->volumeId);
-    }
 }
