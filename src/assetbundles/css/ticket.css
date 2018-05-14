@@ -20,6 +20,10 @@
   margin: 0;
 }
 
+.new-message.active .field {
+  margin-bottom: 16px;
+}
+
 .new-message .field .text {
   height: 62px;
 }
@@ -37,7 +41,7 @@
 }
 
 .new-message .elementselect {
-  margin: 1rem 0;
+  margin: 0 0 16px;
 }
 
 .messages {
