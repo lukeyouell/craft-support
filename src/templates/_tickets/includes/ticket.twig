@@ -1,83 +1,48 @@
 {% macro message(message) %}
   {% import _self as blocks %}
-  {% import "_includes/forms" as forms %}
 
   {% set isUsersMessage = message.authorId == currentUser.id ? true : false %}
-  {% set author = craft.app.users.getUserById(message.authorId) %}
   {% set attachments = message.attachmentIds ? craft.assets.id(message.attachmentIds).all() : null %}
 
-  <div class="message {{ isUsersMessage ? 'current-user' }}">
-    <div class="message-container">
-      {% if isUsersMessage %}
-        <div class="message-controls">
-          <form method="post">
-            {{ csrfInput() }}
+  <div class="message-container">
+    <div class="message flex">
+      {{ blocks.authorPhoto(message.author.getPhoto) }}
 
-            {{ forms.hidden({
-                name: 'action',
-                value: 'support/messages/controls',
-            })}}
-
-            {{ forms.hidden({
-                name: 'messageId',
-                value: message.id|hash,
-            })}}
-
-            <div class="flex">
-              <div>
-                <button class="message-control-button" type="submit" name="event" value="delete" title="Delete">
-                  {% include "support/_icons/delete.svg" ignore missing %}
-                </button>
-              </div>
-            </div>
-
-          </form>
+      <div class="flex-grow">
+        <div class="message-details">
+          {{ message.author.name }}
+          <span class="light small">{{ message.dateCreated|datetime('short') }}</span>
         </div>
-      {% endif %}
 
-      <div class="flex">
-        {% if not isUsersMessage %}
-          {{ blocks.authorPhoto(author.getPhoto) }}
-        {% endif %}
-        <div class="flex-grow">
-          <div class="message-inner">
-            <div class="message-body">
-              <div class="message-details">
-                <span class="message-user">{{ author.name|default('Undefined') }}</span>
-              </div>
+        <div class="message-body">
+          {{ message.content|nl2br }}
+        </div>
 
-              <div>
-                {{ message.content|nl2br }}
+        {% if attachments %}
+          <div class="message-attachments">
+            {% for attachment in attachments %}
+              <div class="message-attachment">
+                <a href="{{ attachment.url }}" target="_blank">
+                  <span data-icon="download"></span>
+                  {{ attachment.filename }}
+                </a>
               </div>
-            </div>
-
-            {% if attachments %}
-              <div class="message-attachments">
-                {% for attachment in attachments %}
-                  <div class="message-attachment">
-                    <a href="{{ attachment.url }}" target="_blank">{{ attachment.filename }}</a>
-                  </div>
-                {% endfor %}
-              </div>
-            {% endif %}
+            {% endfor %}
           </div>
-        </div>
-        {% if isUsersMessage %}
-          {{ blocks.authorPhoto(author.getPhoto) }}
         {% endif %}
       </div>
-
-      <div class="message-date">{{ message.dateCreated|datetime('short') }}</div>
     </div>
   </div>
 {% endmacro %}
 
 {% macro authorPhoto(photo) %}
   <div class="message-photo">
-    {% if photo %}
-      <img src="{{ photo.url}}">
-    {% else  %}
-      {% include "support/_icons/face.svg" ignore missing %}
-    {% endif %}
+    <div>
+      {% if photo %}
+        <img src="{{ photo.url}}">
+      {% else  %}
+        {% include "support/_icons/face.svg" ignore missing %}
+      {% endif %}
+    </div>
   </div>
 {% endmacro %}

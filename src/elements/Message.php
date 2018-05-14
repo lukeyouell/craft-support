@@ -32,6 +32,8 @@ class Message extends Element
 
     public $content;
 
+    public $_author;
+
     // Static Methods
     // =========================================================================
 
@@ -68,6 +70,33 @@ class Message extends Element
     public static function find(): ElementQueryInterface
     {
         return new MessageQuery(static::class);
+    }
+
+    // Public Methods
+    // -------------------------------------------------------------------------
+
+    public function extraFields()
+    {
+        $names = parent::extraFields();
+        $names[] = 'author';
+        return $names;
+    }
+
+    public function getAuthor()
+    {
+        if ($this->_author !== null) {
+            return $this->_author;
+        }
+
+        if ($this->authorId === null) {
+            return null;
+        }
+
+        if (($this->_author = Craft::$app->getUsers()->getUserById($this->authorId)) === null) {
+            throw new InvalidConfigException('Invalid author ID: '.$this->authorId);
+        }
+
+        return $this->_author;
     }
 
     // Events

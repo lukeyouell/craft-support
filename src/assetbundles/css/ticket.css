@@ -25,90 +25,40 @@
 
 .message {
   font-size: 14px;
-  margin: 0 0 .5rem;
-}
-
-.message-container,
-.message-inner {
-  display: inline-block;
+  line-height: 1.6;
+  padding: 20px 0;
+  border-bottom: 1px solid #e3e5e8;
 }
 
 .message-container .flex {
   align-items: flex-start;
 }
 
-.message-controls {
-  visibility: hidden;
-}
-
-.message:hover .message-controls {
-  visibility: visible;
-}
-
-.message-control-button {
-  background: none;
-  padding: 0;
-  border: none;
-  cursor: pointer;
-}
-
-.message-control-button svg {
-  display: block;
-  height: 12px;
-  fill: #8795a1;
-}
-
-.message-body {
-  background: #f8fafc;
-  min-width: 150px;
-  padding: 1rem;
-  line-height: 1.5;
-  text-align: left;
-  border-radius: .25rem;
-}
-
-.message-details {
-  margin: 0 0 .25rem;
-}
-
-.message-user {
-  font-weight: 700;
-}
-
-.message-attachments {
-  border-bottom: 1px dashed #8795a1;
-  padding: .5rem 0;
-  font-size: 11px;
+.message-photo > div {
+  margin: 0 7px 0 0;
 }
 
 .message-photo img {
   display: block;
-  width: 50px;
-  height: 50px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
 }
 
 .message-photo svg {
-  width: 50px;
-  height: 50px;
+  width: 44px;
+  height: 44px;
   fill: #8795a1;
 }
 
-.message-date {
-  font-size: 11px;
-  color: #8795a1;
-  text-align: right;
+.message-details {
+  font-weight: 700;
 }
 
-.message.current-user {
-  text-align: right;
+.message-details .small {
+  font-size: 75%;
 }
 
-.message.current-user .message-body {
-  background: #3490dc;
-  color: #fff;
-}
-
-.message.current-user .message-date {
-  text-align: left;
+.message-attachments {
+  margin-top: 7px;
 }
