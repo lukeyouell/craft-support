@@ -1,12 +1,14 @@
 {% macro message(message) %}
-  {% import _self as blocks %}
-
   {% set isUsersMessage = message.authorId == currentUser.id ? true : false %}
   {% set attachments = message.attachmentIds ? craft.assets.id(message.attachmentIds).all() : null %}
 
   <div class="message-container">
     <div class="message flex">
-      {{ blocks.authorPhoto(message.author.getPhoto) }}
+      <div class="message-photo">
+        <div>
+          <img src="{{ message.author.getThumbUrl(100) }}" alt="{{ message.author.name }}">
+        </div>
+      </div>
 
       <div class="flex-grow">
         <div class="message-details">
@@ -31,18 +33,6 @@
           </div>
         {% endif %}
       </div>
-    </div>
-  </div>
-{% endmacro %}
-
-{% macro authorPhoto(photo) %}
-  <div class="message-photo">
-    <div>
-      {% if photo %}
-        <img src="{{ photo.url}}">
-      {% else  %}
-        {% include "support/_icons/face.svg" ignore missing %}
-      {% endif %}
     </div>
   </div>
 {% endmacro %}
