@@ -24,40 +24,40 @@ class TicketStatusService extends Component
     {
         return [
             [
-                'handle' => 'new',
-                'name'   => 'New',
+                'value' => 'new',
+                'label'   => 'New',
                 'colour' => 'blue',
             ],
             [
-                'handle' => 'in-progress',
-                'name'   => 'In Progress',
+                'value' => 'in-progress',
+                'label'   => 'In Progress',
                 'colour' => 'orange',
             ],
             [
-                'handle' => 'solved',
-                'name'   => 'Solved',
+                'value' => 'solved',
+                'label'   => 'Solved',
                 'colour' => 'green',
             ],
             [
-                'handle' => 'closed',
-                'name'   => 'Closed',
+                'value' => 'closed',
+                'label'   => 'Closed',
                 'colour' => 'red',
             ],
             [
-                'handle' => 'archived',
-                'name'   => 'Archived',
+                'value' => 'archived',
+                'label'   => 'Archived',
                 'colour' => 'grey',
             ],
         ];
     }
 
-    public static function getStatusByHandle($handle = null)
+    public static function getStatusByValue($value = null)
     {
-        if ($handle) {
+        if ($value) {
             $statuses = self::getStatuses();
 
             foreach ($statuses as $status) {
-                if ($status['handle'] === $handle) {
+                if ($status['value'] === $value) {
                     return $status;
                 }
             }

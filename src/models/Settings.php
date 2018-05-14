@@ -39,6 +39,8 @@ class Settings extends Model
 
     public $toEmail;
 
+    public $attachments = false;
+
     public $volumeId;
 
     public $volumeSubpath;
@@ -59,7 +61,7 @@ class Settings extends Model
     public function rules()
     {
         return [
-            [['email'], 'boolean'],
+            [['email', 'attachments'], 'boolean'],
             [['toEmail', 'volumeSubpath'], 'string'],
             [['volumeId'], 'number', 'integerOnly' => true]
         ];

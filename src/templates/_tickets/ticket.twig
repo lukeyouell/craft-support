@@ -50,7 +50,7 @@
         rows: 4
     })}}
 
-    {% if volume %}
+    {% if settings.attachments and volume %}
       {% include "_components/fieldtypes/Assets/input" with {
         id: 'attachments',
         fieldId: 'attachments',
@@ -70,13 +70,43 @@
 </div>
 
 <div class="messages">
-  {% for message in messages %}
+  {% for message in ticket.messages %}
     {{ macros.message(message) }}
   {% endfor %}
 </div>
 {% endblock %}
 
 {% block details %}
+  {% if currentUser.can('manageTickets') %}
+    <form method="post">
+      <div class="meta">
+        {{ csrfInput() }}
+
+        {{ forms.hidden({
+            name: 'action',
+            value: 'support/tickets/save-ticket',
+        })}}
+
+        {{ forms.hidden({
+            name: 'ticketId',
+            value: ticket.id|hash,
+        })}}
+
+        {{ forms.selectField({
+            label:   'Ticket Status',
+            id:      'ticketStatus',
+            name:    'ticketStatus',
+            value:   ticket.ticketStatus,
+            options: ticketStatuses,
+        })}}
+
+        <input class="btn submit" type="submit" value="Update ticket">
+      </div>
+    </form>
+
+    <hr>
+  {% endif %}
+
   <div class="meta read-only">
     <div class="data">
       <div class="heading">
@@ -87,17 +117,19 @@
       </div>
     </div>
 
-    <div class="data">
-      <div class="heading">
-        Author
-      </div>
-      <div class="value">
-        <a href="{{ cpUrl('users/'~author.id) }}">{{ author.name ?? author.username }}</a>
-        <div>
-          <code>{{ author.email }}</code>
+    {% if currentUser.can('manageTickets') %}
+      <div class="data">
+        <div class="heading">
+          Author
+        </div>
+        <div class="value">
+          <a href="{{ cpUrl('users/'~ ticket.author.id) }}">{{ ticket.author.name ?? ticket.author.username }}</a>
+          <div>
+            <code>{{ ticket.author.email }}</code>
+          </div>
         </div>
       </div>
-    </div>
+    {% endif %}
 
     <div class="data">
       <div class="heading">
@@ -117,4 +149,6 @@
       </div>
     </div>
   </div>
+
+  <hr>
 {% endblock %}

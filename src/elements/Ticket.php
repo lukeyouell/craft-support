@@ -12,6 +12,7 @@ namespace lukeyouell\support\elements;
 
 use lukeyouell\support\Support;
 use lukeyouell\support\elements\db\TicketQuery;
+use lukeyouell\support\services\MessageService;
 use lukeyouell\support\services\TicketStatusService;
 
 use Craft;
@@ -20,14 +21,21 @@ use craft\elements\actions\Delete;
 use craft\elements\db\ElementQueryInterface;
 use craft\helpers\UrlHelper;
 
+use yii\base\Exception;
+use yii\base\InvalidConfigException;
+
 class Ticket extends Element
 {
     // Public Properties
     // =========================================================================
 
-    public $status;
+    public $ticketStatus;
 
     public $authorId;
+
+    public $_author;
+
+    public $_messages;
 
     // Static Methods
     // =========================================================================
@@ -57,6 +65,16 @@ class Ticket extends Element
         return true;
     }
 
+    public static function hasStatuses(): bool
+    {
+        return false;
+    }
+
+    public static function statuses(): array
+    {
+        return [];
+    }
+
     public static function find(): ElementQueryInterface
     {
         return new TicketQuery(static::class);
@@ -64,11 +82,17 @@ class Ticket extends Element
 
     protected static function defineSources(string $context = null): array
     {
+        $userSessionService = Craft::$app->getUser();
+        $userId = $userSessionService->getIdentity()->id;
+        $canManageTickets = $userSessionService->checkPermission('manageTickets');
+
         $sources = [
             '*' => [
                 'key'         => '*',
                 'label'       => 'All Tickets',
-                'criteria'    => [],
+                'criteria'    => [
+                    'authorId' => $canManageTickets ? '' : $userId,
+                ],
                 'defaultSort' => ['dateCreated', 'desc'],
             ],
         ];
@@ -76,7 +100,9 @@ class Ticket extends Element
         $sources[] = [
             'key'         => 'myTickets',
             'label'       => 'My Tickets',
-            'criteria'    => ['authorId' => Craft::$app->getUser()->getIdentity()->id],
+            'criteria'    => [
+                'authorId' => $userId,
+            ],
             'defaultSort' => ['dateCreated', 'desc'],
         ];
 
@@ -86,10 +112,13 @@ class Ticket extends Element
 
         foreach ($statuses as $status) {
             $sources[] = [
-                'key'         => 'status:'.$status['handle'],
+                'key'         => 'status:'.$status['value'],
                 'status'      => $status['colour'],
-                'label'       => $status['name'],
-                'criteria'    => ['status' => $status['handle']],
+                'label'       => $status['label'],
+                'criteria'    => [
+                    'authorId' => $canManageTickets ? '' : $userId,
+                    'ticketStatus' => $status['value'],
+                ],
                 'defaultSort' => ['dateCreated', 'desc'],
             ];
         }
@@ -99,37 +128,62 @@ class Ticket extends Element
 
     protected static function defineSearchableAttributes(): array
     {
-        return ['title', 'status'];
+        return ['title', 'ticketStatus'];
     }
 
     protected static function defineActions(string $source = null): array
     {
+        $userSessionService = Craft::$app->getUser();
+        $canDeleteTickets = $userSessionService->checkPermission('deleteTickets');
+
         $actions = [];
 
-        $actions[] = Craft::$app->getElements()->createAction([
-            'type'                => Delete::class,
-            'confirmationMessage' => Craft::t('support', 'Are you sure you want to delete the selected tickets?'),
-            'successMessage'      => Craft::t('support', 'Tickets deleted.'),
-        ]);
+        if ($canDeleteTickets) {
+            $actions[] = Craft::$app->getElements()->createAction([
+                'type'                => Delete::class,
+                'confirmationMessage' => Craft::t('support', 'Are you sure you want to delete the selected tickets?'),
+                'successMessage'      => Craft::t('support', 'Tickets deleted.'),
+            ]);
+        }
 
         return $actions;
     }
 
     protected static function defineTableAttributes(): array
     {
-        $attributes = [
-            'title'       => Craft::t('support', 'Title'),
-            'status'      => Craft::t('support', 'Status'),
-            'dateCreated' => Craft::t('support', 'Date Created'),
-            'dateUpdated' => Craft::t('support', 'Date Updated'),
-        ];
+        $userSessionService = Craft::$app->getUser();
+        $canManageTickets = $userSessionService->checkPermission('manageTickets');
+
+        if ($canManageTickets) {
+            $attributes = [
+                'title'        => Craft::t('support', 'Title'),
+                'ticketStatus' => Craft::t('support', 'Status'),
+                'author' => Craft::t('support', 'Author'),
+                'dateCreated'  => Craft::t('support', 'Date Created'),
+                'dateUpdated'  => Craft::t('support', 'Date Updated'),
+            ];
+        } else {
+            $attributes = [
+                'title'        => Craft::t('support', 'Title'),
+                'ticketStatus' => Craft::t('support', 'Status'),
+                'dateCreated'  => Craft::t('support', 'Date Created'),
+                'dateUpdated'  => Craft::t('support', 'Date Updated'),
+            ];
+        }
 
         return $attributes;
     }
 
     protected static function defineDefaultTableAttributes(string $source): array
     {
-        $attributes = ['title', 'status', 'dateCreated', 'dateUpdated'];
+        $userSessionService = Craft::$app->getUser();
+        $canManageTickets = $userSessionService->checkPermission('manageTickets');
+
+        if ($canManageTickets) {
+            $attributes = ['title', 'ticketStatus', 'dateCreated', 'dateUpdated', 'author'];
+        } else {
+            $attributes = ['title', 'ticketStatus', 'dateCreated', 'dateUpdated'];
+        }
 
         return $attributes;
     }
@@ -137,11 +191,13 @@ class Ticket extends Element
     public function getTableAttributeHtml(string $attribute): string
     {
         switch ($attribute) {
-            case 'status':
-                {
-                    $status = TicketStatusService::getStatusByHandle($this->status);
-                    return '<span class="status '.$status['colour'].'"></span>'.$status['name'];
-                }
+            case 'ticketStatus':
+                $status = TicketStatusService::getStatusByValue($this->ticketStatus);
+                return '<span class="status '.$status['colour'].'"></span>'.$status['label'];
+            case 'author':
+                $author = $this->getAuthor();
+
+                return $author ? Craft::$app->getView()->renderTemplate('_elements/element', ['element' => $author]) : '';
             default:
                 {
                     return parent::tableAttributeHtml($attribute);
@@ -152,6 +208,14 @@ class Ticket extends Element
     // Public Methods
     // =========================================================================
 
+    public function extraFields()
+    {
+        $names = parent::extraFields();
+        $names[] = 'author';
+        $names[] = 'messages';
+        return $names;
+    }
+
     public function getIsEditable(): bool
     {
         return false;
@@ -160,6 +224,34 @@ class Ticket extends Element
     public function getCpEditUrl()
     {
         return UrlHelper::cpUrl('support/tickets/'.$this->id);
+    }
+
+    public function getAuthor()
+    {
+        if ($this->_author !== null) {
+            return $this->_author;
+        }
+
+        if ($this->authorId === null) {
+            return null;
+        }
+
+        if (($this->_author = Craft::$app->getUsers()->getUserById($this->authorId)) === null) {
+            throw new InvalidConfigException('Invalid author ID: '.$this->authorId);
+        }
+
+        return $this->_author;
+    }
+
+    public function getMessages()
+    {
+        if ($this->_messages !== null) {
+            return $this->_messages;
+        }
+
+        $this->_messages = MessageService::getMessagesByTicketId($this->id);
+
+        return $this->_messages;
     }
 
     // Indexes, etc.
@@ -184,14 +276,14 @@ class Ticket extends Element
             Craft::$app->db->createCommand()
                 ->insert('{{%support_tickets}}', [
                     'id'       => $this->id,
-                    'status'   => $this->status,
+                    'ticketStatus'   => $this->ticketStatus,
                     'authorId' => $this->authorId,
                 ])
                 ->execute();
         } else {
             Craft::$app->db->createCommand()
                 ->update('{{%support_tickets}}', [
-                    'status'  => $this->status,
+                    'ticketStatus'  => $this->ticketStatus,
                 ], ['id' => $this->id])
                 ->execute();
         }

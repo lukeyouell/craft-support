@@ -17,9 +17,9 @@
 
 {% macro configWarning(setting) -%}
   {% set setting = '<code>' ~ setting ~ '</code>' %}
-  {{ 'This is being overridden by the {setting} config setting in your {file} config file.'|t('update-checker', {
+  {{ 'This is being overridden by the {setting} config setting in your {file} config file.'|t('support', {
         setting: setting,
-        file:    'update-checker.php'
+        file:    'support.php'
   })|raw }}
 {%- endmacro %}
 
@@ -28,14 +28,14 @@
 <h2 class="first">Notifications</h2>
 
 {{ forms.lightswitchField({
-    first:         true,
-    label:        'Email Notifications'|t,
-    id:           'email',
-    name:         'email',
-    on:           settings.email,
-    disabled:     'email' in overrides,
-    warning:      'email' in overrides ? configWarning('email'),
-}) }}
+    first:    true,
+    label:    'Email Notifications'|t,
+    id:       'email',
+    name:     'email',
+    on:       settings.email,
+    disabled: 'email' in overrides,
+    warning:  'email' in overrides ? configWarning('email'),
+})}}
 
 {{ forms.textField({
     first: true,
@@ -52,6 +52,16 @@
 <hr>
 
 <h2 class="first">Attachments</h2>
+
+{{ forms.lightswitchField({
+    first:    true,
+    label:    'Allow Attachments'|t,
+    id:       'attachments',
+    name:     'attachments',
+    on:       settings.attachments,
+    disabled: 'attachments' in overrides,
+    warning:  'attachments' in overrides ? configWarning('attachments'),
+})}}
 
 {% set allVolumes = craft.app.volumes.getAllVolumes() %}
 {% set volumeList = [] %}

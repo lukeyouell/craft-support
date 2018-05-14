@@ -13,12 +13,15 @@ namespace lukeyouell\support\controllers;
 use lukeyouell\support\Support;
 use lukeyouell\support\services\MessageService;
 use lukeyouell\support\services\TicketService;
+use lukeyouell\support\services\TicketStatusService;
 
 use Craft;
 use craft\elements\Asset;
 use craft\web\Controller;
 
 use yii\base\InvalidConfigException;
+use yii\web\HttpException;
+use yii\web\NotFoundHttpException;
 
 class TicketsController extends Controller
 {
@@ -43,14 +46,17 @@ class TicketsController extends Controller
     public function actionShowTicket(string $ticketId = null)
     {
         $ticket = TicketService::getTicketById($ticketId);
-        $messages = MessageService::getMessagesByTicketId($ticket->id);
+
+        if (!$ticket) {
+            throw new NotFoundHttpException('Ticket not found');
+        }
 
         $variables = [
             'ticket'   => $ticket,
-            'author'   => $ticket->authorId ? Craft::$app->users->getUserById($ticket->authorId) : null,
-            'messages' => $messages,
+            'ticketStatuses' => TicketStatusService::getStatuses(),
             'volume' => $this->settings->volumeId ? Craft::$app->getVolumes()->getVolumeById($this->settings->volumeId) : null,
             'assetElementType' => Asset::class,
+            'settings' => $this->settings,
         ];
 
         return $this->renderTemplate('support/_tickets/ticket', $variables);
@@ -61,6 +67,7 @@ class TicketsController extends Controller
         $variables = [
             'volume' => $this->settings->volumeId ? Craft::$app->getVolumes()->getVolumeById($this->settings->volumeId) : null,
             'elementType' => Asset::class,
+            'settings' => $this->settings,
         ];
 
         return $this->renderTemplate('support/_tickets/new', $variables);
@@ -104,5 +111,31 @@ class TicketsController extends Controller
 
             return $this->redirectToPostedUrl();
         }
+    }
+
+    public function actionSaveTicket()
+    {
+        $this->requirePostRequest();
+
+        $request = Craft::$app->getRequest();
+        $ticketId = Craft::$app->security->validateData($request->post('ticketId'));
+
+        if ($ticketId) {
+            $ticket = TicketService::getTicketById($ticketId);
+
+            if (!$ticket) {
+                throw new NotFoundHttpException('Ticket not found');
+            }
+
+            if ($request->post('ticketStatus')) {
+                $ticket->ticketStatus = $request->post('ticketStatus');
+            }
+
+            Craft::$app->getElements()->saveElement($ticket, false);
+
+            Craft::$app->getSession()->setNotice('Ticket updated.');
+        }
+
+        return $this->redirectToPostedUrl();
     }
 }

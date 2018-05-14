@@ -25,7 +25,7 @@ class TicketService extends Component
     public static function createTicket($submission = null) {
         if ($submission) {
           $ticket = new Ticket();
-          $ticket->status = 'new';
+          $ticket->ticketStatus = 'new';
           $ticket->title = $submission->post('title');
           $ticket->authorId = Craft::$app->getUser()->getIdentity()->id;
 
@@ -41,9 +41,14 @@ class TicketService extends Component
 
     public static function getTicketById($ticketId = null)
     {
+        $userSessionService = Craft::$app->getUser();
+        $userId = $userSessionService->getIdentity()->id;
+        $canManageTickets = $userSessionService->checkPermission('manageTickets');
+
         if ($ticketId) {
             $query = new TicketQuery(Ticket::class);
             $query->id = $ticketId;
+            $query->authorId = $canManageTickets ? null : $userId;
 
             return $query->one();
         }

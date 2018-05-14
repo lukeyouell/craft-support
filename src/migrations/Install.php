@@ -76,13 +76,13 @@ class Install extends Migration
             $this->createTable(
                 '{{%support_tickets}}',
                 [
-                    'id'          => $this->primaryKey(),
-                    'dateCreated' => $this->dateTime()->notNull(),
-                    'dateUpdated' => $this->dateTime()->notNull(),
-                    'uid'         => $this->uid(),
+                    'id'           => $this->primaryKey(),
+                    'dateCreated'  => $this->dateTime()->notNull(),
+                    'dateUpdated'  => $this->dateTime()->notNull(),
+                    'uid'          => $this->uid(),
                     // Custom columns in the table
-                    'status'      => $this->string()->notNull(),
-                    'authorId'    => $this->integer(),
+                    'ticketStatus' => $this->string()->notNull(),
+                    'authorId'     => $this->integer(),
                 ]
             );
 
