@@ -4,6 +4,10 @@
   padding: 0;
 }
 
+.meta .btn.submit {
+  margin-top: 16px;
+}
+
 /* Plugin css */
 
 .new-message {
@@ -17,7 +21,7 @@
 }
 
 .new-message .field .text {
-  height: 60px;
+  height: 62px;
 }
 
 .new-message.active .field .text {
@@ -37,7 +41,7 @@
 }
 
 .messages {
-  padding: 24px;
+  padding: 4px 24px;
 }
 
 .message {
