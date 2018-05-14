@@ -17,6 +17,7 @@ use lukeyouell\support\services\TicketStatusService;
 
 use Craft;
 use craft\elements\Asset;
+use craft\helpers\Template;
 use craft\web\Controller;
 
 use yii\base\InvalidConfigException;
@@ -51,11 +52,15 @@ class TicketsController extends Controller
             throw new NotFoundHttpException('Ticket not found');
         }
 
+        $volume = $this->settings->volumeId ? Craft::$app->getVolumes()->getVolumeById($this->settings->volumeId) : null;
+        $authorHtml = $ticket->author ? Craft::$app->getView()->renderTemplate('_elements/element', ['element' => $ticket->author]) : '';
+
         $variables = [
             'ticket'   => $ticket,
             'ticketStatuses' => TicketStatusService::getStatuses(),
-            'volume' => $this->settings->volumeId ? Craft::$app->getVolumes()->getVolumeById($this->settings->volumeId) : null,
+            'volume' => $volume,
             'assetElementType' => Asset::class,
+            'authorHtml' => Template::raw($authorHtml),
             'settings' => $this->settings,
         ];
 

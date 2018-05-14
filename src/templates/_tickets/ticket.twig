@@ -123,10 +123,7 @@
           Author
         </div>
         <div class="value">
-          <a href="{{ cpUrl('users/'~ ticket.author.id) }}">{{ ticket.author.name ?? ticket.author.username }}</a>
-          <div>
-            <code>{{ ticket.author.email }}</code>
-          </div>
+          {{ authorHtml }}
         </div>
       </div>
     {% endif %}
