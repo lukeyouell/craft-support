@@ -12,11 +12,27 @@
 }
 
 .new-message .field {
-  margin: 0 0 1rem;
+  margin: 0;
+}
+
+.new-message .field .text {
+  height: 60px;
+}
+
+.new-message.active .field .text {
+  height: 100px;
+}
+
+.new-message-controls {
+  display: none;
+}
+
+.new-message.active .new-message-controls {
+  display: block;
 }
 
 .new-message .elementselect {
-  margin: 0 0 1rem;
+  margin: 1rem 0;
 }
 
 .messages {

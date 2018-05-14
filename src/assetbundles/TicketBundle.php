@@ -25,11 +25,9 @@ class TicketBundle extends AssetBundle
             CpAsset::class,
         ];
 
-        // define the relative path to CSS/JS files that should be registered with the page
-        // when this asset bundle is registered
-        //$this->js = [
-        //    'script.js',
-        //];
+        $this->js = [
+            'js/ticket.js',
+        ];
 
         $this->css = [
             'css/ticket.css',

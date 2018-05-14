@@ -47,25 +47,26 @@
         id: 'message',
         name: 'message',
         placeholder: 'Post a message or upload a file...',
-        rows: 4
     })}}
 
-    {% if settings.attachments and volume %}
-      {% include "_components/fieldtypes/Assets/input" with {
-        id: 'attachments',
-        fieldId: 'attachments',
-        name: 'attachments',
-        selectionLabel: 'Attachment',
-        elementType: assetElementType,
-        sourceElementId: volume.id,
-        viewMode: 'list',
-        limit: 4,
-        defaultFieldLayoutId: volume.fieldLayoutId,
-        hideSidebar: true,
-      } %}
-    {% endif %}
+    <div class="new-message-controls">
+      {% if settings.attachments and volume %}
+        {% include "_components/fieldtypes/Assets/input" with {
+          id: 'attachments',
+          fieldId: 'attachments',
+          name: 'attachments',
+          selectionLabel: 'Attachment',
+          elementType: assetElementType,
+          sourceElementId: volume.id,
+          viewMode: 'list',
+          limit: 4,
+          defaultFieldLayoutId: volume.fieldLayoutId,
+          hideSidebar: true,
+        } %}
+      {% endif %}
 
-    <input class="btn submit" type="submit" value="Post message">
+      <input class="btn submit" type="submit" value="Post message">
+    </div>
   </form>
 </div>
 
