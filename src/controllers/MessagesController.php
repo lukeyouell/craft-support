@@ -44,22 +44,26 @@ class MessagesController extends Controller
         $this->requirePostRequest();
 
         $request = Craft::$app->getRequest();
-
         $ticketId = Craft::$app->security->validateData($request->post('ticketId'));
+        $messageVal = $request->post('message');
 
-        // First check ticket exists
-        $ticket = TicketService::getTicketById($ticketId);
-
-        if (!$ticket) {
-            Craft::$app->getSession()->setError('Couldn’t find the ticket.');
+        if (!$messageVal) {
+            Craft::$app->getSession()->setError('Message field is required.');
         } else {
-            // Ticket exists, now create message
-            $message = MessageService::createMessage($ticket->id, $request);
+            // First check ticket exists
+            $ticket = TicketService::getTicketById($ticketId);
 
-            if (!$message) {
-                Craft::$app->getSession()->setError('Couldn’t send the message.');
+            if (!$ticket) {
+                Craft::$app->getSession()->setError('Couldn’t find the ticket.');
             } else {
-                Craft::$app->getSession()->setNotice('Message sent.');
+                // Ticket exists, now create message
+                $message = MessageService::createMessage($ticket->id, $request);
+
+                if (!$message) {
+                    Craft::$app->getSession()->setError('Couldn’t send the message.');
+                } else {
+                    Craft::$app->getSession()->setNotice('Message sent.');
+                }
             }
         }
 
