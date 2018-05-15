@@ -7,10 +7,10 @@
 {% set settings = plugin.settings %}
 
 {% set navItems = {
-    'general': { title: 'General Settings' },
-    'ticketstatuses': { title: 'Ticket Statuses' },
-    'emails': { title: 'Emails' },
-    'attachments': { title: 'Attachments' },
+    'general':        { title: 'General Settings' },
+    'ticket-statuses': { title: 'Ticket Statuses' },
+    'emails':         { title: 'Emails' },
+    'attachments':    { title: 'Attachments' },
 } %}
 
 {% if selectedItem is not defined %}
@@ -27,7 +27,7 @@
                     <li class="heading"><span>{{ item.heading }}</span></li>
                 {% else %}
                     <li>
-                        <a href="{{ url('commerce/settings/' ~ id) }}"{% if id == selectedItem %} class="sel"{% endif %}>{{ item.title }}</a>
+                        <a href="{{ url('support/settings/' ~ id) }}"{% if id == selectedItem %} class="sel"{% endif %}>{{ item.title }}</a>
                     </li>
                 {% endif %}
             {% endfor %}

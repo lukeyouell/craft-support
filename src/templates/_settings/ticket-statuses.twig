@@ -1,0 +1,27 @@
+{% extends "support/_layouts/settings" %}
+
+{% import "support/_macros/settings" as macros %}
+
+{% block content %}
+
+  <h2 class="first">Ticket Statuses</h2>
+
+  <p>Define the ticket statuses that can be set.</p>
+
+  <table id="ticket-statuses" class="data fullwidth collapsible">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Handle</th>
+        <th>Default Status?</th>
+        <td class="thin"></td>
+        <td class="thin"></td>
+      </tr>
+    </head>
+  </table>
+
+  <div class="buttons">
+    <a class="btn submit icon add" href="{{ cpUrl('support/settings/order-statuses/new') }}">New ticket status</a>
+  </buttons>
+
+{% endblock %}

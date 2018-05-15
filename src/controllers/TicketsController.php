@@ -105,7 +105,7 @@ class TicketsController extends Controller
             return null;
         } else {
 
-            // Ticket created, now create message but don't change ticket status
+            // Ticket created, now create message but don't change ticket status id
             $message = MessageService::createMessage($ticket->id, $request, false);
 
             if ($request->getAcceptsJson()) {
@@ -139,8 +139,8 @@ class TicketsController extends Controller
                 throw new NotFoundHttpException('Ticket not found');
             }
 
-            if ($request->post('ticketStatus')) {
-                $ticket->ticketStatus = $request->post('ticketStatus');
+            if ($request->post('ticketStatusId')) {
+                $ticket->ticketStatusId = $request->post('ticketStatusId');
             }
 
             Craft::$app->getElements()->saveElement($ticket, false);

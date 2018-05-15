@@ -47,11 +47,13 @@ class SettingsController extends Controller
         $settings = $this->settings;
         $pluginHandle = Support::$plugin->handle;
         $overrides = Craft::$app->getConfig()->getConfigFromFile(strtolower($pluginHandle));
+        $volumes = Craft::$app->volumes->getAllVolumes();
 
         $variables = [
           'settings'     => $settings,
           'pluginHandle' => $pluginHandle,
           'overrides'    => $overrides,
+          'volumes'      => $volumes,
         ];
 
         return $this->renderTemplate('support/_settings/'.$category, $variables);
