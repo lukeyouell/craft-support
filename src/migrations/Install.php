@@ -11,10 +11,12 @@
 namespace lukeyouell\support\migrations;
 
 use lukeyouell\support\Support;
+use lukeyouell\support\records\TicketStatus;
 
 use Craft;
 use craft\config\DbConfig;
 use craft\db\Migration;
+use craft\helpers\MigrationHelper;
 
 /**
  * Support Install Migration
@@ -56,8 +58,8 @@ class Install extends Migration
     public function safeDown()
     {
         $this->driver = Craft::$app->getConfig()->getDb()->driver;
-        $this->removeForeignKeys();
-        $this->removeTables();
+        $this->dropForeignKeys();
+        $this->dropTables();
 
         return true;
     }
@@ -87,6 +89,22 @@ class Install extends Migration
             );
 
             $this->createTable(
+                '{{%support_ticketstatuses}}',
+                [
+                    'id'            => $this->primaryKey(),
+                    'dateCreated'   => $this->dateTime()->notNull(),
+                    'dateUpdated'   => $this->dateTime()->notNull(),
+                    'uid'           => $this->uid(),
+                    // Custom columns in the table
+                    'name'      => $this->string()->notNull(),
+                    'handle'      => $this->string()->notNull(),
+                    'colour' => $this->enum('color', ['green', 'orange', 'red', 'blue', 'yellow', 'pink', 'purple', 'turquoise', 'light', 'grey', 'black'])->notNull()->defaultValue('green'),
+                    'sortOrder' => $this->integer(),
+                    'default' => $this->boolean(),
+                ]
+            );
+
+            $this->createTable(
                 '{{%support_messages}}',
                 [
                     'id'            => $this->primaryKey(),
@@ -107,79 +125,76 @@ class Install extends Migration
 
     protected function addForeignKeys()
     {
-        // support_tickets table
-        $this->addForeignKey(
-            $this->db->getForeignKeyName('{{%support_tickets}}', 'id'),
-            '{{%support_tickets}}',
-            'id',
-            '{{%elements}}',
-            'id',
-            'CASCADE',
-            null
-        );
+        $this->addForeignKey(null, '{{%support_tickets}}', ['id'], '{{%elements}}', ['id'], null, 'CASCADE');
+        $this->addForeignKey(null, '{{%support_tickets}}', ['authorId'], '{{%users}}', ['id'], null, 'CASCADE');
+        $this->addForeignKey(null, '{{%support_tickets}}', ['ticketStatusId'], '{{%support_ticketstatuses}}', ['id'], null, 'CASCADE');
+        $this->addForeignKey(null, '{{%support_messages}}', ['id'], '{{%elements}}', ['id'], null, 'CASCADE');
+        $this->addForeignKey(null, '{{%support_messages}}', ['authorId'], '{{%users}}', ['id'], null, 'CASCADE');
+        $this->addForeignKey(null, '{{%support_messages}}', ['ticketId'], '{{%support_tickets}}', ['id'], null, 'CASCADE');
+    }
 
-        $this->addForeignKey(
-            $this->db->getForeignKeyName('{{%support_tickets}}', 'authorId'),
-            '{{%support_tickets}}',
-            'authorId',
-            '{{%users}}',
-            'id',
-            'CASCADE',
-            null
-        );
+    protected function dropForeignKeys()
+    {
+        MigrationHelper::dropAllForeignKeysOnTable('{{%support_tickets}}', $this);
+        MigrationHelper::dropAllForeignKeysOnTable('{{%support_ticketstatuses}}', $this);
+        MigrationHelper::dropAllForeignKeysOnTable('{{%support_messages}}', $this);
+    }
 
-        // support_messages table
-        $this->addForeignKey(
-            $this->db->getForeignKeyName('{{%support_messages}}', 'id'),
-            '{{%support_messages}}',
-            'id',
-            '{{%elements}}',
-            'id',
-            'CASCADE',
-            null
-        );
-
-        $this->addForeignKey(
-            $this->db->getForeignKeyName('{{%support_messages}}', 'ticketId'),
-            '{{%support_messages}}',
-            'ticketId',
-            '{{%support_tickets}}',
-            'id',
-            'CASCADE',
-            null
-        );
-
-        $this->addForeignKey(
-            $this->db->getForeignKeyName('{{%support_messages}}', 'authorId'),
-            '{{%support_messages}}',
-            'authorId',
-            '{{%users}}',
-            'id',
-            'CASCADE',
-            null
-        );
+    protected function dropTables()
+    {
+        $this->dropTable('{{%support_tickets}}');
+        $this->dropTable('{{%support_ticketstatuses}}');
+        $this->dropTable('{{%support_messages}}');
     }
 
     protected function insertDefaultData()
     {
+        $this->_defaultTicketStatuses();
     }
 
-    protected function removeForeignKeys()
-    {
-        $this->dropForeignKey(
-            $this->db->getForeignKeyName('{{%support_messages}}', 'ticketId'),
-            '{{%support_messages}}',
-            'ticketId',
-            '{{%support_tickets}}',
-            'id',
-            'CASCADE',
-            null
-        );
-    }
+    // Private Methods
+    // =========================================================================
 
-    protected function removeTables()
+    private function _defaultTicketStatuses()
     {
-        $this->dropTableIfExists('{{%support_tickets}}');
-        $this->dropTableIfExists('{{%support_messages}}');
+        $data = [
+            'name' => 'New',
+            'handle' => 'new',
+            'color' => 'blue',
+            'default' => true
+        ];
+        $this->insert(OrderStatus::tableName(), $data);
+
+        $data = [
+            'name' => 'In Progress',
+            'handle' => 'inProgress',
+            'color' => 'orange',
+            'default' => false
+        ];
+        $this->insert(OrderStatus::tableName(), $data);
+
+        $data = [
+            'name' => 'Solved',
+            'handle' => 'solved',
+            'color' => 'green',
+            'default' => false
+        ];
+        $this->insert(OrderStatus::tableName(), $data);
+
+        $data = [
+            'name' => 'Closed',
+            'handle' => 'closed',
+            'color' => 'red',
+            'default' => false
+        ];
+        $this->insert(OrderStatus::tableName(), $data);
+
+        $data = [
+            'name' => 'Archived',
+            'handle' => 'archived',
+            'color' => 'grey',
+            'default' => false
+        ];
+        $this->insert(OrderStatus::tableName(), $data);
     }
 }
