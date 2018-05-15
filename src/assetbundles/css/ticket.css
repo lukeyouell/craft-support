@@ -49,8 +49,6 @@
 }
 
 .message {
-  font-size: 14px;
-  line-height: 1.6;
   padding: 20px 0;
   border-bottom: 1px solid #e3e5e8;
 }
@@ -86,4 +84,11 @@
 
 .message-attachments {
   margin-top: 7px;
+}
+
+.message-details,
+.message-body,
+.message-attachments {
+  font-size: 14px;
+  line-height: 1.6;
 }
