@@ -13,7 +13,7 @@
       <div class="flex-grow">
         <div class="message-details">
           {{ message.author.name }}
-          <span class="light small">{{ message.dateCreated|datetime('short') }}</span>
+          <span class="light small" title="{{ message.dateCreated|datetime('short') }}">{{ message.dateCreated|timestamp('short') }}</span>
         </div>
 
         <div class="message-body">
