@@ -4,7 +4,7 @@ A new support ticket has been created on {{ system.name }}.
 
 -----
 
-### {{ ticket.title }}
+### (#{{ ticket.id }}) {{ ticket.title }}
 
 {% for message in ticket.messages %}
 {{ message.content|nl2br }}
