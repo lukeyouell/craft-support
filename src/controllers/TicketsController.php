@@ -11,6 +11,7 @@
 namespace lukeyouell\support\controllers;
 
 use lukeyouell\support\Support;
+use lukeyouell\support\services\MailService;
 use lukeyouell\support\services\MessageService;
 use lukeyouell\support\services\TicketService;
 use lukeyouell\support\services\TicketStatusService;
@@ -82,6 +83,7 @@ class TicketsController extends Controller
     {
         $this->requirePostRequest();
 
+        $settings = Support::$plugin->getSettings();
         $request = Craft::$app->getRequest();
 
         // First create ticket
@@ -110,6 +112,11 @@ class TicketsController extends Controller
                 return $this->asJson([
                     'success' => true,
                 ]);
+            }
+
+            // Handle email notification
+            if ($settings->email) {
+                MailService::ticketCreation($ticket->id);
             }
 
             Craft::$app->getSession()->setNotice('Ticket created.');

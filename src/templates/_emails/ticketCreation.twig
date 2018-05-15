@@ -1,0 +1,15 @@
+Hey,
+
+A new support ticket has been created on {{ system.name }}.
+
+-----
+
+### {{ ticket.title }}
+
+{% for message in ticket.messages %}
+{{ message.content|nl2br }}
+{% endfor %}
+
+-----
+
+[View ticket]({{ cpUrl }})
