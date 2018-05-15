@@ -125,12 +125,12 @@ class Install extends Migration
 
     protected function addForeignKeys()
     {
-        $this->addForeignKey(null, '{{%support_tickets}}', ['id'], '{{%elements}}', ['id'], null, 'CASCADE');
+        $this->addForeignKey(null, '{{%support_tickets}}', ['id'], '{{%elements}}', ['id'], 'CASCADE');
         $this->addForeignKey(null, '{{%support_tickets}}', ['authorId'], '{{%users}}', ['id'], null, 'CASCADE');
         $this->addForeignKey(null, '{{%support_tickets}}', ['ticketStatusId'], '{{%support_ticketstatuses}}', ['id'], null, 'CASCADE');
-        $this->addForeignKey(null, '{{%support_messages}}', ['id'], '{{%elements}}', ['id'], null, 'CASCADE');
+        $this->addForeignKey(null, '{{%support_messages}}', ['id'], '{{%elements}}', ['id'], 'CASCADE');
         $this->addForeignKey(null, '{{%support_messages}}', ['authorId'], '{{%users}}', ['id'], null, 'CASCADE');
-        $this->addForeignKey(null, '{{%support_messages}}', ['ticketId'], '{{%support_tickets}}', ['id'], null, 'CASCADE');
+        $this->addForeignKey(null, '{{%support_messages}}', ['ticketId'], '{{%support_tickets}}', ['id'], 'CASCADE');
     }
 
     protected function dropForeignKeys()

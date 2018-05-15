@@ -196,7 +196,7 @@ class Ticket extends Element
             case 'ticketStatus':
                 $status = $this->getTicketStatus();
 
-                return '<span class="status '.$status['colour'].'"></span>'.$status['label'];
+                return '<span class="status '.$status['colour'].'"></span>'.$status['name'];
             case 'author':
                 $author = $this->getAuthor();
 
