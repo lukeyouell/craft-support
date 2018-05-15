@@ -105,8 +105,8 @@ class TicketsController extends Controller
             return null;
         } else {
 
-            // Ticket created, now create message
-            $message = MessageService::createMessage($ticket->id, $request);
+            // Ticket created, now create message but don't change ticket status
+            $message = MessageService::createMessage($ticket->id, $request, false);
 
             if ($request->getAcceptsJson()) {
                 return $this->asJson([

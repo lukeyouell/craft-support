@@ -47,7 +47,7 @@ class MessageService extends Component
         return null;
     }
 
-    public static function createMessage($ticketId = null, $submission = null)
+    public static function createMessage($ticketId = null, $submission = null, $updateStatus = true)
     {
         if ($ticketId and $submission) {
             $message = new Message();
@@ -59,8 +59,11 @@ class MessageService extends Component
             $res = Craft::$app->getElements()->saveElement($message, true, false);
 
             if ($res) {
+                // Update ticket status?
+                $ticketStatus = $updateStatus ? 'in-progress' : null;
+                
                 // Save ticket to update the 'dateUpdated' value
-                TicketService::saveTicketById($ticketId);
+                TicketService::saveTicketById($ticketId, $ticketStatus);
 
                 return $message;
             }

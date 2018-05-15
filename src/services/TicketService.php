@@ -56,7 +56,7 @@ class TicketService extends Component
         return null;
     }
 
-    public static function saveTicketById($ticketId = null)
+    public static function saveTicketById($ticketId = null, $ticketStatus = null)
     {
         if ($ticketId) {
             $query = new TicketQuery(Ticket::class);
@@ -65,6 +65,11 @@ class TicketService extends Component
             $ticket = $query->one();
 
             if ($ticket) {
+                // Update ticket status
+                if ($ticketStatus) {
+                    $ticket->ticketStatus = $ticketStatus;
+                }
+
                 return Craft::$app->getElements()->saveElement($ticket, true, false);
             }
         }
