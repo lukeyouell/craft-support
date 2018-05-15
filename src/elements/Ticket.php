@@ -29,9 +29,11 @@ class Ticket extends Element
     // Public Properties
     // =========================================================================
 
-    public $ticketStatus;
+    public $ticketStatusId;
 
     public $authorId;
+
+    public $_ticketStatus;
 
     public $_author;
 
@@ -117,7 +119,7 @@ class Ticket extends Element
                 'label'       => $status['label'],
                 'criteria'    => [
                     'authorId' => $canManageTickets ? '' : $userId,
-                    'ticketStatus' => $status['value'],
+                    'ticketStatusId' => $status['value'],
                 ],
                 'defaultSort' => ['dateCreated', 'desc'],
             ];
@@ -128,7 +130,7 @@ class Ticket extends Element
 
     protected static function defineSearchableAttributes(): array
     {
-        return ['title', 'ticketStatus'];
+        return ['title', 'ticketStatusId'];
     }
 
     protected static function defineActions(string $source = null): array
@@ -156,16 +158,16 @@ class Ticket extends Element
 
         if ($canManageTickets) {
             $attributes = [
-                'title'        => Craft::t('support', 'Title'),
-                'ticketStatus' => Craft::t('support', 'Status'),
-                'author' => Craft::t('support', 'Author'),
-                'dateCreated'  => Craft::t('support', 'Date Created'),
-                'dateUpdated'  => Craft::t('support', 'Date Updated'),
+                'title'          => Craft::t('support', 'Title'),
+                'ticketStatusId' => Craft::t('support', 'Status'),
+                'author'         => Craft::t('support', 'Author'),
+                'dateCreated'    => Craft::t('support', 'Date Created'),
+                'dateUpdated'    => Craft::t('support', 'Date Updated'),
             ];
         } else {
             $attributes = [
                 'title'        => Craft::t('support', 'Title'),
-                'ticketStatus' => Craft::t('support', 'Status'),
+                'ticketStatusId' => Craft::t('support', 'Status'),
                 'dateCreated'  => Craft::t('support', 'Date Created'),
                 'dateUpdated'  => Craft::t('support', 'Date Updated'),
             ];
@@ -180,9 +182,9 @@ class Ticket extends Element
         $canManageTickets = $userSessionService->checkPermission('manageTickets');
 
         if ($canManageTickets) {
-            $attributes = ['title', 'ticketStatus', 'dateCreated', 'dateUpdated', 'author'];
+            $attributes = ['title', 'ticketStatusId', 'dateCreated', 'dateUpdated', 'author'];
         } else {
-            $attributes = ['title', 'ticketStatus', 'dateCreated', 'dateUpdated'];
+            $attributes = ['title', 'ticketStatusId', 'dateCreated', 'dateUpdated'];
         }
 
         return $attributes;
@@ -191,8 +193,8 @@ class Ticket extends Element
     public function getTableAttributeHtml(string $attribute): string
     {
         switch ($attribute) {
-            case 'ticketStatus':
-                $status = TicketStatusService::getStatusByValue($this->ticketStatus);
+            case 'ticketStatusId':
+                $status = TicketStatusService::getStatusByValue($this->ticketStatusId);
                 return '<span class="status '.$status['colour'].'"></span>'.$status['label'];
             case 'author':
                 $author = $this->getAuthor();
@@ -211,6 +213,7 @@ class Ticket extends Element
     public function extraFields()
     {
         $names = parent::extraFields();
+        $names[] = 'ticketStatus';
         $names[] = 'author';
         $names[] = 'messages';
         return $names;
@@ -224,6 +227,21 @@ class Ticket extends Element
     public function getCpEditUrl()
     {
         return UrlHelper::cpUrl('support/tickets/'.$this->id);
+    }
+
+    public function getTicketStatus()
+    {
+        if ($this->_ticketStatus !== null) {
+            return $this->_ticketStatus;
+        }
+
+        if ($this->ticketStatusId === null) {
+            return null;
+        }
+
+        $this->_ticketStatus = TicketStatusService::getStatusByValue($this->ticketStatusId);
+
+        return $this->_ticketStatus;
     }
 
     public function getAuthor()
@@ -275,15 +293,15 @@ class Ticket extends Element
         if ($isNew) {
             Craft::$app->db->createCommand()
                 ->insert('{{%support_tickets}}', [
-                    'id'       => $this->id,
-                    'ticketStatus'   => $this->ticketStatus,
-                    'authorId' => $this->authorId,
+                    'id'             => $this->id,
+                    'ticketStatusId' => $this->ticketStatusId,
+                    'authorId'       => $this->authorId,
                 ])
                 ->execute();
         } else {
             Craft::$app->db->createCommand()
                 ->update('{{%support_tickets}}', [
-                    'ticketStatus'  => $this->ticketStatus,
+                    'ticketStatusId'  => $this->ticketStatusId,
                 ], ['id' => $this->id])
                 ->execute();
         }

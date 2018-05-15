@@ -1,0 +1,36 @@
+{% extends "_layouts/cp" %}
+{% requireAdmin %}
+
+{% set title = 'Support Settings' %}
+
+{% set plugin = craft.app.plugins.getPlugin('support') %}
+{% set settings = plugin.settings %}
+
+{% set navItems = {
+    'general': { title: 'General Settings' },
+    'ticketstatuses': { title: 'Ticket Statuses' },
+    'emails': { title: 'Emails' },
+    'attachments': { title: 'Attachments' },
+} %}
+
+{% if selectedItem is not defined %}
+    {% set selectedItem = craft.app.request.getSegment(3) %}
+{% endif %}
+
+{% set docTitle = navItems[selectedItem].title ~ ' - ' ~ title %}
+
+{% block sidebar %}
+    <nav>
+        <ul>
+            {% for id, item in navItems %}
+                {% if item.heading is defined %}
+                    <li class="heading"><span>{{ item.heading }}</span></li>
+                {% else %}
+                    <li>
+                        <a href="{{ url('commerce/settings/' ~ id) }}"{% if id == selectedItem %} class="sel"{% endif %}>{{ item.title }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </nav>
+{% endblock %}

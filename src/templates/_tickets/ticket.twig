@@ -113,10 +113,19 @@
   <div class="meta read-only">
     <div class="data">
       <div class="heading">
-        Ticket ID
+        ID
       </div>
       <div class="value">
         #{{ ticket.id }}
+      </div>
+    </div>
+
+    <div class="data">
+      <div class="heading">
+        Status
+      </div>
+      <div class="value">
+        {{ ticket.ticketStatus.label }}
       </div>
     </div>
 
