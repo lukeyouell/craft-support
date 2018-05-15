@@ -83,7 +83,7 @@ class Install extends Migration
                     'dateUpdated'    => $this->dateTime()->notNull(),
                     'uid'            => $this->uid(),
                     // Custom columns in the table
-                    'ticketStatusId' => $this->string()->notNull(),
+                    'ticketStatusId' => $this->integer(),
                     'authorId'       => $this->integer(),
                 ]
             );
@@ -98,7 +98,7 @@ class Install extends Migration
                     // Custom columns in the table
                     'name'      => $this->string()->notNull(),
                     'handle'      => $this->string()->notNull(),
-                    'colour' => $this->enum('color', ['green', 'orange', 'red', 'blue', 'yellow', 'pink', 'purple', 'turquoise', 'light', 'grey', 'black'])->notNull()->defaultValue('green'),
+                    'colour' => $this->enum('colour', ['green', 'orange', 'red', 'blue', 'yellow', 'pink', 'purple', 'turquoise', 'light', 'grey', 'black'])->notNull()->defaultValue('green'),
                     'sortOrder' => $this->integer(),
                     'default' => $this->boolean(),
                 ]
@@ -160,41 +160,41 @@ class Install extends Migration
         $data = [
             'name' => 'New',
             'handle' => 'new',
-            'color' => 'blue',
+            'colour' => 'blue',
             'default' => true
         ];
-        $this->insert(OrderStatus::tableName(), $data);
+        $this->insert(TicketStatus::tableName(), $data);
 
         $data = [
             'name' => 'In Progress',
             'handle' => 'inProgress',
-            'color' => 'orange',
+            'colour' => 'orange',
             'default' => false
         ];
-        $this->insert(OrderStatus::tableName(), $data);
+        $this->insert(TicketStatus::tableName(), $data);
 
         $data = [
             'name' => 'Solved',
             'handle' => 'solved',
-            'color' => 'green',
+            'colour' => 'green',
             'default' => false
         ];
-        $this->insert(OrderStatus::tableName(), $data);
+        $this->insert(TicketStatus::tableName(), $data);
 
         $data = [
             'name' => 'Closed',
             'handle' => 'closed',
-            'color' => 'red',
+            'colour' => 'red',
             'default' => false
         ];
-        $this->insert(OrderStatus::tableName(), $data);
+        $this->insert(TicketStatus::tableName(), $data);
 
         $data = [
             'name' => 'Archived',
             'handle' => 'archived',
-            'color' => 'grey',
+            'colour' => 'grey',
             'default' => false
         ];
-        $this->insert(OrderStatus::tableName(), $data);
+        $this->insert(TicketStatus::tableName(), $data);
     }
 }
