@@ -159,7 +159,7 @@ class Ticket extends Element
         if ($canManageTickets) {
             $attributes = [
                 'title'          => Craft::t('support', 'Title'),
-                'ticketStatusId' => Craft::t('support', 'Status'),
+                'ticketStatus'   => Craft::t('support', 'Status'),
                 'author'         => Craft::t('support', 'Author'),
                 'dateCreated'    => Craft::t('support', 'Date Created'),
                 'dateUpdated'    => Craft::t('support', 'Date Updated'),
@@ -167,7 +167,7 @@ class Ticket extends Element
         } else {
             $attributes = [
                 'title'        => Craft::t('support', 'Title'),
-                'ticketStatusId' => Craft::t('support', 'Status'),
+                'ticketStatus' => Craft::t('support', 'Status'),
                 'dateCreated'  => Craft::t('support', 'Date Created'),
                 'dateUpdated'  => Craft::t('support', 'Date Updated'),
             ];
@@ -182,9 +182,9 @@ class Ticket extends Element
         $canManageTickets = $userSessionService->checkPermission('manageTickets');
 
         if ($canManageTickets) {
-            $attributes = ['title', 'ticketStatusId', 'dateCreated', 'dateUpdated', 'author'];
+            $attributes = ['title', 'ticketStatus', 'dateCreated', 'dateUpdated', 'author'];
         } else {
-            $attributes = ['title', 'ticketStatusId', 'dateCreated', 'dateUpdated'];
+            $attributes = ['title', 'ticketStatus', 'dateCreated', 'dateUpdated'];
         }
 
         return $attributes;
@@ -193,8 +193,9 @@ class Ticket extends Element
     public function getTableAttributeHtml(string $attribute): string
     {
         switch ($attribute) {
-            case 'ticketStatusId':
-                $status = TicketStatusService::getStatusByValue($this->ticketStatusId);
+            case 'ticketStatus':
+                $status = $this->getTicketStatus();
+
                 return '<span class="status '.$status['colour'].'"></span>'.$status['label'];
             case 'author':
                 $author = $this->getAuthor();
