@@ -27,62 +27,61 @@
 {% do view.registerAssetBundle("lukeyouell\\support\\assetbundles\\TicketBundle") %}
 
 {% block content %}
+  {% if ticket.ticketStatus != 'archived' %}
+    <div class="new-message">
+      <form method="post" accept-charset="UTF-8">
+        {{ csrfInput() }}
 
-{% if not ticket.ticketStatus == 'archived' %}
-  <div class="new-message">
-    <form method="post">
-      {{ csrfInput() }}
+        {{ forms.hidden({
+            name: 'action',
+            value: 'support/messages/new-message',
+        })}}
 
-      {{ forms.hidden({
-          name: 'action',
-          value: 'support/messages/new-message',
-      })}}
+        {{ forms.hidden({
+            name: 'ticketId',
+            value: ticket.id|hash,
+        })}}
 
-      {{ forms.hidden({
-          name: 'ticketId',
-          value: ticket.id|hash,
-      })}}
+        {{ forms.textareaField({
+            first: true,
+            required: true,
+            id: 'message',
+            name: 'message',
+            placeholder: 'Post a message...',
+        })}}
 
-      {{ forms.textareaField({
-          first: true,
-          required: true,
-          id: 'message',
-          name: 'message',
-          placeholder: 'Post a message...',
-      })}}
+        <div class="new-message-controls">
+          {% if settings.attachments and volume %}
+            {% include "_components/fieldtypes/Assets/input" with {
+              id: 'attachments',
+              fieldId: 'attachments',
+              name: 'attachments',
+              selectionLabel: 'Attachment',
+              elementType: assetElementType,
+              sourceElementId: volume.id,
+              viewMode: 'list',
+              limit: 4,
+              defaultFieldLayoutId: volume.fieldLayoutId,
+              hideSidebar: true,
+            } %}
+          {% endif %}
 
-      <div class="new-message-controls">
-        {% if settings.attachments and volume %}
-          {% include "_components/fieldtypes/Assets/input" with {
-            id: 'attachments',
-            fieldId: 'attachments',
-            name: 'attachments',
-            selectionLabel: 'Attachment',
-            elementType: assetElementType,
-            sourceElementId: volume.id,
-            viewMode: 'list',
-            limit: 4,
-            defaultFieldLayoutId: volume.fieldLayoutId,
-            hideSidebar: true,
-          } %}
-        {% endif %}
+          <input class="btn submit" type="submit" value="Post message">
+        </div>
+      </form>
+    </div>
+  {% endif %}
 
-        <input class="btn submit" type="submit" value="Post message">
-      </div>
-    </form>
+  <div class="messages">
+    {% for message in ticket.messages %}
+      {{ macros.message(message) }}
+    {% endfor %}
   </div>
-{% endif %}
-
-<div class="messages">
-  {% for message in ticket.messages %}
-    {{ macros.message(message) }}
-  {% endfor %}
-</div>
 {% endblock %}
 
 {% block details %}
   {% if currentUser.can('manageTickets') %}
-    <form method="post">
+    <form method="post" accept-charset="UTF-8">
       <div class="meta">
         {{ csrfInput() }}
 
@@ -127,7 +126,7 @@
           Author
         </div>
         <div class="value">
-          {{ authorHtml }}
+          <a href="{{ ticket.author.cpEditUrl }}">{{ ticket.author.name }}</a>
         </div>
       </div>
     {% endif %}

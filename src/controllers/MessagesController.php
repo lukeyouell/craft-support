@@ -70,25 +70,21 @@ class MessagesController extends Controller
         return $this->redirectToPostedUrl();
     }
 
-    public function actionControls()
+    public function actionDeleteMessage()
     {
         $this->requirePostRequest();
 
         $request = Craft::$app->getRequest();
-        $messageId = Craft::$app->security->validateData($request->post('messageId'));
-        $event = $request->post('event');
+        $messageId = $request->post('messageId');
 
-        switch ($request->post('event')) {
-            case 'delete':
-                $res = MessageService::deleteMessage($messageId);
+        if ($messageId) {
+            $res = MessageService::deleteMessage($messageId);
 
-                if (!$res) {
-                    Craft::$app->getSession()->setError('Couldn’t delete the message.');
-                } else {
-                    Craft::$app->getSession()->setNotice('Message deleted.');
-                }
-
-                break;
+            if (!$res) {
+                Craft::$app->getSession()->setError('Couldn’t delete the message.');
+            } else {
+                Craft::$app->getSession()->setNotice('Message deleted.');
+            }
         }
 
         return $this->redirectToPostedUrl();

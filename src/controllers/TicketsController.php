@@ -53,14 +53,12 @@ class TicketsController extends Controller
         }
 
         $volume = $this->settings->volumeId ? Craft::$app->getVolumes()->getVolumeById($this->settings->volumeId) : null;
-        $authorHtml = $ticket->author ? Craft::$app->getView()->renderTemplate('_elements/element', ['element' => $ticket->author]) : '';
 
         $variables = [
             'ticket'   => $ticket,
             'ticketStatuses' => TicketStatusService::getStatuses(),
             'volume' => $volume,
             'assetElementType' => Asset::class,
-            'authorHtml' => Template::raw($authorHtml),
             'settings' => $this->settings,
         ];
 
