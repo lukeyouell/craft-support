@@ -17,7 +17,34 @@
         <td class="thin"></td>
         <td class="thin"></td>
       </tr>
-    </head>
+    </thead>
+
+    <tbody>
+      {% for status in ticketStatuses %}
+        <tr data-id="{{ status.id }}" data-name="{{ status.handle }}">
+          <th data-title="Name">
+            <a href="">
+              <span class="status {{ status.colour }}"></span>
+              {{ status.name }}
+            </a>
+          </th>
+          <td class="code" data-title="Handle">
+            {{ status.handle }}
+          </td>
+          <td>
+            {% if status.default %}
+              <span data-icon="check" title="Yes"></span>
+            {% endif %}
+          </td>
+          <td class="thin">
+            <a class="move icon" title="Reorder" role="button"></a>
+          </td>
+          <td class="thin">
+            <a class="delete icon" title="Delete" role="button"></a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
   </table>
 
   <div class="buttons">
@@ -25,3 +52,16 @@
   </buttons>
 
 {% endblock %}
+
+
+{% js %}
+    new Craft.AdminTable({
+    tableSelector: '#ticket-statuses',
+    deleteAction: 'support/ticket-statuses/delete',
+    minObjects: 1,
+    sortable: true,
+    reorderAction: 'support/ticket-statuses/reorder',
+    reorderSuccessMessage: 'Ticket statuses reordered.' ,
+    reorderFailMessage:    'Couldn’t reorder tickets.',
+    });
+{% endjs %}

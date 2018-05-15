@@ -11,6 +11,7 @@
 namespace lukeyouell\support\controllers;
 
 use lukeyouell\support\Support;
+use lukeyouell\support\services\TicketStatusService;
 
 use Craft;
 use craft\web\Controller;
@@ -48,12 +49,14 @@ class SettingsController extends Controller
         $pluginHandle = Support::$plugin->handle;
         $overrides = Craft::$app->getConfig()->getConfigFromFile(strtolower($pluginHandle));
         $volumes = Craft::$app->volumes->getAllVolumes();
+        $ticketStatuses = TicketStatusService::getAllTicketStatuses();
 
         $variables = [
-          'settings'     => $settings,
-          'pluginHandle' => $pluginHandle,
-          'overrides'    => $overrides,
-          'volumes'      => $volumes,
+          'settings'       => $settings,
+          'pluginHandle'   => $pluginHandle,
+          'overrides'      => $overrides,
+          'volumes'        => $volumes,
+          'ticketStatuses' => $ticketStatuses,
         ];
 
         return $this->renderTemplate('support/_settings/'.$category, $variables);

@@ -13,6 +13,7 @@ namespace lukeyouell\support\services;
 use lukeyouell\support\Support;
 use lukeyouell\support\elements\Ticket;
 use lukeyouell\support\elements\db\TicketQuery;
+use lukeyouell\support\services\TicketStatusService;
 
 use Craft;
 use craft\base\Component;
@@ -24,8 +25,10 @@ class TicketService extends Component
 
     public static function createTicket($submission = null) {
         if ($submission) {
+          $defaultTicketStatus = TicketStatusService::getDefaultTicketStatus();
+
           $ticket = new Ticket();
-          $ticket->ticketStatusId = 'new';
+          $ticket->ticketStatusId = $defaultTicketStatus['id'];
           $ticket->title = $submission->post('title');
           $ticket->authorId = Craft::$app->getUser()->getIdentity()->id;
 

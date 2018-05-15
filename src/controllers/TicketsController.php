@@ -57,7 +57,7 @@ class TicketsController extends Controller
 
         $variables = [
             'ticket'   => $ticket,
-            'ticketStatuses' => TicketStatusService::getStatuses(),
+            'ticketStatuses' => TicketStatusService::getAllTicketStatuses(),
             'volume' => $volume,
             'assetElementType' => Asset::class,
             'settings' => $this->settings,

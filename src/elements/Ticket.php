@@ -110,16 +110,16 @@ class Ticket extends Element
 
         $sources[] = ['heading' => 'Ticket Status'];
 
-        $statuses = TicketStatusService::getStatuses();
+        $statuses = TicketStatusService::getAllTicketStatuses();
 
         foreach ($statuses as $status) {
             $sources[] = [
-                'key'         => 'status:'.$status['value'],
+                'key'         => 'status:'.$status['handle'],
                 'status'      => $status['colour'],
-                'label'       => $status['label'],
+                'label'       => $status['name'],
                 'criteria'    => [
                     'authorId' => $canManageTickets ? '' : $userId,
-                    'ticketStatusId' => $status['value'],
+                    'ticketStatusId' => $status['id'],
                 ],
                 'defaultSort' => ['dateCreated', 'desc'],
             ];
@@ -240,7 +240,7 @@ class Ticket extends Element
             return null;
         }
 
-        $this->_ticketStatus = TicketStatusService::getStatusByValue($this->ticketStatusId);
+        $this->_ticketStatus = TicketStatusService::getTicketStatusById($this->ticketStatusId);
 
         return $this->_ticketStatus;
     }

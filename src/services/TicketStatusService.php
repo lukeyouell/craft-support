@@ -14,55 +14,45 @@ use lukeyouell\support\Support;
 
 use Craft;
 use craft\base\Component;
+use craft\db\Query;
 
 class TicketStatusService extends Component
 {
     // Static Methods
     // =========================================================================
 
-    public static function getStatuses()
+    public static function getAllTicketStatuses()
     {
-        return [
-            [
-                'value' => 'new',
-                'label'   => 'New',
-                'colour' => 'blue',
-            ],
-            [
-                'value' => 'in-progress',
-                'label'   => 'In Progress',
-                'colour' => 'orange',
-            ],
-            [
-                'value' => 'solved',
-                'label'   => 'Solved',
-                'colour' => 'green',
-            ],
-            [
-                'value' => 'closed',
-                'label'   => 'Closed',
-                'colour' => 'red',
-            ],
-            [
-                'value' => 'archived',
-                'label'   => 'Archived',
-                'colour' => 'grey',
-            ],
-        ];
+      return (new Query())
+          ->orderBy('sortOrder')
+          ->from(['{{%support_ticketstatuses}}'])
+          ->all();
     }
 
-    public static function getStatusByValue($value = null)
+    public static function getTicketStatusById($id)
     {
-        if ($value) {
-            $statuses = self::getStatuses();
+      return (new Query())
+          ->where(['id' => $id])
+          ->from(['{{%support_ticketstatuses}}'])
+          ->one();
+    }
 
-            foreach ($statuses as $status) {
-                if ($status['value'] === $value) {
-                    return $status;
-                }
-            }
+    public static function getDefaultTicketStatus()
+    {
+      return (new Query())
+          ->where(['default' => 1])
+          ->from(['{{%support_ticketstatuses}}'])
+          ->one();
+    }
+
+    public static function reorderTicketStatuses(array $ids): bool
+    {
+        foreach ($ids as $sortOrder => $id) {
+            Craft::$app->getDb()->createCommand()
+                ->update('{{%support_ticketstatuses}}', ['sortOrder' => $sortOrder + 1], ['id' => $id])
+                ->execute();
         }
 
-        return null;
+        return true;
     }
 }
