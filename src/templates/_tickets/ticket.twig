@@ -33,36 +33,36 @@
         {{ csrfInput() }}
 
         {{ forms.hidden({
-            name: 'action',
+            name:  'action',
             value: 'support/messages/new-message',
         })}}
 
         {{ forms.hidden({
-            name: 'ticketId',
+            name:  'ticketId',
             value: ticket.id|hash,
         })}}
 
         {{ forms.textareaField({
-            first: true,
-            required: true,
-            id: 'message',
-            name: 'message',
+            first:       true,
+            required:    true,
+            id:          'message',
+            name:        'message',
             placeholder: 'Post a message...',
         })}}
 
         <div class="new-message-controls">
           {% if settings.attachments and volume %}
             {% include "_components/fieldtypes/Assets/input" with {
-              id: 'attachments',
-              fieldId: 'attachments',
-              name: 'attachments',
-              selectionLabel: 'Attachment',
-              elementType: assetElementType,
-              sourceElementId: volume.id,
-              viewMode: 'list',
-              limit: 4,
+              id:                   'attachments',
+              fieldId:              'attachments',
+              name:                 'attachments',
+              selectionLabel:       'Attachment',
+              elementType:          assetElementType,
+              sourceElementId:      volume.id,
+              viewMode:             'list',
+              limit:                4,
               defaultFieldLayoutId: volume.fieldLayoutId,
-              hideSidebar: true,
+              hideSidebar:          true,
             } %}
           {% endif %}
 
@@ -86,12 +86,12 @@
         {{ csrfInput() }}
 
         {{ forms.hidden({
-            name: 'action',
+            name:  'action',
             value: 'support/tickets/save-ticket',
         })}}
 
         {{ forms.hidden({
-            name: 'ticketId',
+            name:  'ticketId',
             value: ticket.id|hash,
         })}}
 
