@@ -11,6 +11,7 @@
 namespace lukeyouell\support\controllers;
 
 use lukeyouell\support\Support;
+use lukeyouell\support\models\TicketStatus as TicketStatusModel;
 use lukeyouell\support\services\TicketStatusService;
 
 use Craft;
@@ -60,5 +61,33 @@ class SettingsController extends Controller
         ];
 
         return $this->renderTemplate('support/_settings/'.$category, $variables);
+    }
+
+    public function actionEditTicketStatus(int $id = null, TicketStatusModel $ticketStatus = null)
+    {
+        $variables = [
+            'id'           => $id,
+            'ticketStatus' => $ticketStatus,
+        ];
+
+        if (!$variables['ticketStatus']) {
+            if ($variables['id']) {
+                $variables['ticketStatus'] = TicketStatusService::getTicketStatusById($variables['id']);
+
+                if (!$variables['ticketStatus']) {
+                    throw new NotFoundHttpException('Ticket status not found');
+                }
+            } else {
+                $variables['ticketStatus'] = new TicketStatusModel();
+            }
+        }
+
+        if ($variables['ticketStatus']->id) {
+            $variables['title'] = $variables['ticketStatus']->name;
+        } else {
+            $variables['title'] = 'Create a new ticket status';
+        }
+
+        return $this->renderTemplate('support/_settings/edit-ticket-status', $variables);
     }
 }

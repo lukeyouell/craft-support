@@ -12,6 +12,7 @@ namespace lukeyouell\support\services;
 
 use lukeyouell\support\Support;
 use lukeyouell\support\elements\Ticket;
+use lukeyouell\support\models\TicketStatus as TicketStatusModel;
 use lukeyouell\support\records\TicketStatus as TicketStatusRecord;
 
 use Craft;
@@ -20,38 +21,59 @@ use craft\db\Query;
 
 class TicketStatusService extends Component
 {
-    // Static Methods
+
+    // Properties
+    // =========================================================================
+
+    private static $_fetchedAllStatuses = false;
+
+    private static $_ticketStatusesById = [];
+
+    private static $_ticketStatusesByHandle = [];
+
+    // Public Static Methods
     // =========================================================================
 
     public static function getAllTicketStatuses()
     {
-      return (new Query())
-          ->orderBy('sortOrder')
-          ->from(['{{%support_ticketstatuses}}'])
-          ->all();
+        if (!self::$_fetchedAllStatuses) {
+            $results = self::_createTicketStatusQuery()->all();
+
+            foreach ($results as $row) {
+                self::_memoizeTicketStatus(new TicketStatusModel($row));
+            }
+
+            self::$_fetchedAllStatuses = true;
+        }
+
+        return self::$_ticketStatusesById;
     }
 
     public static function getTicketStatusById($id)
     {
-      return (new Query())
-          ->where(['id' => $id])
-          ->from(['{{%support_ticketstatuses}}'])
-          ->one();
+        $result = self::_createTicketStatusQuery()
+            ->where(['id' => $id])
+            ->one();
+
+        return new TicketStatusModel($result);
     }
 
     public static function getDefaultTicketStatus()
     {
-      return (new Query())
-          ->where(['default' => 1])
-          ->from(['{{%support_ticketstatuses}}'])
-          ->one();
+        $result = self::_createTicketStatusQuery()
+            ->where(['default' => 1])
+            ->one();
+
+        return new TicketStatusModel($result);
     }
 
     public static function checkIfTicketStatusInUse($id)
     {
-        return Ticket::find()
+        $result = Ticket::find()
             ->ticketStatusId($id)
             ->one();
+
+        return $result;
     }
 
     public static function reorderTicketStatuses(array $ids)
@@ -84,5 +106,29 @@ class TicketStatusService extends Component
         }
 
         return false;
+    }
+
+    // Private Static Methods
+    // =========================================================================
+
+    private static function _memoizeTicketStatus(TicketStatusModel $ticketStatus)
+    {
+        self::$_ticketStatusesById[$ticketStatus->id] = $ticketStatus;
+        self::$_ticketStatusesByHandle[$ticketStatus->handle] = $ticketStatus;
+    }
+
+    private static function _createTicketStatusQuery()
+    {
+        return (new Query())
+            ->select([
+                'id',
+                'name',
+                'handle',
+                'colour',
+                'sortOrder',
+                'default',
+            ])
+            ->orderBy('sortOrder')
+            ->from(['{{%support_ticketstatuses}}']);
     }
 }

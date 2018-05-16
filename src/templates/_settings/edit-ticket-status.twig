@@ -1,0 +1,109 @@
+{% extends "_layouts/cp" %}
+{% requireAdmin %}
+
+{% set crumbs = [
+    { label: 'Support Settings', url: url('support/settings') },
+    { label: 'Ticket Statuses', url: url('support/settings/ticket-statuses') }
+] %}
+
+{% set fullPageForm = true %}
+
+{% import "_includes/forms" as forms %}
+
+{% block content %}
+
+  {{ forms.hidden({
+      name: 'action',
+      value: 'support/ticket-statuses/save',
+  })}}
+
+  {{ redirectInput('support/settings/ticket-statuses') }}
+
+  {% if ticketStatus.id %}
+    {{ forms.hidden({
+        name: 'id',
+        value: ticketStatus.id,
+    })}}
+
+    {{ forms.hidden({
+        name: 'sortOrder',
+        value: ticketStatus.sortOrder,
+    })}}
+  {% endif %}
+
+  {{ forms.textField({
+      first:        true,
+      required:     true,
+      label:        'Name',
+      instructions: 'What this status will be called in the CP.',
+      id:           'name',
+      name:         'name',
+      value:        ticketStatus.name,
+      errors:       ticketStatus.getErrors('name'),
+  })}}
+
+  {{ forms.textField({
+      first:        true,
+      required:     true,
+      label:        'Handle',
+      instructions: 'How you’ll refer to this status in the templates.',
+      id:           'handle',
+      name:         'handle',
+      value:        ticketStatus.handle,
+      errors:       ticketStatus.getErrors('handle'),
+  })}}
+
+  {{ forms.hidden({
+      id:    'colour',
+      name:  'colour',
+      value: ticketStatus.colour,
+  })}}
+
+  {% set colourField %}
+    <div>
+      <a id="colour-menu-btn" class="btn menubtn" href="#">
+        <span class="status {{ ticketStatus.colour }}"></span>{{ ticketStatus.colour|title }}
+      </a>
+      <div class="menu">
+        <ul class="padded">
+          {% for colour in ['green','orange', 'red', 'blue', 'yellow', 'pink', 'purple', 'turquoise', 'light', 'grey', 'black'] %}
+            <li>
+              <a data-val="{{ colour }}" {% if ticketStatus.colour == colour %}class="sel"{% endif %} href="#">
+                <span class="status {{ colour }}"></span>{{ colour|title }}
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  {% endset %}
+
+  {{ forms.field({
+      label:        'Colour',
+      instructions: 'Choose a colour to represent the ticket’s status'|t
+  }, colourField) }}
+
+  {{ forms.checkboxField({
+      label:   'New tickets get this status by default',
+      name:    'default',
+      value:   1,
+      checked: ticketStatus.default,
+      errors:  ticketStatus.getErrors('default')
+  })}}
+
+{% endblock %}
+
+{% js %}
+    {% if not ticketStatus.handle %}new Craft.HandleGenerator('#name', '#handle');{% endif %}
+    $(function () {
+        $colourSelect = $('#coluor-menu-btn');
+        new Garnish.MenuBtn($colourSelect, {
+            onOptionSelect: function(data){
+                var val = $(data).data('val');
+                $('#colour').val(val);
+                var html = "<span class='status "+val+"'></span>"+Craft.uppercaseFirst(val);
+                $colourSelect.html(html);
+            }
+        });
+    });
+{% endjs %}

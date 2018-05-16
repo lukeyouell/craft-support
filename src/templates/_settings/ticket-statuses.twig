@@ -23,9 +23,8 @@
       {% for status in ticketStatuses %}
         <tr data-id="{{ status.id }}" data-name="{{ status.handle }}">
           <th data-title="Name">
-            <a href="">
-              <span class="status {{ status.colour }}"></span>
-              {{ status.name }}
+            <a href="{{ status.getCpEditUrl() }}">
+              {{ status.labelHtml|raw }}
             </a>
           </th>
           <td class="code" data-title="Handle">
@@ -48,7 +47,7 @@
   </table>
 
   <div class="buttons">
-    <a class="btn submit icon add" href="{{ cpUrl('support/settings/order-statuses/new') }}">New ticket status</a>
+    <a class="btn submit icon add" href="{{ cpUrl('support/settings/ticket-statuses/new') }}">New ticket status</a>
   </buttons>
 
 {% endblock %}
