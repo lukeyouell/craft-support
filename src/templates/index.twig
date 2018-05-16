@@ -1,6 +1,4 @@
-{% if currentUser.can('support-manageTickets') %}
-  {% redirect 'support/tickets' %}
-{% endif %}
+{% redirect 'support/tickets' %}
 
 {% extends "403" %}
 {% set message = 'You don’t have permission to access to any of the Support sub-sections. Please contact an admin.' %}

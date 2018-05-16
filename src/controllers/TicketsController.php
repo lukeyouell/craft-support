@@ -120,7 +120,7 @@ class TicketsController extends Controller
             }
 
             // Handle email notification
-            if ($settings->email) {
+            if ($settings->toEmail) {
                 MailService::ticketCreation($ticket->id);
             }
 

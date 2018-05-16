@@ -42,13 +42,13 @@ class AttachmentsController extends Controller
     public function actionIndex()
     {
         $settings = $this->settings;
-        $pluginHandle = Support::$plugin->handle;
-        $overrides = Craft::$app->getConfig()->getConfigFromFile(strtolower($pluginHandle));
+        $plugin = Support::$plugin;
+        $overrides = Craft::$app->getConfig()->getConfigFromFile(strtolower($plugin->handle));
         $volumes = Craft::$app->volumes->getAllVolumes();
 
         $variables = [
           'settings'       => $settings,
-          'pluginHandle'   => $pluginHandle,
+          'plugin'         => $plugin,
           'overrides'      => $overrides,
           'volumes'        => $volumes,
         ];

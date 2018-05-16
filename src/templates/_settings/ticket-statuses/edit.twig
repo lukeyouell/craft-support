@@ -96,7 +96,7 @@
 {% js %}
     {% if not ticketStatus.handle %}new Craft.HandleGenerator('#name', '#handle');{% endif %}
     $(function () {
-        $colourSelect = $('#coluor-menu-btn');
+        $colourSelect = $('#colour-menu-btn');
         new Garnish.MenuBtn($colourSelect, {
             onOptionSelect: function(data){
                 var val = $(data).data('val');

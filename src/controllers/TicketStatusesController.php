@@ -82,6 +82,37 @@ class TicketStatusesController extends Controller
         return $this->renderTemplate('support/_settings/ticket-statuses/edit', $variables);
     }
 
+    public function actionSave()
+    {
+        $this->requirePostRequest();
+
+        $request = Craft::$app->getRequest();
+        $id = $request->post('id');
+        $ticketStatus = TicketStatusService::getTicketStatusById($id);
+
+        if (!$ticketStatus) {
+            $ticketStatus = new TicketStatusModel();
+        }
+
+        $ticketStatus->name = $request->post('name');
+        $ticketStatus->handle = $request->post('handle');
+        $ticketStatus->colour = $request->post('colour');
+        $ticketStatus->default = $request->post('default');
+
+        // Save it
+        $save = TicketStatusService::saveTicketStatus($ticketStatus);
+
+        if ($save) {
+            Craft::$app->getSession()->setNotice('Ticket status saved.');
+
+            $this->redirectToPostedUrl();
+        } else {
+            Craft::$app->getSession()->setError('Couldn’t save ticket status.');
+        }
+
+        Craft::$app->getUrlManager()->setRouteParams(compact('ticketStatus'));
+    }
+
     public function actionReorder(): Response
     {
         $this->requirePostRequest();

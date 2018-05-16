@@ -166,7 +166,7 @@ class Support extends Plugin
     {
         $ret = parent::getCpNavItem();
 
-        $ret['label'] = $this->name;
+        $ret['label'] = $this->getSettings()->pluginNameOverride ?: $this->name;
 
         $ret['subnav']['tickets'] = [
             'label' => 'Tickets',

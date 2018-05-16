@@ -14,53 +14,54 @@
 
   {{ forms.hidden({
       name: 'pluginHandle',
-      value: pluginHandle
+      value: plugin.handle
   })}}
 
   <h2 class="first">General Settings</h2>
 
   {{ forms.textField({
       first:        true,
-      label:        'Support Email Address',
-      instructions: 'The email address that support emails are sent from. Leave blank to use the System Email Address defined in Craft’s General Settings.',
-      id:          'fromEmail',
-      name:        'settings[fromEmail]',
-      placeholder: systemEmail,
-      value:       settings.fromEmail,
-      disabled:    'fromEmail' in overrides,
-      warning:     'fromEmail' in overrides ? macros.configWarning('fromEmail'),
+      label:        'Plugin Name Override',
+      instructions: 'The plugin name as you’d like it to be displayed in the CP.',
+      id:           'pluginNameOverride',
+      name:         'settings[pluginNameOverride]',
+      placeholder:  plugin.name,
+      value:        settings.pluginNameOverride,
+      disabled:     'pluginNameOverride' in overrides,
+      warning:      'pluginNameOverride' in overrides ? macros.configWarning('pluginNameOverride'),
   })}}
 
   {{ forms.textField({
-      first:        true,
-      label:        'From Name',
-      instructions: 'The "From" name that will be used when sending support emails. Leave blank to use the Sender Name defined in Craft’s General Settings.',
-      id:          'fromName',
-      name:        'settings[fromName]',
-      placeholder: systemSender,
-      value:       settings.fromName,
-      disabled:    'fromName' in overrides,
-      warning:     'fromName' in overrides ? macros.configWarning('fromName'),
+      label:        'Support Email Address',
+      instructions: 'The email address that ticket notification emails are sent from. Leave blank to use the System Email Address defined in Craft’s General Settings.',
+      id:           'fromEmail',
+      name:         'settings[fromEmail]',
+      placeholder:  systemEmail,
+      value:        settings.fromEmail,
+      disabled:     'fromEmail' in overrides,
+      warning:      'fromEmail' in overrides ? macros.configWarning('fromEmail'),
   })}}
 
-  {{ forms.lightswitchField({
-      label:    'Email Notifications'|t,
-      id:       'email',
-      name:     'settings[email]',
-      on:       settings.email,
-      disabled: 'email' in overrides,
-      warning:  'email' in overrides ? macros.configWarning('email'),
+  {{ forms.textField({
+      label:        'From Name',
+      instructions: 'The "From" name that will be used when sending ticket notification emails. Leave blank to use the Sender Name defined in Craft’s General Settings.',
+      id:           'fromName',
+      name:         'settings[fromName]',
+      placeholder:  systemSender,
+      value:        settings.fromName,
+      disabled:     'fromName' in overrides,
+      warning:      'fromName' in overrides ? macros.configWarning('fromName'),
   })}}
 
   {{ forms.textField({
       label:        'To Email',
       instructions: 'The email address(es) that ticket notifications will be send to. Separate multiple email addresses with commas.',
-      id:          'toEmail',
-      name:        'settings[toEmail]',
-      placeholder: 'joe.bloggs@email.co.uk, jane.bloggs@email.co.uk',
-      value: settings.toEmail,
-      disabled:    'toEmail' in overrides,
-      warning:     'toEmail' in overrides ? macros.configWarning('toEmail'),
+      id:           'toEmail',
+      name:         'settings[toEmail]',
+      placeholder:  'joe.bloggs@email.co.uk, jane.bloggs@email.co.uk',
+      value:        settings.toEmail,
+      disabled:     'toEmail' in overrides,
+      warning:      'toEmail' in overrides ? macros.configWarning('toEmail'),
   })}}
 
 {% endblock %}

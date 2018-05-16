@@ -43,14 +43,14 @@ class SettingsController extends Controller
         $systemEmail = Craft::$app->systemSettings->getSetting('email', 'fromEmail');
         $systemSender = Craft::$app->systemSettings->getSetting('email', 'fromName');
         $settings = $this->settings;
-        $pluginHandle = Support::$plugin->handle;
-        $overrides = Craft::$app->getConfig()->getConfigFromFile(strtolower($pluginHandle));
+        $plugin = Support::$plugin;
+        $overrides = Craft::$app->getConfig()->getConfigFromFile(strtolower($plugin->handle));
 
         $variables = [
           'systemEmail'  => $systemEmail,
           'systemSender' => $systemSender,
           'settings'     => $settings,
-          'pluginHandle' => $pluginHandle,
+          'plugin'       => $plugin,
           'overrides'    => $overrides,
         ];
 

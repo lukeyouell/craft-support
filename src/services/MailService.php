@@ -39,8 +39,8 @@ class MailService extends Component
                 $system = Craft::$app->getInfo();
 
                 // Prep
-                $fromEmail = Craft::$app->systemSettings->getSetting('email', 'fromEmail');
-                $fromName = Craft::$app->systemSettings->getSetting('email', 'fromName');
+                $fromEmail = $settings->fromEmail ?: Craft::$app->systemSettings->getSetting('email', 'fromEmail');
+                $fromName = $settings->fromName ?: Craft::$app->systemSettings->getSetting('email', 'fromName');
                 $toEmails = is_string($settings->toEmail) ? StringHelper::split($settings->toEmail) : $settings->toEmail;
                 $subject = '📥 A new support ticket has been created on '.$system->name;
                 $cpUrl = UrlHelper::cpUrl('support/tickets/'.$ticket->id);

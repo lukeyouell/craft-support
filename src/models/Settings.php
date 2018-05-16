@@ -35,11 +35,11 @@ class Settings extends Model
     // Public Properties
     // =========================================================================
 
+    public $pluginNameOverride;
+
     public $fromEmail;
 
     public $fromName;
-
-    public $email = true;
 
     public $toEmail;
 
@@ -65,8 +65,8 @@ class Settings extends Model
     public function rules()
     {
         return [
-            [['email', 'attachments'], 'boolean'],
-            [['fromEmail', 'fromName', 'toEmail', 'volumeSubpath'], 'string'],
+            [['attachments'], 'boolean'],
+            [['pluginNameOverride', 'fromEmail', 'fromName', 'toEmail', 'volumeSubpath'], 'string'],
             [['volumeId'], 'number', 'integerOnly' => true]
         ];
     }

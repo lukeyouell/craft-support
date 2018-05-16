@@ -19,6 +19,8 @@ use Craft;
 use craft\base\Component;
 use craft\db\Query;
 
+use yii\base\Exception;
+
 class TicketStatusService extends Component
 {
 
@@ -82,6 +84,55 @@ class TicketStatusService extends Component
             Craft::$app->getDb()->createCommand()
                 ->update('{{%support_ticketstatuses}}', ['sortOrder' => $sortOrder + 1], ['id' => $id])
                 ->execute();
+        }
+
+        return true;
+    }
+
+    public static function saveTicketStatus(TicketStatusModel $model, bool $runValidation = true)
+    {
+        if ($model->id) {
+            $record = TicketStatusRecord::findOne($model->id);
+
+            if (!$record->id) {
+                throw new Exception(Craft::t('support', 'No ticket status exists with the ID "{id}"',
+                    ['id' => $model->id]));
+            }
+        } else {
+            $record = new TicketStatusRecord();
+        }
+
+        if ($runValidation && !$model->validate()) {
+            Craft::info('Ticket status not saved due to a validation error.', __METHOD__);
+
+            return false;
+        }
+
+        $record->name = $model->name;
+        $record->handle = $model->handle;
+        $record->colour = $model->colour;
+        $record->sortOrder = $model->sortOrder ?: 999;
+        $record->default = $model->default;
+
+        $db = Craft::$app->getDb();
+        $transaction = $db->beginTransaction();
+
+        try {
+            // Only one default status can be among statuses
+            if ($record->default) {
+                TicketStatusRecord::updateAll(['default' => 0]);
+            }
+
+            // Save it
+            $record->save(false);
+
+            $model->id = $record->id;
+
+            $transaction->commit();
+        } catch (\Exception $e) {
+            $transaction->rollBack();
+
+            throw $e;
         }
 
         return true;
