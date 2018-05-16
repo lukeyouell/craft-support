@@ -11,6 +11,8 @@
 namespace lukeyouell\support\services;
 
 use lukeyouell\support\Support;
+use lukeyouell\support\elements\Ticket;
+use lukeyouell\support\records\TicketStatus as TicketStatusRecord;
 
 use Craft;
 use craft\base\Component;
@@ -45,7 +47,14 @@ class TicketStatusService extends Component
           ->one();
     }
 
-    public static function reorderTicketStatuses(array $ids): bool
+    public static function checkIfTicketStatusInUse($id)
+    {
+        return Ticket::find()
+            ->ticketStatusId($id)
+            ->one();
+    }
+
+    public static function reorderTicketStatuses(array $ids)
     {
         foreach ($ids as $sortOrder => $id) {
             Craft::$app->getDb()->createCommand()
@@ -54,5 +63,26 @@ class TicketStatusService extends Component
         }
 
         return true;
+    }
+
+    public static function deleteTicketStatusbyId($id)
+    {
+        $statuses = self::getAllTicketStatuses();
+
+        $existingTicket = self::checkIfTicketStatusInUse($id);
+
+        // Don't delete if it's still in use
+        if ($existingTicket) {
+            return false;
+        }
+
+        // Don't delete if it's the only status left
+        if (count($statuses) > 1) {
+            $record = TicketStatusRecord::findOne($id);
+
+            return $record->delete();
+        }
+
+        return false;
     }
 }

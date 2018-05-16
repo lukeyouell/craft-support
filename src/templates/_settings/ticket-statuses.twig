@@ -58,10 +58,12 @@
     new Craft.AdminTable({
     tableSelector: '#ticket-statuses',
     deleteAction: 'support/ticket-statuses/delete',
+    deleteSuccessMessage: 'Ticket status deleted.',
+    deleteFailMessage: 'Couldn’t delete ticket status.',
     minObjects: 1,
     sortable: true,
     reorderAction: 'support/ticket-statuses/reorder',
     reorderSuccessMessage: 'Ticket statuses reordered.' ,
-    reorderFailMessage:    'Couldn’t reorder tickets.',
+    reorderFailMessage:    'Couldn’t reorder ticket statuses.',
     });
 {% endjs %}

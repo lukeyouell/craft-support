@@ -35,6 +35,19 @@ class TicketStatusesController extends Controller
             return $this->asJson(['success' => $success]);
         }
 
-        return $this->asJson(['error' => 'Couldn’t reorder Order Statuses.']);
+        return $this->asJson(['error' => 'Couldn’t reorder ticket statuses.']);
+    }
+
+    public function actionDelete()
+    {
+        $this->requireAcceptsJson();
+
+        $ticketStatusId = Craft::$app->getRequest()->getRequiredParam('id');
+
+        if ($success = TicketStatusService::deleteTicketStatusById($ticketStatusId)) {
+            return $this->asJson(['success' => true]);
+        }
+
+        return $this->asJson(['error' => 'Couldn’t delete ticket status.']);
     }
 }
