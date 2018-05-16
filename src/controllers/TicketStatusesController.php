@@ -17,12 +17,69 @@ use Craft;
 use craft\helpers\Json;
 use craft\web\Controller;
 
+use yii\base\InvalidConfigException;
 use yii\web\Response;
 
 class TicketStatusesController extends Controller
 {
+    // Public Properties
+    // =========================================================================
+
+    public $settings;
+
     // Public Methods
     // =========================================================================
+
+    public function init()
+    {
+        parent::init();
+
+        $this->settings = Support::$plugin->getSettings();
+        if (!$this->settings->validate()) {
+            throw new InvalidConfigException('Support settings don’t validate.');
+        }
+    }
+
+    public function actionIndex()
+    {
+        $settings = $this->settings;
+        $ticketStatuses = TicketStatusService::getAllTicketStatuses();
+
+        $variables = [
+          'settings'       => $settings,
+          'ticketStatuses' => $ticketStatuses,
+        ];
+
+        return $this->renderTemplate('support/_settings/ticket-statuses/index', $variables);
+    }
+
+    public function actionEdit(int $id = null, TicketStatusModel $ticketStatus = null)
+    {
+        $variables = [
+            'id'           => $id,
+            'ticketStatus' => $ticketStatus,
+        ];
+
+        if (!$variables['ticketStatus']) {
+            if ($variables['id']) {
+                $variables['ticketStatus'] = TicketStatusService::getTicketStatusById($variables['id']);
+
+                if (!$variables['ticketStatus']) {
+                    throw new NotFoundHttpException('Ticket status not found');
+                }
+            } else {
+                $variables['ticketStatus'] = new TicketStatusModel();
+            }
+        }
+
+        if ($variables['ticketStatus']->id) {
+            $variables['title'] = $variables['ticketStatus']->name;
+        } else {
+            $variables['title'] = 'Create a new ticket status';
+        }
+
+        return $this->renderTemplate('support/_settings/edit-ticket-status', $variables);
+    }
 
     public function actionReorder(): Response
     {

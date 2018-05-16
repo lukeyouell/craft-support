@@ -11,16 +11,16 @@
 namespace lukeyouell\support\controllers;
 
 use lukeyouell\support\Support;
-use lukeyouell\support\models\TicketStatus as TicketStatusModel;
 use lukeyouell\support\services\TicketStatusService;
 
 use Craft;
+use craft\helpers\Json;
 use craft\web\Controller;
 
 use yii\base\InvalidConfigException;
-use yii\web\NotFoundHttpException;
+use yii\web\Response;
 
-class SettingsController extends Controller
+class AttachmentsController extends Controller
 {
     // Public Properties
     // =========================================================================
@@ -45,13 +45,15 @@ class SettingsController extends Controller
         $settings = $this->settings;
         $pluginHandle = Support::$plugin->handle;
         $overrides = Craft::$app->getConfig()->getConfigFromFile(strtolower($pluginHandle));
+        $volumes = Craft::$app->volumes->getAllVolumes();
 
         $variables = [
           'settings'       => $settings,
           'pluginHandle'   => $pluginHandle,
           'overrides'      => $overrides,
+          'volumes'        => $volumes,
         ];
 
-        return $this->renderTemplate('support/_settings/general/index', $variables);
+        return $this->renderTemplate('support/_settings/attachments/index', $variables);
     }
 }

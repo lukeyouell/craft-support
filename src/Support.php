@@ -97,9 +97,16 @@ class Support extends Plugin
             function (RegisterUrlRulesEvent $event) {
                 $event->rules['support/tickets/new-ticket'] = 'support/tickets/new-ticket-template';
                 $event->rules['support/tickets/<ticketId:\d+>'] = 'support/tickets/show-ticket';
-                $event->rules['support/settings/<category>'] = 'support/settings/show-settings';
-                $event->rules['support/settings/ticket-statuses/new'] = 'support/settings/edit-ticket-status';
-                $event->rules['support/settings/ticket-statuses/<id:\d+>'] = 'support/settings/edit-ticket-status';
+
+                //$event->rules['support/settings/<category>'] = 'support/settings/show-settings';
+
+                $event->rules['support/settings/general'] = 'support/settings/index';
+
+                $event->rules['support/settings/attachments'] = 'support/attachments/index';
+
+                $event->rules['support/settings/ticket-statuses'] = 'support/ticket-statuses/index';
+                $event->rules['support/settings/ticket-statuses/new'] = 'support/ticket-statuses/edit';
+                $event->rules['support/settings/ticket-statuses/<id:\d+>'] = 'support/ticket-statuses/edit';
             }
         );
 
