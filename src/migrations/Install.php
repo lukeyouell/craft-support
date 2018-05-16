@@ -161,6 +161,7 @@ class Install extends Migration
             'name' => 'New',
             'handle' => 'new',
             'colour' => 'blue',
+            'sortOrder' => 1,
             'default' => true
         ];
         $this->insert(TicketStatus::tableName(), $data);
@@ -169,6 +170,7 @@ class Install extends Migration
             'name' => 'In Progress',
             'handle' => 'inProgress',
             'colour' => 'orange',
+            'sortOrder' => 2,
             'default' => false
         ];
         $this->insert(TicketStatus::tableName(), $data);
@@ -177,6 +179,7 @@ class Install extends Migration
             'name' => 'Solved',
             'handle' => 'solved',
             'colour' => 'green',
+            'sortOrder' => 3,
             'default' => false
         ];
         $this->insert(TicketStatus::tableName(), $data);
@@ -185,6 +188,7 @@ class Install extends Migration
             'name' => 'Closed',
             'handle' => 'closed',
             'colour' => 'red',
+            'sortOrder' => 4,
             'default' => false
         ];
         $this->insert(TicketStatus::tableName(), $data);
@@ -193,6 +197,7 @@ class Install extends Migration
             'name' => 'Archived',
             'handle' => 'archived',
             'colour' => 'grey',
+            'sortOrder' => 5,
             'default' => false
         ];
         $this->insert(TicketStatus::tableName(), $data);
