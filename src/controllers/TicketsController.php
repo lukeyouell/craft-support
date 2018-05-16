@@ -45,7 +45,25 @@ class TicketsController extends Controller
         }
     }
 
-    public function actionShowTicket(string $ticketId = null)
+    public function actionIndex()
+    {
+        return $this->renderTemplate('support/_tickets/index');
+    }
+
+    public function actionNew()
+    {
+        $volume = $this->settings->volumeId ? Craft::$app->getVolumes()->getVolumeById($this->settings->volumeId) : null;
+
+        $variables = [
+            'volume' => $volume,
+            'elementType' => Asset::class,
+            'settings' => $this->settings,
+        ];
+
+        return $this->renderTemplate('support/_tickets/new', $variables);
+    }
+
+    public function actionView(string $ticketId = null)
     {
         $ticket = TicketService::getTicketById($ticketId);
 
@@ -66,20 +84,7 @@ class TicketsController extends Controller
         return $this->renderTemplate('support/_tickets/ticket', $variables);
     }
 
-    public function actionNewTicketTemplate()
-    {
-        $volume = $this->settings->volumeId ? Craft::$app->getVolumes()->getVolumeById($this->settings->volumeId) : null;
-
-        $variables = [
-            'volume' => $volume,
-            'elementType' => Asset::class,
-            'settings' => $this->settings,
-        ];
-
-        return $this->renderTemplate('support/_tickets/new', $variables);
-    }
-
-    public function actionNewTicket()
+    public function actionCreate()
     {
         $this->requirePostRequest();
 
@@ -125,7 +130,7 @@ class TicketsController extends Controller
         }
     }
 
-    public function actionSaveTicket()
+    public function actionSave()
     {
         $this->requirePostRequest();
 

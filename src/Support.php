@@ -95,10 +95,9 @@ class Support extends Plugin
             UrlManager::class,
             UrlManager::EVENT_REGISTER_CP_URL_RULES,
             function (RegisterUrlRulesEvent $event) {
-                $event->rules['support/tickets/new-ticket'] = 'support/tickets/new-ticket-template';
-                $event->rules['support/tickets/<ticketId:\d+>'] = 'support/tickets/show-ticket';
-
-                //$event->rules['support/settings/<category>'] = 'support/settings/show-settings';
+                $event->rules['support/tickets'] = 'support/tickets/index';
+                $event->rules['support/tickets/new'] = 'support/tickets/new';
+                $event->rules['support/tickets/<ticketId:\d+>'] = 'support/tickets/view';
 
                 $event->rules['support/settings/general'] = 'support/settings/index';
 
@@ -126,8 +125,8 @@ class Support extends Plugin
             UserPermissions::EVENT_REGISTER_PERMISSIONS,
             function(RegisterUserPermissionsEvent $event) {
                 $event->permissions[$this->name] = [
-                    'manageTickets' => ['label' => \Craft::t('support', 'Manage Tickets')],
-                    'deleteTickets' => ['label' => \Craft::t('support', 'Delete Tickets')],
+                    'support-manageTickets' => ['label' => \Craft::t('support', 'Manage Tickets')],
+                    'support-deleteTickets' => ['label' => \Craft::t('support', 'Delete Tickets')],
                 ];
             }
         );
@@ -174,10 +173,12 @@ class Support extends Plugin
             'url'   => 'support/tickets',
         ];
 
-        $ret['subnav']['settings'] = [
-            'label' => 'Settings',
-            'url'   => 'support/settings/general',
-        ];
+        if (Craft::$app->getUser()->getIsAdmin()) {
+            $ret['subnav']['settings'] = [
+                'label' => 'Settings',
+                'url'   => 'support/settings/general',
+            ];
+        }
 
         return $ret;
     }

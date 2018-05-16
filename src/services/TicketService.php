@@ -46,7 +46,7 @@ class TicketService extends Component
     {
         $userSessionService = Craft::$app->getUser();
         $userId = $userSessionService->getIdentity()->id;
-        $canManageTickets = $userSessionService->checkPermission('manageTickets');
+        $canManageTickets = $userSessionService->checkPermission('support-manageTickets');
 
         if ($ticketId) {
             $query = new TicketQuery(Ticket::class);

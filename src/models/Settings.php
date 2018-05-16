@@ -35,6 +35,10 @@ class Settings extends Model
     // Public Properties
     // =========================================================================
 
+    public $fromEmail;
+
+    public $fromName;
+
     public $email = true;
 
     public $toEmail;
@@ -62,7 +66,7 @@ class Settings extends Model
     {
         return [
             [['email', 'attachments'], 'boolean'],
-            [['toEmail', 'volumeSubpath'], 'string'],
+            [['fromEmail', 'fromName', 'toEmail', 'volumeSubpath'], 'string'],
             [['volumeId'], 'number', 'integerOnly' => true]
         ];
     }

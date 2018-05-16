@@ -1,0 +1,10 @@
+{% extends "_layouts/elementindex" %}
+{% set elementType = 'lukeyouell\\support\\elements\\Ticket' %}
+
+{% set title = "Tickets" %}
+
+{% block actionButton %}
+  <div class="btngroup">
+    <a class="btn submit add icon" href="{{ cpUrl('support/tickets/new') }}">New ticket</a>
+  </div>
+{% endblock %}

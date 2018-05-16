@@ -40,14 +40,18 @@ class SettingsController extends Controller
 
     public function actionIndex()
     {
+        $systemEmail = Craft::$app->systemSettings->getSetting('email', 'fromEmail');
+        $systemSender = Craft::$app->systemSettings->getSetting('email', 'fromName');
         $settings = $this->settings;
         $pluginHandle = Support::$plugin->handle;
         $overrides = Craft::$app->getConfig()->getConfigFromFile(strtolower($pluginHandle));
 
         $variables = [
-          'settings'       => $settings,
-          'pluginHandle'   => $pluginHandle,
-          'overrides'      => $overrides,
+          'systemEmail'  => $systemEmail,
+          'systemSender' => $systemSender,
+          'settings'     => $settings,
+          'pluginHandle' => $pluginHandle,
+          'overrides'    => $overrides,
         ];
 
         return $this->renderTemplate('support/_settings/general/index', $variables);

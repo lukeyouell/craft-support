@@ -78,14 +78,14 @@
 {% endblock %}
 
 {% block details %}
-  {% if currentUser.can('manageTickets') %}
+  {% if currentUser.can('support-manageTickets') %}
     <form method="post" accept-charset="UTF-8">
       <div class="meta">
         {{ csrfInput() }}
 
         {{ forms.hidden({
             name:  'action',
-            value: 'support/tickets/save-ticket',
+            value: 'support/tickets/save',
         })}}
 
         {{ forms.hidden({
@@ -132,7 +132,7 @@
       </div>
     </div>
 
-    {% if currentUser.can('manageTickets') %}
+    {% if currentUser.can('support-manageTickets') %}
       <div class="data">
         <div class="heading">
           Author

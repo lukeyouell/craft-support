@@ -86,7 +86,7 @@ class Ticket extends Element
     {
         $userSessionService = Craft::$app->getUser();
         $userId = $userSessionService->getIdentity()->id;
-        $canManageTickets = $userSessionService->checkPermission('manageTickets');
+        $canManageTickets = $userSessionService->checkPermission('support-manageTickets');
 
         $sources = [
             '*' => [
@@ -136,7 +136,7 @@ class Ticket extends Element
     protected static function defineActions(string $source = null): array
     {
         $userSessionService = Craft::$app->getUser();
-        $canDeleteTickets = $userSessionService->checkPermission('deleteTickets');
+        $canDeleteTickets = $userSessionService->checkPermission('support-deleteTickets');
 
         $actions = [];
 
@@ -154,7 +154,7 @@ class Ticket extends Element
     protected static function defineTableAttributes(): array
     {
         $userSessionService = Craft::$app->getUser();
-        $canManageTickets = $userSessionService->checkPermission('manageTickets');
+        $canManageTickets = $userSessionService->checkPermission('support-manageTickets');
 
         if ($canManageTickets) {
             $attributes = [
@@ -179,7 +179,7 @@ class Ticket extends Element
     protected static function defineDefaultTableAttributes(string $source): array
     {
         $userSessionService = Craft::$app->getUser();
-        $canManageTickets = $userSessionService->checkPermission('manageTickets');
+        $canManageTickets = $userSessionService->checkPermission('support-manageTickets');
 
         if ($canManageTickets) {
             $attributes = ['title', 'ticketStatus', 'dateCreated', 'dateUpdated', 'author'];

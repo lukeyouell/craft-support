@@ -1,25 +1,6 @@
-{# @var craft \craft\web\twig\variables\CraftVariable #}
-{#
-/**
- * Support plugin for Craft CMS 3.x
- *
- * Support index.twig
- *
- * @author    Luke Youell
- * @copyright Copyright (c) 2018 Luke Youell
- * @link      https://github.com/lukeyouell
- * @package   Support
- * @since     1.0.0
- */
-#}
+{% if currentUser.can('support-manageTickets') %}
+  {% redirect 'support/tickets' %}
+{% endif %}
 
-{% extends "_layouts/elementindex" %}
-{% set elementType = 'lukeyouell\\support\\elements\\Ticket' %}
-
-{% set title = "Tickets" %}
-
-{% block actionButton %}
-  <div class="btngroup">
-    <a class="btn submit add icon" href="{{ cpUrl('support/tickets/new-ticket') }}">New ticket</a>
-  </div>
-{% endblock %}
+{% extends "403" %}
+{% set message = 'You don’t have permission to access to any of the Support sub-sections. Please contact an admin.' %}

@@ -25,10 +25,10 @@
 {% block content %}
   {{ forms.hidden({
       name: 'action',
-      value: 'support/tickets/new-ticket',
+      value: 'support/tickets/create',
   })}}
 
-  {{ redirectInput('support') }}
+  {{ redirectInput('support/tickets') }}
 
   {{ forms.textField({
       first: true,
