@@ -101,11 +101,13 @@ class Support extends Plugin
 
                 $event->rules['support/settings/general'] = 'support/settings/index';
 
-                $event->rules['support/settings/attachments'] = 'support/attachments/index';
-
                 $event->rules['support/settings/ticket-statuses'] = 'support/ticket-statuses/index';
                 $event->rules['support/settings/ticket-statuses/new'] = 'support/ticket-statuses/edit';
                 $event->rules['support/settings/ticket-statuses/<id:\d+>'] = 'support/ticket-statuses/edit';
+
+                $event->rules['support/settings/emails'] = 'support/emails/index';
+
+                $event->rules['support/settings/attachments'] = 'support/attachments/index';
             }
         );
 

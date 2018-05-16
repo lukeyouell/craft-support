@@ -1,0 +1,41 @@
+{% extends "support/_layouts/settings" %}
+
+{% block content %}
+
+  <h2 class="first">Emails</h2>
+
+  <table id="emails" class="data fullwidth collapsible">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Subject</th>
+        <th>To</th>
+        <th>Bcc</th>
+        <th>Template Path</th>
+        <td class="thin"></td>
+      </tr>
+    </thead>
+
+    <tbody>
+    </tbody>
+  </table>
+
+  <div class="buttons">
+    <a class="btn submit icon add" href="{{ cpUrl('support/settings/emails/new') }}">New email</a>
+  </buttons>
+
+{% endblock %}
+
+{% js %}
+    new Craft.AdminTable({
+    tableSelector: '#emails',
+    deleteAction: 'support/emails/delete',
+    deleteSuccessMessage: 'Email deleted.',
+    deleteFailMessage: 'Couldn’t delete email.',
+    minObjects: 1,
+    sortable: true,
+    reorderAction: 'support/emails/reorder',
+    reorderSuccessMessage: 'Emails reordered.' ,
+    reorderFailMessage:    'Couldn’t reorder emails.',
+    });
+{% endjs %}
