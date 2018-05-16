@@ -14,7 +14,6 @@ use lukeyouell\support\Support;
 use lukeyouell\support\services\TicketStatusService;
 
 use Craft;
-use craft\helpers\Json;
 use craft\web\Controller;
 
 use yii\base\InvalidConfigException;

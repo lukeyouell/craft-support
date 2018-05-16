@@ -11,6 +11,7 @@
 namespace lukeyouell\support\controllers;
 
 use lukeyouell\support\Support;
+use lukeyouell\support\models\TicketStatus as TicketStatusModel;
 use lukeyouell\support\services\TicketStatusService;
 
 use Craft;
@@ -78,7 +79,7 @@ class TicketStatusesController extends Controller
             $variables['title'] = 'Create a new ticket status';
         }
 
-        return $this->renderTemplate('support/_settings/edit-ticket-status', $variables);
+        return $this->renderTemplate('support/_settings/ticket-statuses/edit', $variables);
     }
 
     public function actionReorder(): Response

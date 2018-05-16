@@ -163,6 +163,25 @@ class Support extends Plugin
         );
     }
 
+    public function getCpNavItem()
+    {
+        $ret = parent::getCpNavItem();
+
+        $ret['label'] = $this->name;
+
+        $ret['subnav']['tickets'] = [
+            'label' => 'Tickets',
+            'url'   => 'support/tickets',
+        ];
+
+        $ret['subnav']['settings'] = [
+            'label' => 'Settings',
+            'url'   => 'support/settings/general',
+        ];
+
+        return $ret;
+    }
+
     // Protected Methods
     // =========================================================================
 
