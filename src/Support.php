@@ -98,6 +98,7 @@ class Support extends Plugin
                 $event->rules['support/tickets/new-ticket'] = 'support/tickets/new-ticket-template';
                 $event->rules['support/tickets/<ticketId:\d+>'] = 'support/tickets/show-ticket';
                 $event->rules['support/settings/<category>'] = 'support/settings/show-settings';
+                $event->rules['commerce/settings/ticket-statuses/<id:\d+>'] = 'support/settings/edit-ticket-status';
             }
         );
 
