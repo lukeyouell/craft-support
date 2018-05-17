@@ -1,0 +1,94 @@
+{% extends "support/_layouts/settingscp" %}
+{% requireAdmin %}
+
+{% set crumbs = [
+    { label: 'Support Settings', url: url('support/settings') },
+    { label: 'Emails', url: url('support/settings/emails') }
+] %}
+
+{% set fullPageForm = true %}
+
+{% import "_includes/forms" as forms %}
+
+{% block content %}
+
+  {{ forms.hidden({
+      name: 'action',
+      value: 'support/emails/save',
+  })}}
+
+  {{ redirectInput('support/settings/emails') }}
+
+  {{ forms.textField({
+      first:        true,
+      required:     true,
+      label:        'Name',
+      instructions: 'What this email will be called in the CP.',
+      id:           'name',
+      name:         'name',
+      placeholder:  'New Support Ticket',
+  })}}
+
+  {{ forms.textField({
+      required: true,
+      label:    'Email Subject',
+      id:       'subject',
+      name:     'subject',
+      placeholder: '📥 New Support Ticket',
+  })}}
+
+  {% set recipientInput %}
+    <div class="flex">
+      <div>
+        {{ forms.select({
+            id:           'recipientType',
+            name:         'recipientType',
+            toggle:       true,
+            targetPrefix: 'to-option-',
+            options: [
+                { label: 'Send to the author', value: 'author' },
+                { label: 'Send to custom recipient', value: 'custom' }
+            ],
+        })}}
+      </div>
+      <div id="to-option-custom" class="flex-grow hidden">
+          {{ forms.text({
+              id:          'to',
+              name:        'to',
+              placeholder: 'joe.bloggs@email.co.uk, jane.bloggs@email.co.uk',
+          }) }}
+      </div>
+    </div>
+  {% endset %}
+
+  {{ forms.field({
+      id:      'recipientTypeField',
+      label:   'Recipient',
+      required: true,
+  }, recipientInput) }}
+
+  {{ forms.textField({
+      label:        'BCC’d Recipient',
+      instructions: 'The email address(es) that will receive a copy of this email. Separate multiple email addresses with commas.',
+      id:           'bcc',
+      name:         'bcc',
+      placeholder:  'joe.bloggs@email.co.uk, jane.bloggs@email.co.uk',
+  })}}
+
+  {{ forms.textField({
+      required: true,
+      label: 'HTML Email Template Path',
+      instructions: 'The template to be used for HTML emails.',
+      id: 'templatePath',
+      name: 'templatePath',
+      placeholder: 'path/to/template',
+  })}}
+
+  {{ forms.lightswitchField({
+      label: 'Enabled?',
+      id: 'enabled',
+      name: 'enabled',
+      value: 1,
+  })}}
+
+{% endblock %}

@@ -47,4 +47,13 @@ class EmailsController extends Controller
 
         return $this->renderTemplate('support/_settings/emails/index', $variables);
     }
+
+    public function actionEdit()
+    {
+        $variables = [
+            'title' => 'Create a new email',
+        ];
+
+        return $this->renderTemplate('support/_settings/emails/edit', $variables);
+    }
 }

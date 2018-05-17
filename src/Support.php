@@ -106,6 +106,8 @@ class Support extends Plugin
                 $event->rules['support/settings/ticket-statuses/<id:\d+>'] = 'support/ticket-statuses/edit';
 
                 $event->rules['support/settings/emails'] = 'support/emails/index';
+                $event->rules['support/settings/emails/new'] = 'support/emails/edit';
+                $event->rules['support/settings/emails/<id:\d+>'] = 'support/emails/edit';
 
                 $event->rules['support/settings/attachments'] = 'support/attachments/index';
             }
