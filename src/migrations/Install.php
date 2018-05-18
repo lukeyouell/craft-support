@@ -75,32 +75,23 @@ class Install extends Migration
         $tableSchema = Craft::$app->db->schema->getTableSchema('{{%support_tickets}}');
         if ($tableSchema === null) {
             $tablesCreated = true;
-            $this->createTable(
-                '{{%support_tickets}}',
-                [
-                    'id'             => $this->primaryKey(),
-                    'dateCreated'    => $this->dateTime()->notNull(),
-                    'dateUpdated'    => $this->dateTime()->notNull(),
-                    'uid'            => $this->uid(),
-                    // Custom columns in the table
-                    'ticketStatusId' => $this->integer(),
-                    'authorId'       => $this->integer(),
-                ]
-            );
 
             $this->createTable(
-                '{{%support_ticketstatuses}}',
+                '{{%support_emails}}',
                 [
                     'id'            => $this->primaryKey(),
                     'dateCreated'   => $this->dateTime()->notNull(),
                     'dateUpdated'   => $this->dateTime()->notNull(),
                     'uid'           => $this->uid(),
                     // Custom columns in the table
-                    'name'      => $this->string()->notNull(),
-                    'handle'      => $this->string()->notNull(),
-                    'colour' => $this->enum('colour', ['green', 'orange', 'red', 'blue', 'yellow', 'pink', 'purple', 'turquoise', 'light', 'grey', 'black'])->notNull()->defaultValue('green'),
-                    'sortOrder' => $this->integer(),
-                    'default' => $this->boolean(),
+                    'name'          => $this->string()->notNull(),
+                    'subject'       => $this->string()->notNull(),
+                    'recipientType' => $this->enum('recipientType', ['author', 'custom'])->defaultValue('custom'),
+                    'to'            => $this->string(),
+                    'bcc'           => $this->string(),
+                    'templatePath'  => $this->string()->notNull(),
+                    'sortOrder'   => $this->integer(),
+                    'enabled'       => $this->boolean(),
                 ]
             );
 
@@ -118,6 +109,48 @@ class Install extends Migration
                     'content'       => $this->text()->notNull(),
                 ]
             );
+
+            $this->createTable(
+                '{{%support_tickets}}',
+                [
+                    'id'             => $this->primaryKey(),
+                    'dateCreated'    => $this->dateTime()->notNull(),
+                    'dateUpdated'    => $this->dateTime()->notNull(),
+                    'uid'            => $this->uid(),
+                    // Custom columns in the table
+                    'ticketStatusId' => $this->integer(),
+                    'authorId'       => $this->integer(),
+                ]
+            );
+
+            $this->createTable(
+                '{{%support_ticketstatuses}}',
+                [
+                    'id'          => $this->primaryKey(),
+                    'dateCreated' => $this->dateTime()->notNull(),
+                    'dateUpdated' => $this->dateTime()->notNull(),
+                    'uid'         => $this->uid(),
+                    // Custom columns in the table
+                    'name'        => $this->string()->notNull(),
+                    'handle'      => $this->string()->notNull(),
+                    'colour'      => $this->enum('colour', ['green', 'orange', 'red', 'blue', 'yellow', 'pink', 'purple', 'turquoise', 'light', 'grey', 'black'])->notNull()->defaultValue('green'),
+                    'sortOrder'   => $this->integer(),
+                    'default'     => $this->boolean(),
+                ]
+            );
+
+            $this->createTable(
+                '{{%support_ticketstatus_emails}}',
+                [
+                    'id'             => $this->primaryKey(),
+                    'dateCreated'    => $this->dateTime()->notNull(),
+                    'dateUpdated'    => $this->dateTime()->notNull(),
+                    'uid'            => $this->uid(),
+                    // Custom columns in the table
+                    'ticketStatusId' => $this->integer()->notNull(),
+                    'emailId'        => $this->integer()->notNull(),
+                ]
+            );
         }
 
         return $tablesCreated;
@@ -125,26 +158,33 @@ class Install extends Migration
 
     protected function addForeignKeys()
     {
-        $this->addForeignKey(null, '{{%support_tickets}}', ['id'], '{{%elements}}', ['id'], 'CASCADE');
-        $this->addForeignKey(null, '{{%support_tickets}}', ['authorId'], '{{%users}}', ['id'], null, 'CASCADE');
-        $this->addForeignKey(null, '{{%support_tickets}}', ['ticketStatusId'], '{{%support_ticketstatuses}}', ['id'], null, 'CASCADE');
         $this->addForeignKey(null, '{{%support_messages}}', ['id'], '{{%elements}}', ['id'], 'CASCADE');
         $this->addForeignKey(null, '{{%support_messages}}', ['authorId'], '{{%users}}', ['id'], null, 'CASCADE');
         $this->addForeignKey(null, '{{%support_messages}}', ['ticketId'], '{{%support_tickets}}', ['id'], 'CASCADE');
+
+        $this->addForeignKey(null, '{{%support_tickets}}', ['id'], '{{%elements}}', ['id'], 'CASCADE');
+        $this->addForeignKey(null, '{{%support_tickets}}', ['authorId'], '{{%users}}', ['id'], null, 'CASCADE');
+        $this->addForeignKey(null, '{{%support_tickets}}', ['ticketStatusId'], '{{%support_ticketstatuses}}', ['id'], null, 'CASCADE');
+
+        $this->addForeignKey(null, '{{%support_ticketstatus_emails}}', ['emailId'], '{{%support_emails}}', ['id'], 'CASCADE', 'CASCADE');
+        $this->addForeignKey(null, '{{%support_ticketstatus_emails}}', ['ticketStatusId'], '{{%support_ticketstatuses}}', ['id'], 'CASCADE', 'CASCADE');
     }
 
     protected function dropForeignKeys()
     {
+        MigrationHelper::dropAllForeignKeysOnTable('{{%support_messages}}', $this);
         MigrationHelper::dropAllForeignKeysOnTable('{{%support_tickets}}', $this);
         MigrationHelper::dropAllForeignKeysOnTable('{{%support_ticketstatuses}}', $this);
-        MigrationHelper::dropAllForeignKeysOnTable('{{%support_messages}}', $this);
+        MigrationHelper::dropAllForeignKeysOnTable('{{%support_ticketstatus_emails}}', $this);
     }
 
     protected function dropTables()
     {
+        $this->dropTable('{{%support_emails}}');
+        $this->dropTable('{{%support_messages}}');
         $this->dropTable('{{%support_tickets}}');
         $this->dropTable('{{%support_ticketstatuses}}');
-        $this->dropTable('{{%support_messages}}');
+        $this->dropTable('{{%support_ticketstatus_emails}}');
     }
 
     protected function insertDefaultData()

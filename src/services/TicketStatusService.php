@@ -126,6 +126,7 @@ class TicketStatusService extends Component
             // Save it
             $record->save(false);
 
+            // Now that we have a record ID, save it on the model
             $model->id = $record->id;
 
             $transaction->commit();

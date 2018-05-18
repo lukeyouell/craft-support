@@ -12,8 +12,15 @@ namespace lukeyouell\support\records;
 
 use craft\db\ActiveRecord;
 
-class TicketStatus extends ActiveRecord
+class Email extends ActiveRecord
 {
+    // Constants
+    // =========================================================================
+
+    const TYPE_AUTHOR = 'author';
+
+    const TYPE_CUSTOM = 'custom';
+
     // Public Methods
     // =========================================================================
 
@@ -22,6 +29,6 @@ class TicketStatus extends ActiveRecord
      */
     public static function tableName(): string
     {
-        return '{{%support_ticketstatuses}}';
+        return '{{%support_emails}}';
     }
 }
