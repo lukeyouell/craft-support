@@ -15,6 +15,7 @@ use lukeyouell\support\records\Email as EmailRecord;
 
 use Craft;
 use craft\base\Model;
+use craft\helpers\UrlHelper;
 
 class Email extends Model
 {
@@ -62,6 +63,10 @@ class Email extends Model
 
     public function getLabelHtml(): string
     {
-        return sprintf('<span class="status %s"></span> %s', $this->enabled ? 'green' : 'red', $this->name);
+        if ($this->enabled) {
+            return '<span class="status green"></span> '.$this->name;
+        }
+
+        return '<span class="status"></span> '.$this->name;
     }
 }

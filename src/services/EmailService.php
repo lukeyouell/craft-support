@@ -83,6 +83,17 @@ class EmailService extends Component
         return true;
     }
 
+    public static function reorderEmails(array $ids)
+    {
+        foreach ($ids as $sortOrder => $id) {
+            Craft::$app->getDb()->createCommand()
+                ->update('{{%support_emails}}', ['sortOrder' => $sortOrder + 1], ['id' => $id])
+                ->execute();
+        }
+
+        return true;
+    }
+
     public static function deleteEmailById($id)
     {
         $email = EmailRecord::findOne($id);

@@ -19,6 +19,18 @@
 
   {{ redirectInput('support/settings/emails') }}
 
+  {% if email.id %}
+    {{ forms.hidden({
+        name:  'id',
+        value: email.id,
+    })}}
+
+    {{ forms.hidden({
+        name:  'sortOrder',
+        value: email.sortOrder,
+    })}}
+  {% endif %}
+
   {{ forms.textField({
       first:        true,
       required:     true,
@@ -27,14 +39,18 @@
       id:           'name',
       name:         'name',
       placeholder:  'New Support Ticket',
+      value:        email.name,
+      errors:       email.getErrors('name'),
   })}}
 
   {{ forms.textField({
-      required: true,
-      label:    'Email Subject',
-      id:       'subject',
-      name:     'subject',
+      required:    true,
+      label:       'Email Subject',
+      id:          'subject',
+      name:        'subject',
       placeholder: '📥 New Support Ticket',
+      value:        email.subject,
+      errors:       email.getErrors('subject'),
   })}}
 
   {% set recipientInput %}
@@ -49,22 +65,25 @@
                 { label: 'Send to the author', value: 'author' },
                 { label: 'Send to custom recipient', value: 'custom' }
             ],
+            value: email.recipientType,
         })}}
       </div>
-      <div id="to-option-custom" class="flex-grow hidden">
+      <div id="to-option-custom" class="flex-grow {% if email.recipientType != 'custom' %}hidden{% endif %}">
           {{ forms.text({
               id:          'to',
               name:        'to',
               placeholder: 'joe.bloggs@email.co.uk, jane.bloggs@email.co.uk',
+              value:       email.to,
           }) }}
       </div>
     </div>
   {% endset %}
 
   {{ forms.field({
-      id:      'recipientTypeField',
-      label:   'Recipient',
+      id:       'recipientTypeField',
+      label:    'Recipient',
       required: true,
+      errors:   email.getErrors('to'),
   }, recipientInput) }}
 
   {{ forms.textField({
@@ -73,22 +92,28 @@
       id:           'bcc',
       name:         'bcc',
       placeholder:  'joe.bloggs@email.co.uk, jane.bloggs@email.co.uk',
+      value:        email.bcc,
+      errors:       email.getErrors('bcc'),
   })}}
 
   {{ forms.textField({
-      required: true,
-      label: 'HTML Email Template Path',
+      required:     true,
+      label:        'HTML Email Template Path',
       instructions: 'The template to be used for HTML emails.',
-      id: 'templatePath',
-      name: 'templatePath',
-      placeholder: 'path/to/template',
+      id:           'templatePath',
+      name:         'templatePath',
+      placeholder:  'path/to/template',
+      value:        email.templatePath,
+      errors:       email.getErrors('templatePath'),
   })}}
 
   {{ forms.lightswitchField({
-      label: 'Enabled?',
-      id: 'enabled',
-      name: 'enabled',
-      value: 1,
+      label:  'Enabled?',
+      id:     'enabled',
+      name:   'enabled',
+      value:  1,
+      on:     email.enabled,
+      errors: email.getErrors('enabled'),
   })}}
 
 {% endblock %}

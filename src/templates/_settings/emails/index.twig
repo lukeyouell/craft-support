@@ -18,6 +18,33 @@
     </thead>
 
     <tbody>
+      {% for email in emails %}
+        <tr data-id="{{ email.id }}" data-name="{{ email.name }}">
+          <th data-title="Name">
+            <a href="{{ email.getCpEditUrl() }}">
+              {{ email.labelHtml|raw }}
+            </a>
+          </th>
+          <td data-title="Subject">
+            {{ email.subject }}
+          </td>
+          <td data-title="To">
+            {{ email.to ?: 'Author' }}
+          </td>
+          <td data-title="Bcc">
+            {{ email.bcc }}
+          </td>
+          <td data-title="Template Path">
+            {{ email.templatePath }}
+          </td>
+          <td class="thin">
+            <a class="move icon" title="Reorder" role="button"></a>
+          </td>
+          <td class="thin">
+            <a class="delete icon" title="Delete" role="button"></a>
+          </td>
+        </tr>
+      {% endfor %}
     </tbody>
   </table>
 

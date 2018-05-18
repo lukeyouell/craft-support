@@ -47,8 +47,8 @@ class TicketStatusesController extends Controller
         $ticketStatuses = TicketStatusService::getAllTicketStatuses();
 
         $variables = [
-          'settings'       => $settings,
-          'ticketStatuses' => $ticketStatuses,
+            'settings'       => $settings,
+            'ticketStatuses' => $ticketStatuses,
         ];
 
         return $this->renderTemplate('support/_settings/ticket-statuses/index', $variables);

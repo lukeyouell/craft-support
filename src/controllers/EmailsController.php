@@ -11,11 +11,15 @@
 namespace lukeyouell\support\controllers;
 
 use lukeyouell\support\Support;
+use lukeyouell\support\models\Email as EmailModel;
+use lukeyouell\support\services\EmailService;
 
 use Craft;
+use craft\helpers\Json;
 use craft\web\Controller;
 
 use yii\base\InvalidConfigException;
+use yii\web\Response;
 
 class EmailsController extends Controller
 {
@@ -40,20 +44,102 @@ class EmailsController extends Controller
     public function actionIndex()
     {
         $settings = $this->settings;
+        $emails = EmailService::getAllEmails();
 
         $variables = [
-          'settings' => $settings,
+            'settings' => $settings,
+            'emails'   => $emails,
         ];
 
         return $this->renderTemplate('support/_settings/emails/index', $variables);
     }
 
-    public function actionEdit()
+    public function actionEdit(int $id = null, EmailModel $email = null)
     {
         $variables = [
-            'title' => 'Create a new email',
+            'id'    => $id,
+            'email' => $email,
         ];
 
+        if (!$variables['email']) {
+            if ($variables['id']) {
+                $variables['email'] = EmailService::getEmailById($variables['id']);
+
+                if (!$variables['email']) {
+                    throw new NotFoundHttpException('Email not found');
+                }
+            } else {
+                $variables['email'] = new EmailModel();
+            }
+        }
+
+        if ($variables['email']->id) {
+            $variables['title'] = $variables['email']->name;
+        } else {
+            $variables['title'] = 'Create a new email';
+        }
+
         return $this->renderTemplate('support/_settings/emails/edit', $variables);
+    }
+
+    public function actionSave()
+    {
+        $this->requirePostRequest();
+
+        $request = Craft::$app->getRequest();
+        $id = $request->post('id');
+        $email = EmailService::getEmailById($id);
+
+        if (!$email) {
+            $email = new EmailModel();
+        }
+
+        $email->name = $request->post('name');
+        $email->subject = $request->post('subject');
+        $email->recipientType = $request->post('recipientType');
+        $email->to = $request->post('to');
+        $email->bcc = $request->post('bcc');
+        $email->templatePath = $request->post('templatePath');
+        $email->enabled = $request->post('enabled');
+
+        // Save it
+        $save = EmailService::saveEmail($email);
+
+        if ($save) {
+            Craft::$app->getSession()->setNotice('Email saved.');
+
+            $this->redirectToPostedUrl();
+        } else {
+            Craft::$app->getSession()->setError('Couldn’t save email.');
+        }
+
+        Craft::$app->getUrlManager()->setRouteParams(compact('email'));
+    }
+
+    public function actionReorder(): Response
+    {
+        $this->requirePostRequest();
+        $this->requireAcceptsJson();
+
+        $ids = Json::decode(Craft::$app->getRequest()->getRequiredBodyParam('ids'));
+
+        if ($success = EmailService::reorderEmails($ids)) {
+            return $this->asJson(['success' => $success]);
+        }
+
+        return $this->asJson(['error' => 'Couldn’t reorder emails.']);
+    }
+
+    public function actionDelete()
+    {
+        $this->requireAcceptsJson();
+
+        $emailId = Craft::$app->getRequest()->getRequiredParam('id');
+
+        if ($success = EmailService::deleteEmailById($emailId)) {
+            return $this->asJson(['success' => true]);
+        }
+
+        return $this->asJson(['error' => 'Couldn’t delete email.']);
     }
 }
