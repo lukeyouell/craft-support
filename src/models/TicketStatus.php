@@ -59,6 +59,11 @@ class TicketStatus extends Model
 
     public function getLabelHtml(): string
     {
-        return sprintf('<span class="status %s"></span> %s', $this->colour, $this->name);
+        $html  = '<div class="element small hasstatus">';
+        $html .= '<span class="status '.$this->colour.'"></span>';
+        $html .= '<div class="label"><span class="title">'.$this->name.'</span></div>';
+        $html .= '</div>';
+
+        return $html;
     }
 }
