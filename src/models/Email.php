@@ -64,14 +64,14 @@ class Email extends Model
     public function getLabelHtml(): string
     {
         $html  = '<div class="element small hasstatus">';
-
         if ($this->enabled) {
             $html .= '<span class="status green"></span>';
         } else {
             $html .= '<span class="status"></span>';
         }
-
-        $html .= '<div class="label"><span class="title">'.$this->name.'</span></div>';
+        $html .= '<div class="label"><span class="title">';
+        $html .= '<a href="'.$this->getCpEditUrl().'">'.$this->name.'</a>';
+        $html .='</span></div>';
         $html .= '</div>';
 
         return $html;

@@ -61,7 +61,9 @@ class TicketStatus extends Model
     {
         $html  = '<div class="element small hasstatus">';
         $html .= '<span class="status '.$this->colour.'"></span>';
-        $html .= '<div class="label"><span class="title">'.$this->name.'</span></div>';
+        $html .= '<div class="label"><span class="title">';
+        $html .= '<a href="'.$this->getCpEditUrl().'">'.$this->name.'</a>';
+        $html .='</span></div>';
         $html .= '</div>';
 
         return $html;

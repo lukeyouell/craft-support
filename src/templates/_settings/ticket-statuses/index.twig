@@ -21,9 +21,7 @@
       {% for status in ticketStatuses %}
         <tr data-id="{{ status.id }}" data-name="{{ status.handle }}">
           <th data-title="Name">
-            <a href="{{ status.getCpEditUrl() }}">
-              {{ status.labelHtml|raw }}
-            </a>
+            {{ status.labelHtml|raw }}
           </th>
           <td class="code" data-title="Handle">
             {{ status.handle }}

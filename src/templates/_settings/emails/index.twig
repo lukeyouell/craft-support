@@ -21,9 +21,7 @@
       {% for email in emails %}
         <tr data-id="{{ email.id }}" data-name="{{ email.name }}">
           <th data-title="Name">
-            <a href="{{ email.getCpEditUrl() }}">
-              {{ email.labelHtml|raw }}
-            </a>
+            {{ email.labelHtml|raw }}
           </th>
           <td data-title="Subject">
             {{ email.subject }}
