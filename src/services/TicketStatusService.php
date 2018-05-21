@@ -12,8 +12,11 @@ namespace lukeyouell\support\services;
 
 use lukeyouell\support\Support;
 use lukeyouell\support\elements\Ticket;
+use lukeyouell\support\models\Email as EmailModel;
 use lukeyouell\support\models\TicketStatus as TicketStatusModel;
+use lukeyouell\support\records\Email as EmailRecord;
 use lukeyouell\support\records\TicketStatus as TicketStatusRecord;
+use lukeyouell\support\records\TicketStatusEmail as TicketStatusEmailRecord;
 
 use Craft;
 use craft\base\Component;
@@ -89,7 +92,7 @@ class TicketStatusService extends Component
         return true;
     }
 
-    public static function saveTicketStatus(TicketStatusModel $model, bool $runValidation = true)
+    public static function saveTicketStatus(TicketStatusModel $model, array $emailIds, bool $runValidation = true)
     {
         if ($model->id) {
             $record = TicketStatusRecord::findOne($model->id);
@@ -114,6 +117,14 @@ class TicketStatusService extends Component
         $record->sortOrder = $model->sortOrder ?: 999;
         $record->default = $model->default;
 
+        // Validate email ids
+        $exist = EmailRecord::find()->where(['in', 'id', $emailIds])->exists();
+        $hasEmails = (boolean) count($emailIds);
+
+        if (!$exist && $hasEmails) {
+            $model->addError('emails', 'One or more emails do not exist in the system.');
+        }
+
         $db = Craft::$app->getDb();
         $transaction = $db->beginTransaction();
 
@@ -125,6 +136,25 @@ class TicketStatusService extends Component
 
             // Save it
             $record->save(false);
+
+            // Delete old email links
+            if ($model->id) {
+                $records = TicketStatusEmailRecord::find()->where(['ticketStatusId' => $model->id])->all();
+
+                foreach ($records as $record) {
+                    $record->delete();
+                }
+            }
+
+            // Save new email links
+            $rows = array_map(
+                function ($id) use ($record) {
+                    return [$id, $record->id];
+                }, $emailIds);
+
+            $cols = ['emailId', 'ticketStatusId'];
+            $table = TicketStatusEmailRecord::tableName();
+            Craft::$app->getDb()->createCommand()->batchInsert($table, $cols, $rows)->execute();
 
             // Now that we have a record ID, save it on the model
             $model->id = $record->id;

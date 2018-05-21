@@ -12,6 +12,7 @@ namespace lukeyouell\support\models;
 
 use lukeyouell\support\Support;
 use lukeyouell\support\records\TicketStatus as TicketStatusRecord;
+use lukeyouell\support\services\EmailService;
 
 use Craft;
 use craft\base\Model;
@@ -50,6 +51,16 @@ class TicketStatus extends Model
             [['name', 'handle'], 'required'],
             [['handle'], UniqueValidator::class, 'targetClass' => TicketStatusRecord::class],
         ];
+    }
+
+    public function getEmails(): array
+    {
+        return $this->id ? EmailService::getAllEmailsByTicketStatusId($this->id) : [];
+    }
+
+    public function getEmailIds(): array
+    {
+        return array_column($this->getEmails(), 'id');
     }
 
     public function getCpEditUrl(): string

@@ -38,6 +38,23 @@ class EmailService extends Component
         return $emails;
     }
 
+    public static function getAllEmailsByTicketStatusId(int $id): array
+    {
+        $results = self::_createEmailQuery()
+            ->innerJoin('{{%support_ticketstatus_emails}} statusEmails', '[[emails.id]] = [[statusEmails.emailId]]')
+            ->innerJoin('{{%support_ticketstatuses}} ticketStatuses', '[[statusEmails.ticketStatusId]] = [[ticketStatuses.id]]')
+            ->where(['ticketStatuses.id' => $id])
+            ->all();
+
+        $emails = [];
+
+        foreach ($results as $row) {
+            $emails[] = new EmailModel($row);
+        }
+
+        return $emails;
+    }
+
     public static function getEmailById($id)
     {
         $result = self::_createEmailQuery()
@@ -112,17 +129,17 @@ class EmailService extends Component
     {
         return (new Query())
             ->select([
-                'id',
-                'name',
-                'subject',
-                'recipientType',
-                'to',
-                'bcc',
-                'templatePath',
-                'sortOrder',
-                'enabled',
+                'emails.id',
+                'emails.name',
+                'emails.subject',
+                'emails.recipientType',
+                'emails.to',
+                'emails.bcc',
+                'emails.templatePath',
+                'emails.sortOrder',
+                'emails.enabled',
             ])
             ->orderBy('sortOrder')
-            ->from(['{{%support_emails}}']);
+            ->from(['{{%support_emails}} emails']);
     }
 }

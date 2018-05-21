@@ -82,6 +82,25 @@
       instructions: 'Choose a colour to represent the ticket’s status'|t
   }, colourField) }}
 
+  {% if not emails|length %}
+    {{ forms.field({
+        label: 'Status Emails',
+        instructions: '<span class="error">You currently have no emails configured to select for this status.</span>',
+        disabled: true
+    }) }}
+  {% else %}
+    {{ forms.multiselectField({
+        label: 'Status Emails',
+        instructions: 'Select the emails that will be sent when transitioning to this status.',
+        id: 'emails',
+        name: 'emails',
+        options: emails,
+        values: emailIds is defined ? emailIds : ticketStatus.getEmailIds(),
+        errors: ticketStatus.getErrors('emails'),
+        class: 'selectize fullwidth',
+    }) }}
+  {% endif %}
+
   {{ forms.checkboxField({
       label:   'New tickets get this status by default',
       name:    'default',
@@ -103,6 +122,11 @@
                 var html = "<span class='status "+val+"'></span>"+Craft.uppercaseFirst(val);
                 $colourSelect.html(html);
             }
+        });
+
+        $('#emails').selectize({
+            plugins: ['remove_button'],
+            dropdownParent: 'body'
         });
     });
 {% endjs %}

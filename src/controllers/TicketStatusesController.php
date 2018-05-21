@@ -12,9 +12,11 @@ namespace lukeyouell\support\controllers;
 
 use lukeyouell\support\Support;
 use lukeyouell\support\models\TicketStatus as TicketStatusModel;
+use lukeyouell\support\services\EmailService;
 use lukeyouell\support\services\TicketStatusService;
 
 use Craft;
+use craft\helpers\ArrayHelper;
 use craft\helpers\Json;
 use craft\web\Controller;
 
@@ -79,6 +81,9 @@ class TicketStatusesController extends Controller
             $variables['title'] = 'Create a new ticket status';
         }
 
+        $emails = EmailService::getAllEmails();
+        $variables['emails'] = ArrayHelper::map($emails, 'id', 'name');
+
         return $this->renderTemplate('support/_settings/ticket-statuses/edit', $variables);
     }
 
@@ -98,9 +103,14 @@ class TicketStatusesController extends Controller
         $ticketStatus->handle = $request->post('handle');
         $ticketStatus->colour = $request->post('colour');
         $ticketStatus->default = $request->post('default');
+        $emailIds = $request->post('emails');
+
+        if (!$emailIds) {
+            $emailIds = [];
+        }
 
         // Save it
-        $save = TicketStatusService::saveTicketStatus($ticketStatus);
+        $save = TicketStatusService::saveTicketStatus($ticketStatus, $emailIds);
 
         if ($save) {
             Craft::$app->getSession()->setNotice('Ticket status saved.');
