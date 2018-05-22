@@ -268,6 +268,17 @@ class Install extends Migration
         ];
         $this->insert(EmailRecord::tableName(), $data);
 
+        $data = [
+            'name'          => 'Ticket Closed',
+            'subject'       => LitEmoji::unicodeToShortcode('[📕 Ticket Closed] {title} (#{id})'),
+            'recipientType' => 'custom',
+            'to'            => Craft::$app->systemSettings->getSetting('email', 'fromEmail'),
+            'templatePath'  => 'support/_emails/ticketClosed',
+            'sortOrder'     => 3,
+            'enabled'       => true,
+        ];
+        $this->insert(EmailRecord::tableName(), $data);
+
         // Default ticket status / email links
         $data = [
             'ticketStatusId' => 1,
@@ -278,6 +289,12 @@ class Install extends Migration
         $data = [
             'ticketStatusId' => 2,
             'emailId'        => 2,
+        ];
+        $this->insert(TicketStatusEmailRecord::tableName(), $data);
+
+        $data = [
+            'ticketStatusId' => 4,
+            'emailId'        => 3,
         ];
         $this->insert(TicketStatusEmailRecord::tableName(), $data);
     }
