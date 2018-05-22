@@ -11,12 +11,16 @@
 namespace lukeyouell\support\migrations;
 
 use lukeyouell\support\Support;
-use lukeyouell\support\records\TicketStatus;
+use lukeyouell\support\records\Email as EmailRecord;
+use lukeyouell\support\records\TicketStatus as TicketStatusRecord;
+use lukeyouell\support\records\TicketStatusEmail as TicketStatusEmailRecord;
 
 use Craft;
 use craft\config\DbConfig;
 use craft\db\Migration;
 use craft\helpers\MigrationHelper;
+
+use LitEmoji\LitEmoji;
 
 /**
  * Support Install Migration
@@ -197,49 +201,69 @@ class Install extends Migration
 
     private function _defaultTicketStatuses()
     {
+        // Default ticket statuses
         $data = [
-            'name' => 'New',
-            'handle' => 'new',
-            'colour' => 'blue',
+            'name'      => 'New',
+            'handle'    => 'new',
+            'colour'    => 'blue',
             'sortOrder' => 1,
-            'default' => true
+            'default'   => true
         ];
-        $this->insert(TicketStatus::tableName(), $data);
+        $this->insert(TicketStatusRecord::tableName(), $data);
 
         $data = [
-            'name' => 'In Progress',
-            'handle' => 'inProgress',
-            'colour' => 'orange',
+            'name'      => 'In Progress',
+            'handle'    => 'inProgress',
+            'colour'    => 'orange',
             'sortOrder' => 2,
-            'default' => false
+            'default'   => false
         ];
-        $this->insert(TicketStatus::tableName(), $data);
+        $this->insert(TicketStatusRecord::tableName(), $data);
 
         $data = [
-            'name' => 'Solved',
-            'handle' => 'solved',
-            'colour' => 'green',
+            'name'      => 'Solved',
+            'handle'    => 'solved',
+            'colour'    => 'green',
             'sortOrder' => 3,
-            'default' => false
+            'default'   => false
         ];
-        $this->insert(TicketStatus::tableName(), $data);
+        $this->insert(TicketStatusRecord::tableName(), $data);
 
         $data = [
-            'name' => 'Closed',
-            'handle' => 'closed',
-            'colour' => 'red',
+            'name'      => 'Closed',
+            'handle'    => 'closed',
+            'colour'    => 'red',
             'sortOrder' => 4,
-            'default' => false
+            'default'   => false
         ];
-        $this->insert(TicketStatus::tableName(), $data);
+        $this->insert(TicketStatusRecord::tableName(), $data);
 
         $data = [
-            'name' => 'Archived',
-            'handle' => 'archived',
-            'colour' => 'grey',
+            'name'      => 'Archived',
+            'handle'    => 'archived',
+            'colour'    => 'grey',
             'sortOrder' => 5,
-            'default' => false
+            'default'   => false
         ];
-        $this->insert(TicketStatus::tableName(), $data);
+        $this->insert(TicketStatusRecord::tableName(), $data);
+
+        // Default emails
+        $data = [
+            'name'          => 'Ticket Created',
+            'subject'       => LitEmoji::unicodeToShortcode('📥 A new ticket has been created'),
+            'recipientType' => 'custom',
+            'to'            => Craft::$app->systemSettings->getSetting('email', 'fromEmail'),
+            'templatePath'  => 'support/_emails/ticketCreated',
+            'sortOrder'     => 1,
+            'enabled'       => true,
+        ];
+        $this->insert(EmailRecord::tableName(), $data);
+
+        // Default ticket status / email links
+        $data = [
+            'ticketStatusId' => 1,
+            'emailId'        => 1,
+        ];
+        $this->insert(TicketStatusEmailRecord::tableName(), $data);
     }
 }

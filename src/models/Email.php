@@ -17,6 +17,8 @@ use Craft;
 use craft\base\Model;
 use craft\helpers\UrlHelper;
 
+use LitEmoji\LitEmoji;
+
 class Email extends Model
 {
     // Public Properties
@@ -43,6 +45,13 @@ class Email extends Model
     // Public Methods
     // =========================================================================
 
+    public function init()
+    {
+        parent::init();
+
+        $this->subject = $this->setSubject();
+    }
+
     public function __toString()
     {
         return (string) $this->name;
@@ -51,9 +60,18 @@ class Email extends Model
     public function rules()
     {
         return [
-            [['name', 'subject'], 'required'],
+            [['name', 'subject', 'templatePath'], 'required'],
             [['recipientType'], 'in', 'range' => [EmailRecord::TYPE_AUTHOR, EmailRecord::TYPE_CUSTOM]],
         ];
+    }
+
+    public function setSubject()
+    {
+        if (!empty($this->subject)) {
+            return LitEmoji::shortcodeToUnicode($this->subject);
+        }
+
+        return null;
     }
 
     public function getCpEditUrl(): string

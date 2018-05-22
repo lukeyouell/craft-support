@@ -18,6 +18,8 @@ use Craft;
 use craft\base\Component;
 use craft\db\Query;
 
+use LitEmoji\LitEmoji;
+
 use yii\base\Exception;
 
 class EmailService extends Component
@@ -82,14 +84,14 @@ class EmailService extends Component
             return false;
         }
 
-        $record->name = $model->name;
-        $record->subject = $model->subject;
+        $record->name          = $model->name;
+        $record->subject       = LitEmoji::unicodeToShortcode($model->subject);
         $record->recipientType = $model->recipientType;
-        $record->to = $model->to;
-        $record->bcc = $model->bcc;
-        $record->templatePath = $model->templatePath;
-        $record->sortOrder = $model->sortOrder ?: 999;
-        $record->enabled = $model->enabled;
+        $record->to            = $model->to;
+        $record->bcc           = $model->bcc;
+        $record->templatePath  = $model->templatePath;
+        $record->sortOrder     = $model->sortOrder ?: 999;
+        $record->enabled       = $model->enabled;
 
         // Save it
         $record->save(false);
