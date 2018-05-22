@@ -41,8 +41,6 @@ class Settings extends Model
 
     public $fromName;
 
-    public $toEmail;
-
     public $attachments = false;
 
     public $volumeId;
@@ -66,7 +64,7 @@ class Settings extends Model
     {
         return [
             [['attachments'], 'boolean'],
-            [['pluginNameOverride', 'fromEmail', 'fromName', 'toEmail', 'volumeSubpath'], 'string'],
+            [['pluginNameOverride', 'fromEmail', 'fromName', 'volumeSubpath'], 'string'],
             [['volumeId'], 'number', 'integerOnly' => true]
         ];
     }

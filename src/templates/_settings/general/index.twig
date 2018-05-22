@@ -53,15 +53,4 @@
       warning:      'fromName' in overrides ? macros.configWarning('fromName'),
   })}}
 
-  {{ forms.textField({
-      label:        'To Email',
-      instructions: 'The email address(es) that ticket notifications will be send to. Separate multiple email addresses with commas.',
-      id:           'toEmail',
-      name:         'settings[toEmail]',
-      placeholder:  'joe.bloggs@email.co.uk, jane.bloggs@email.co.uk',
-      value:        settings.toEmail,
-      disabled:     'toEmail' in overrides,
-      warning:      'toEmail' in overrides ? macros.configWarning('toEmail'),
-  })}}
-
 {% endblock %}
