@@ -31,35 +31,36 @@
   {{ redirectInput('support/tickets') }}
 
   {{ forms.textField({
-      first: true,
-      required: true,
-      label: 'Title',
-      id: 'title',
-      name: 'title',
+      first:       true,
+      required:    true,
+      label:       'Title',
+      id:          'title',
+      name:        'title',
       placeholder: 'Title',
+      autofocus:   true,
   })}}
 
   {{ forms.textareaField({
-      required: true,
-      label: 'Message',
-      id: 'message',
-      name: 'message',
+      required:    true,
+      label:       'Message',
+      id:          'message',
+      name:        'message',
       placeholder: 'Message',
-      rows: 8
+      rows:        8,
   })}}
 
   {% if settings.attachments and volume %}
     {% include "_components/fieldtypes/Assets/input" with {
-      id: 'attachments',
-      fieldId: 'attachments',
-      name: 'attachments',
-      selectionLabel: 'Attachment',
-      elementType: elementType,
-      sourceElementId: volume.id,
-      viewMode: 'list',
-      limit: 4,
-      defaultFieldLayoutId: volume.fieldLayoutId,
-      hideSidebar: true,
+        id:                   'attachments',
+        fieldId:              'attachments',
+        name:                 'attachments',
+        selectionLabel:       'Attachment',
+        elementType:          elementType,
+        sourceElementId:      volume.id,
+        viewMode:             'list',
+        limit:                4,
+        defaultFieldLayoutId: volume.fieldLayoutId,
+        hideSidebar:          true,
     } %}
   {% endif %}
 {% endblock %}
