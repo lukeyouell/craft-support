@@ -49,7 +49,9 @@ class MailService extends Component
             $emails = $ticket->ticketStatus->emails;
 
             foreach ($emails as $email) {
-                $this->sendEmail($email, $ticket);
+                if ($email->enabled) {
+                    $this->sendEmail($email, $ticket);
+                }
             }
         }
     }
