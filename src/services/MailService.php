@@ -62,7 +62,7 @@ class MailService extends Component
 
         $message = (new Message())
             ->setFrom([$this->getFromEmail() => $this->getFromName()])
-            ->setSubject($this->getSubject($email))
+            ->setSubject($this->getSubject($email, $ticket))
             ->setHtmlBody($this->getTemplateHtml($email, $ticket));
 
         $toEmails = $this->getToEmails($email, $ticket);
@@ -96,9 +96,11 @@ class MailService extends Component
         return is_string($toEmail) ? StringHelper::split($toEmail) : $toEmail;
     }
 
-    public function getSubject($email)
+    public function getSubject($email, $ticket)
     {
-        return $email->subject ?: '';
+        // Replace keys with ticket values
+        $subject = Craft::$app->getView()->renderObjectTemplate($email->subject, $ticket);
+        return $subject;
     }
 
     public function getTemplateHtml($email, $ticket)
