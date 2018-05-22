@@ -109,6 +109,14 @@
       errors:  ticketStatus.getErrors('default')
   })}}
 
+  {{ forms.checkboxField({
+      label:   'Tickets get this status when a new message is posted',
+      name:    'newMessage',
+      value:   1,
+      checked: ticketStatus.newMessage,
+      errors:  ticketStatus.getErrors('newMessage')
+  })}}
+
 {% endblock %}
 
 {% js %}

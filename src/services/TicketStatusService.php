@@ -72,6 +72,15 @@ class TicketStatusService extends Component
         return new TicketStatusModel($result);
     }
 
+    public function getNewMessageTicketStatus()
+    {
+        $result = $this->_createTicketStatusQuery()
+            ->where(['newMessage' => 1])
+            ->one();
+
+        return new TicketStatusModel($result);
+    }
+
     public function checkIfTicketStatusInUse($id)
     {
         $result = Ticket::find()
@@ -116,6 +125,7 @@ class TicketStatusService extends Component
         $record->colour = $model->colour;
         $record->sortOrder = $model->sortOrder ?: 999;
         $record->default = $model->default;
+        $record->newMessage = $model->newMessage;
 
         // Validate email ids
         $exist = EmailRecord::find()->where(['in', 'id', $emailIds])->exists();
@@ -134,15 +144,20 @@ class TicketStatusService extends Component
                 TicketStatusRecord::updateAll(['default' => 0]);
             }
 
+            // Only one status can be triggered by new messages
+            if ($record->newMessage) {
+                TicketStatusRecord::updateAll(['newMessage' => 0]);
+            }
+
             // Save it
             $record->save(false);
 
             // Delete old email links
             if ($model->id) {
-                $records = TicketStatusEmailRecord::find()->where(['ticketStatusId' => $model->id])->all();
+                $rows = TicketStatusEmailRecord::find()->where(['ticketStatusId' => $model->id])->all();
 
-                foreach ($records as $record) {
-                    $record->delete();
+                foreach ($rows as $row) {
+                    $row->delete();
                 }
             }
 
@@ -209,6 +224,7 @@ class TicketStatusService extends Component
                 'colour',
                 'sortOrder',
                 'default',
+                'newMessage',
             ])
             ->orderBy('sortOrder')
             ->from(['{{%support_ticketstatuses}}']);

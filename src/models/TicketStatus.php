@@ -36,6 +36,8 @@ class TicketStatus extends Model
 
     public $default;
 
+    public $newMessage;
+
     // Public Methods
     // =========================================================================
 

@@ -140,6 +140,7 @@ class Install extends Migration
                     'colour'      => $this->enum('colour', ['green', 'orange', 'red', 'blue', 'yellow', 'pink', 'purple', 'turquoise', 'light', 'grey', 'black'])->notNull()->defaultValue('green'),
                     'sortOrder'   => $this->integer(),
                     'default'     => $this->boolean(),
+                    'newMessage'  => $this->boolean(),
                 ]
             );
 
@@ -212,11 +213,11 @@ class Install extends Migration
         $this->insert(TicketStatusRecord::tableName(), $data);
 
         $data = [
-            'name'      => 'In Progress',
-            'handle'    => 'inProgress',
-            'colour'    => 'orange',
-            'sortOrder' => 2,
-            'default'   => false
+            'name'       => 'In Progress',
+            'handle'     => 'inProgress',
+            'colour'     => 'orange',
+            'sortOrder'  => 2,
+            'newMessage' => true,
         ];
         $this->insert(TicketStatusRecord::tableName(), $data);
 
@@ -225,7 +226,6 @@ class Install extends Migration
             'handle'    => 'solved',
             'colour'    => 'green',
             'sortOrder' => 3,
-            'default'   => false
         ];
         $this->insert(TicketStatusRecord::tableName(), $data);
 
@@ -234,7 +234,6 @@ class Install extends Migration
             'handle'    => 'closed',
             'colour'    => 'red',
             'sortOrder' => 4,
-            'default'   => false
         ];
         $this->insert(TicketStatusRecord::tableName(), $data);
 
@@ -243,7 +242,6 @@ class Install extends Migration
             'handle'    => 'archived',
             'colour'    => 'grey',
             'sortOrder' => 5,
-            'default'   => false
         ];
         $this->insert(TicketStatusRecord::tableName(), $data);
 
@@ -259,10 +257,45 @@ class Install extends Migration
         ];
         $this->insert(EmailRecord::tableName(), $data);
 
+        $data = [
+            'name'          => 'Ticket Status Change',
+            'subject'       => LitEmoji::unicodeToShortcode('ℹ️ Ticket status has changed'),
+            'recipientType' => 'custom',
+            'to'            => Craft::$app->systemSettings->getSetting('email', 'fromEmail'),
+            'templatePath'  => 'support/_emails/ticketStatusChange',
+            'sortOrder'     => 2,
+            'enabled'       => true,
+        ];
+        $this->insert(EmailRecord::tableName(), $data);
+
         // Default ticket status / email links
         $data = [
             'ticketStatusId' => 1,
             'emailId'        => 1,
+        ];
+        $this->insert(TicketStatusEmailRecord::tableName(), $data);
+
+        $data = [
+            'ticketStatusId' => 2,
+            'emailId'        => 2,
+        ];
+        $this->insert(TicketStatusEmailRecord::tableName(), $data);
+
+        $data = [
+            'ticketStatusId' => 3,
+            'emailId'        => 2,
+        ];
+        $this->insert(TicketStatusEmailRecord::tableName(), $data);
+
+        $data = [
+            'ticketStatusId' => 4,
+            'emailId'        => 2,
+        ];
+        $this->insert(TicketStatusEmailRecord::tableName(), $data);
+
+        $data = [
+            'ticketStatusId' => 5,
+            'emailId'        => 2,
         ];
         $this->insert(TicketStatusEmailRecord::tableName(), $data);
     }

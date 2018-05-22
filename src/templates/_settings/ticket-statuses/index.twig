@@ -11,8 +11,9 @@
       <tr>
         <th>Name</th>
         <th>Handle</th>
-        <th>Has Emails?</th>
-        <th>Default Status?</th>
+        <th>Emails</th>
+        <th>Default</th>
+        <th>New Message</th>
         <td class="thin"></td>
         <td class="thin"></td>
       </tr>
@@ -32,6 +33,11 @@
           </td>
           <td>
             {% if status.default %}
+              <span data-icon="check" title="Yes"></span>
+            {% endif %}
+          </td>
+          <td>
+            {% if status.newMessage %}
               <span data-icon="check" title="Yes"></span>
             {% endif %}
           </td>
