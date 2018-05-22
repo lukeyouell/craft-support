@@ -11,7 +11,6 @@
 namespace lukeyouell\support\controllers;
 
 use lukeyouell\support\Support;
-use lukeyouell\support\services\MailService;
 use lukeyouell\support\services\MessageService;
 use lukeyouell\support\services\TicketService;
 use lukeyouell\support\services\TicketStatusService;
@@ -113,15 +112,15 @@ class TicketsController extends Controller
             // Ticket created, now create message but don't change ticket status id
             $message = MessageService::createMessage($ticket->id, $request, false);
 
+            // Handle email notification after message is created
+            if ($ticket->ticketStatus->emails) {
+                Support::getInstance()->mailService->handleEmail($ticket);
+            }
+
             if ($request->getAcceptsJson()) {
                 return $this->asJson([
                     'success' => true,
                 ]);
-            }
-
-            // Handle email notification
-            if ($settings->toEmail) {
-                MailService::ticketCreation($ticket->id);
             }
 
             Craft::$app->getSession()->setNotice('Ticket created.');

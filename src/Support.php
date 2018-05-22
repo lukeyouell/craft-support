@@ -164,6 +164,10 @@ class Support extends Plugin
             ),
             __METHOD__
         );
+
+        $this->setComponents([
+            'mailService' => \lukeyouell\support\services\MailService::class,
+        ]);
     }
 
     public function getCpNavItem()
