@@ -44,11 +44,12 @@
   })}}
 
   {{ forms.textField({
-      required:    true,
-      label:       'Email Subject',
-      id:          'subject',
-      name:        'subject',
-      placeholder: '📥 New Support Ticket',
+      required:     true,
+      label:        'Email Subject',
+      instructions: 'Note that the subject can contain ticket variables like {id}.',
+      id:           'subject',
+      name:         ' subject',
+      placeholder:  '📥 New Support Ticket',
       value:        email.subject,
       errors:       email.getErrors('subject'),
   })}}
