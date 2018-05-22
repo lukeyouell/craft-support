@@ -247,22 +247,22 @@ class Install extends Migration
 
         // Default emails
         $data = [
-            'name'          => 'Ticket Created',
-            'subject'       => LitEmoji::unicodeToShortcode('📥 A new ticket has been created (#{id})'),
+            'name'          => 'New Ticket',
+            'subject'       => LitEmoji::unicodeToShortcode('[📥 New Support Ticket] {title} (#{id})'),
             'recipientType' => 'custom',
             'to'            => Craft::$app->systemSettings->getSetting('email', 'fromEmail'),
-            'templatePath'  => 'support/_emails/ticketCreated',
+            'templatePath'  => 'support/_emails/newTicket',
             'sortOrder'     => 1,
             'enabled'       => true,
         ];
         $this->insert(EmailRecord::tableName(), $data);
 
         $data = [
-            'name'          => 'Ticket Status Change',
-            'subject'       => LitEmoji::unicodeToShortcode('ℹ️ Ticket status has changed (#{id})'),
+            'name'          => 'New Message',
+            'subject'       => LitEmoji::unicodeToShortcode('[📥 New Message] {title} (#{id})'),
             'recipientType' => 'custom',
             'to'            => Craft::$app->systemSettings->getSetting('email', 'fromEmail'),
-            'templatePath'  => 'support/_emails/ticketStatusChange',
+            'templatePath'  => 'support/_emails/newMessage',
             'sortOrder'     => 2,
             'enabled'       => true,
         ];
@@ -277,24 +277,6 @@ class Install extends Migration
 
         $data = [
             'ticketStatusId' => 2,
-            'emailId'        => 2,
-        ];
-        $this->insert(TicketStatusEmailRecord::tableName(), $data);
-
-        $data = [
-            'ticketStatusId' => 3,
-            'emailId'        => 2,
-        ];
-        $this->insert(TicketStatusEmailRecord::tableName(), $data);
-
-        $data = [
-            'ticketStatusId' => 4,
-            'emailId'        => 2,
-        ];
-        $this->insert(TicketStatusEmailRecord::tableName(), $data);
-
-        $data = [
-            'ticketStatusId' => 5,
             'emailId'        => 2,
         ];
         $this->insert(TicketStatusEmailRecord::tableName(), $data);

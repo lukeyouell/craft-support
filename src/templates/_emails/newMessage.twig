@@ -1,7 +1,9 @@
+{% set message = ticket.messages|first %}
+
 <table style="font-family:system-ui,BlinkMacSystemFont,-apple-system,sans-serif;font-size:14px;text-align:left;">
   <tbody>
     <tr>
-      <td colspan="2" style="padding:0 0 10px 0;">There has been a ticket status change.</td>
+      <td colspan="2" style="padding:0 0 10px 0;">{{ ticket.author.name }} posted a new message.</td>
     </tr>
     <tr>
       <td>
@@ -23,6 +25,14 @@
               <td style="padding:10px;"><strong>Author</strong></td>
               <td style="padding:10px;"><a href="{{ ticket.author.cpEditUrl }}">{{ ticket.author.name }}</a></td>
             </tr>
+            {% if message %}
+            <tr>
+              <td style="padding:10px;" colspan="2"><strong>Message</strong></td>
+            </tr>
+            <tr>
+              <td style="padding:0 10px 10px 10px;" colspan="2">{{ message.content|nl2br }}</td>
+            </tr>
+            {% endif %}
           </tbody>
         </table>
       </td>
