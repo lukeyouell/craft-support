@@ -132,6 +132,7 @@ class TicketsController extends Controller
 
         $request = Craft::$app->getRequest();
         $ticketId = Craft::$app->security->validateData($request->post('ticketId'));
+        $ticketStatusId = $request->post('ticketStatusId');
 
         if ($ticketId) {
             $ticket = Support::getInstance()->ticketService->getTicketById($ticketId);
@@ -141,7 +142,7 @@ class TicketsController extends Controller
             }
 
             if ($request->post('ticketStatusId')) {
-                $ticket->ticketStatusId = $request->post('ticketStatusId');
+                Support::getInstance()->ticketService->changeTicketStatus($ticket, $ticketStatusId);
             }
 
             Craft::$app->getElements()->saveElement($ticket, false);

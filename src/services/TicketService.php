@@ -17,6 +17,8 @@ use lukeyouell\support\elements\db\TicketQuery;
 use Craft;
 use craft\base\Component;
 
+use yii\web\NotFoundHttpException;
+
 class TicketService extends Component
 {
     // Public Methods
@@ -56,6 +58,30 @@ class TicketService extends Component
         }
 
         return null;
+    }
+
+    public function changeTicketStatus($ticket = null, $ticketStatusId = null)
+    {
+        if ($ticket->id && $ticketStatusId) {
+            $status = Support::getInstance()->ticketStatusService->getTicketStatusById($ticketStatusId);
+
+            if (!$status->id) {
+                throw new NotFoundHttpException('Ticket status not found');
+            }
+
+            $ticket->ticketStatusId = $status->id;
+
+            Craft::$app->getElements()->saveElement($ticket, false);
+
+            // Handle ticket status emails after saving ticket
+            if ($status->emails) {
+                Support::getInstance()->mailService->handleEmail($ticket);
+            }
+
+            return true;
+        }
+
+        return false;
     }
 
     public function saveTicketById($ticketId = null)

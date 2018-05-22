@@ -59,7 +59,7 @@ class MessageService extends Component
 
             if ($res) {
                 // Save ticket to update the 'dateUpdated' value
-                Support::getInstance()->ticketSercice->saveTicketById($ticketId);
+                Support::getInstance()->ticketService->saveTicketById($ticketId);
 
                 return $message;
             }
