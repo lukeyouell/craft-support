@@ -75,7 +75,7 @@ class TicketService extends Component
 
             // Handle ticket status emails after saving ticket
             if ($status->emails) {
-                Support::getInstance()->mailService->handleEmail($ticket);
+                Support::getInstance()->mailService->handleEmail($ticket->id);
             }
 
             return true;

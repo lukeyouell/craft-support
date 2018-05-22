@@ -43,14 +43,18 @@ class MailService extends Component
         $this->system = Craft::$app->systemSettings;
     }
 
-    public function handleEmail($ticket = null)
+    public function handleEmail($ticketId = null)
     {
-        if ($ticket) {
-            $emails = $ticket->ticketStatus->emails;
+        if ($ticketId) {
+            $ticket = Support::getInstance()->ticketService->getTicketById($ticketId);
 
-            foreach ($emails as $email) {
-                if ($email->enabled) {
-                    $this->sendEmail($email, $ticket);
+            if ($ticket->id) {
+                $emails = $ticket->ticketStatus->emails;
+
+                foreach ($emails as $email) {
+                    if ($email->enabled) {
+                        $this->sendEmail($email, $ticket);
+                    }
                 }
             }
         }

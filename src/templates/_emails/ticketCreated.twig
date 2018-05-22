@@ -9,3 +9,7 @@ A new support ticket has been created.<br><br>
 {% for message in ticket.messages %}
 {{ message.content|nl2br }}<br><br>
 {% endfor %}
+
+-----<br><br>
+
+<a href="{{ ticket.cpEditUrl }}">View ticket</a>

@@ -111,7 +111,7 @@ class TicketsController extends Controller
 
             // Handle email notification after message is created
             if ($ticket->ticketStatus->emails) {
-                Support::getInstance()->mailService->handleEmail($ticket);
+                Support::getInstance()->mailService->handleEmail($ticket->id);
             }
 
             if ($request->getAcceptsJson()) {
