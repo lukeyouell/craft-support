@@ -166,7 +166,11 @@ class Support extends Plugin
         );
 
         $this->setComponents([
+            'emailService' => \lukeyouell\support\services\EmailService::class,
             'mailService' => \lukeyouell\support\services\MailService::class,
+            'messageService' => \lukeyouell\support\services\MessageService::class,
+            'ticketService' => \lukeyouell\support\services\TicketService::class,
+            'ticketStatusService' => \lukeyouell\support\services\TicketStatusService::class,
         ]);
     }
 

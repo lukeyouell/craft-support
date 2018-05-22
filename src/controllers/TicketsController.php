@@ -11,9 +11,6 @@
 namespace lukeyouell\support\controllers;
 
 use lukeyouell\support\Support;
-use lukeyouell\support\services\MessageService;
-use lukeyouell\support\services\TicketService;
-use lukeyouell\support\services\TicketStatusService;
 
 use Craft;
 use craft\elements\Asset;
@@ -64,7 +61,7 @@ class TicketsController extends Controller
 
     public function actionView(string $ticketId = null)
     {
-        $ticket = TicketService::getTicketById($ticketId);
+        $ticket = Support::getInstance()->ticketService->getTicketById($ticketId);
 
         if (!$ticket) {
             throw new NotFoundHttpException('Ticket not found');
@@ -74,7 +71,7 @@ class TicketsController extends Controller
 
         $variables = [
             'ticket'   => $ticket,
-            'ticketStatuses' => TicketStatusService::getAllTicketStatuses(),
+            'ticketStatuses' => Support::getInstance()->ticketStatusService->getAllTicketStatuses(),
             'volume' => $volume,
             'assetElementType' => Asset::class,
             'settings' => $this->settings,
@@ -91,7 +88,7 @@ class TicketsController extends Controller
         $request = Craft::$app->getRequest();
 
         // First create ticket
-        $ticket = TicketService::createTicket($request);
+        $ticket = Support::getInstance()->ticketService->createTicket($request);
 
         if (!$ticket) {
             if ($request->getAcceptsJson()) {
@@ -110,7 +107,7 @@ class TicketsController extends Controller
         } else {
 
             // Ticket created, now create message but don't change ticket status id
-            $message = MessageService::createMessage($ticket->id, $request, false);
+            $message = Support::getInstance()->messageService->createMessage($ticket->id, $request, false);
 
             // Handle email notification after message is created
             if ($ticket->ticketStatus->emails) {
@@ -137,7 +134,7 @@ class TicketsController extends Controller
         $ticketId = Craft::$app->security->validateData($request->post('ticketId'));
 
         if ($ticketId) {
-            $ticket = TicketService::getTicketById($ticketId);
+            $ticket = Support::getInstance()->ticketService->getTicketById($ticketId);
 
             if (!$ticket) {
                 throw new NotFoundHttpException('Ticket not found');

@@ -12,8 +12,6 @@ namespace lukeyouell\support\controllers;
 
 use lukeyouell\support\Support;
 use lukeyouell\support\models\TicketStatus as TicketStatusModel;
-use lukeyouell\support\services\EmailService;
-use lukeyouell\support\services\TicketStatusService;
 
 use Craft;
 use craft\helpers\ArrayHelper;
@@ -46,7 +44,7 @@ class TicketStatusesController extends Controller
     public function actionIndex()
     {
         $settings = $this->settings;
-        $ticketStatuses = TicketStatusService::getAllTicketStatuses();
+        $ticketStatuses = Support::getInstance()->ticketStatusService->getAllTicketStatuses();
 
         $variables = [
             'settings'       => $settings,
@@ -65,7 +63,7 @@ class TicketStatusesController extends Controller
 
         if (!$variables['ticketStatus']) {
             if ($variables['id']) {
-                $variables['ticketStatus'] = TicketStatusService::getTicketStatusById($variables['id']);
+                $variables['ticketStatus'] = Support::getInstance()->ticketStatusService->getTicketStatusById($variables['id']);
 
                 if (!$variables['ticketStatus']) {
                     throw new NotFoundHttpException('Ticket status not found');
@@ -81,7 +79,7 @@ class TicketStatusesController extends Controller
             $variables['title'] = 'Create a new ticket status';
         }
 
-        $emails = EmailService::getAllEmails();
+        $emails = Support::getInstance()->emailService->getAllEmails();
         $variables['emails'] = ArrayHelper::map($emails, 'id', 'name');
 
         return $this->renderTemplate('support/_settings/ticket-statuses/edit', $variables);
@@ -93,7 +91,7 @@ class TicketStatusesController extends Controller
 
         $request = Craft::$app->getRequest();
         $id = $request->post('id');
-        $ticketStatus = TicketStatusService::getTicketStatusById($id);
+        $ticketStatus = Support::getInstance()->ticketStatusService->getTicketStatusById($id);
 
         if (!$ticketStatus) {
             $ticketStatus = new TicketStatusModel();
@@ -110,7 +108,7 @@ class TicketStatusesController extends Controller
         }
 
         // Save it
-        $save = TicketStatusService::saveTicketStatus($ticketStatus, $emailIds);
+        $save = Support::getInstance()->ticketStatusService->saveTicketStatus($ticketStatus, $emailIds);
 
         if ($save) {
             Craft::$app->getSession()->setNotice('Ticket status saved.');
@@ -130,7 +128,7 @@ class TicketStatusesController extends Controller
 
         $ids = Json::decode(Craft::$app->getRequest()->getRequiredBodyParam('ids'));
 
-        if ($success = TicketStatusService::reorderTicketStatuses($ids)) {
+        if ($success = Support::getInstance()->ticketStatusService->reorderTicketStatuses($ids)) {
             return $this->asJson(['success' => $success]);
         }
 
@@ -143,7 +141,7 @@ class TicketStatusesController extends Controller
 
         $ticketStatusId = Craft::$app->getRequest()->getRequiredParam('id');
 
-        if ($success = TicketStatusService::deleteTicketStatusById($ticketStatusId)) {
+        if ($success = Support::getInstance()->ticketStatusService->deleteTicketStatusById($ticketStatusId)) {
             return $this->asJson(['success' => true]);
         }
 

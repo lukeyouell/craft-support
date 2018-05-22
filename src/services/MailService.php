@@ -12,7 +12,6 @@ namespace lukeyouell\support\services;
 
 use lukeyouell\support\Support;
 use lukeyouell\support\records\Email as EmailRecord;
-use lukeyouell\support\services\TicketService;
 
 use Craft;
 use craft\base\Component;

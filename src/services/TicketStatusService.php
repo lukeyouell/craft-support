@@ -30,49 +30,49 @@ class TicketStatusService extends Component
     // Properties
     // =========================================================================
 
-    private static $_fetchedAllStatuses = false;
+    private $_fetchedAllStatuses = false;
 
-    private static $_ticketStatusesById = [];
+    private $_ticketStatusesById = [];
 
-    private static $_ticketStatusesByHandle = [];
+    private $_ticketStatusesByHandle = [];
 
-    // Public Static Methods
+    // Public Methods
     // =========================================================================
 
-    public static function getAllTicketStatuses()
+    public function getAllTicketStatuses()
     {
-        if (!self::$_fetchedAllStatuses) {
-            $results = self::_createTicketStatusQuery()->all();
+        if (!$this->_fetchedAllStatuses) {
+            $results = $this->_createTicketStatusQuery()->all();
 
             foreach ($results as $row) {
-                self::_memoizeTicketStatus(new TicketStatusModel($row));
+                $this->_memoizeTicketStatus(new TicketStatusModel($row));
             }
 
-            self::$_fetchedAllStatuses = true;
+            $this->_fetchedAllStatuses = true;
         }
 
-        return self::$_ticketStatusesById;
+        return $this->_ticketStatusesById;
     }
 
-    public static function getTicketStatusById($id)
+    public function getTicketStatusById($id)
     {
-        $result = self::_createTicketStatusQuery()
+        $result = $this->_createTicketStatusQuery()
             ->where(['id' => $id])
             ->one();
 
         return new TicketStatusModel($result);
     }
 
-    public static function getDefaultTicketStatus()
+    public function getDefaultTicketStatus()
     {
-        $result = self::_createTicketStatusQuery()
+        $result = $this->_createTicketStatusQuery()
             ->where(['default' => 1])
             ->one();
 
         return new TicketStatusModel($result);
     }
 
-    public static function checkIfTicketStatusInUse($id)
+    public function checkIfTicketStatusInUse($id)
     {
         $result = Ticket::find()
             ->ticketStatusId($id)
@@ -81,7 +81,7 @@ class TicketStatusService extends Component
         return $result;
     }
 
-    public static function reorderTicketStatuses(array $ids)
+    public function reorderTicketStatuses(array $ids)
     {
         foreach ($ids as $sortOrder => $id) {
             Craft::$app->getDb()->createCommand()
@@ -92,7 +92,7 @@ class TicketStatusService extends Component
         return true;
     }
 
-    public static function saveTicketStatus(TicketStatusModel $model, array $emailIds, bool $runValidation = true)
+    public function saveTicketStatus(TicketStatusModel $model, array $emailIds, bool $runValidation = true)
     {
         if ($model->id) {
             $record = TicketStatusRecord::findOne($model->id);
@@ -169,11 +169,11 @@ class TicketStatusService extends Component
         return true;
     }
 
-    public static function deleteTicketStatusbyId($id)
+    public function deleteTicketStatusbyId($id)
     {
-        $statuses = self::getAllTicketStatuses();
+        $statuses = $this->getAllTicketStatuses();
 
-        $existingTicket = self::checkIfTicketStatusInUse($id);
+        $existingTicket = $this->checkIfTicketStatusInUse($id);
 
         // Don't delete if it's still in use
         if ($existingTicket) {
@@ -190,16 +190,16 @@ class TicketStatusService extends Component
         return false;
     }
 
-    // Private Static Methods
+    // Private Methods
     // =========================================================================
 
-    private static function _memoizeTicketStatus(TicketStatusModel $ticketStatus)
+    private function _memoizeTicketStatus(TicketStatusModel $ticketStatus)
     {
-        self::$_ticketStatusesById[$ticketStatus->id] = $ticketStatus;
-        self::$_ticketStatusesByHandle[$ticketStatus->handle] = $ticketStatus;
+        $this->_ticketStatusesById[$ticketStatus->id] = $ticketStatus;
+        $this->_ticketStatusesByHandle[$ticketStatus->handle] = $ticketStatus;
     }
 
-    private static function _createTicketStatusQuery()
+    private function _createTicketStatusQuery()
     {
         return (new Query())
             ->select([

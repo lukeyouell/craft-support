@@ -11,7 +11,6 @@
 namespace lukeyouell\support\controllers;
 
 use lukeyouell\support\Support;
-use lukeyouell\support\services\TicketStatusService;
 
 use Craft;
 use craft\web\Controller;

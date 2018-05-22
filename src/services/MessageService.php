@@ -13,17 +13,16 @@ namespace lukeyouell\support\services;
 use lukeyouell\support\Support;
 use lukeyouell\support\elements\Message;
 use lukeyouell\support\elements\db\MessageQuery;
-use lukeyouell\support\services\TicketService;
 
 use Craft;
 use craft\base\Component;
 
 class MessageService extends Component
 {
-    // Static Methods
+    // Public Methods
     // =========================================================================
 
-    public static function getMessageById($messageId = null)
+    public function getMessageById($messageId = null)
     {
         if ($messageId) {
           $query = new MessageQuery(Message::class);
@@ -35,7 +34,7 @@ class MessageService extends Component
         return null;
     }
 
-    public static function getMessagesByTicketId($ticketId = null)
+    public function getMessagesByTicketId($ticketId = null)
     {
         if ($ticketId) {
           $query = new MessageQuery(Message::class);
@@ -47,7 +46,7 @@ class MessageService extends Component
         return null;
     }
 
-    public static function createMessage($ticketId = null, $submission = null)
+    public function createMessage($ticketId = null, $submission = null)
     {
         if ($ticketId and $submission) {
             $message = new Message();
@@ -60,7 +59,7 @@ class MessageService extends Component
 
             if ($res) {
                 // Save ticket to update the 'dateUpdated' value
-                TicketService::saveTicketById($ticketId);
+                Support::getInstance()->ticketSercice->saveTicketById($ticketId);
 
                 return $message;
             }
@@ -69,14 +68,14 @@ class MessageService extends Component
         return null;
     }
 
-    public static function deleteMessage($messageId = null)
+    public function deleteMessage($messageId = null)
     {
         if ($messageId) {
-            $message = self::getMessageById($messageId);
+            $message = $this->getMessageById($messageId);
 
             if ($message) {
                 // Check user is message author
-                $owner = self::isMessageAuthor($message->authorId, Craft::$app->getUser()->getIdentity()->id);
+                $owner = $this->isMessageAuthor($message->authorId, Craft::$app->getUser()->getIdentity()->id);
 
                 if ($owner) {
                     Craft::$app->getElements()->deleteElement($message);
@@ -89,7 +88,7 @@ class MessageService extends Component
         return null;
     }
 
-    public static function isMessageAuthor($authorId = null, $userId = null)
+    public function isMessageAuthor($authorId = null, $userId = null)
     {
         if ($authorId and $userId) {
             if ($authorId === $userId) {

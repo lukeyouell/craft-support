@@ -12,7 +12,6 @@ namespace lukeyouell\support\controllers;
 
 use lukeyouell\support\Support;
 use lukeyouell\support\models\Email as EmailModel;
-use lukeyouell\support\services\EmailService;
 
 use Craft;
 use craft\helpers\Json;
@@ -44,7 +43,7 @@ class EmailsController extends Controller
     public function actionIndex()
     {
         $settings = $this->settings;
-        $emails = EmailService::getAllEmails();
+        $emails = Support::getInstance()->emailService->getAllEmails();
 
         $variables = [
             'settings' => $settings,
@@ -63,7 +62,7 @@ class EmailsController extends Controller
 
         if (!$variables['email']) {
             if ($variables['id']) {
-                $variables['email'] = EmailService::getEmailById($variables['id']);
+                $variables['email'] = Support::getInstance()->emailService->getEmailById($variables['id']);
 
                 if (!$variables['email']) {
                     throw new NotFoundHttpException('Email not found');
@@ -88,7 +87,7 @@ class EmailsController extends Controller
 
         $request = Craft::$app->getRequest();
         $id = $request->post('id');
-        $email = EmailService::getEmailById($id);
+        $email = Support::getInstance()->emailService->getEmailById($id);
 
         if (!$email) {
             $email = new EmailModel();
@@ -103,7 +102,7 @@ class EmailsController extends Controller
         $email->enabled = $request->post('enabled');
 
         // Save it
-        $save = EmailService::saveEmail($email);
+        $save = Support::getInstance()->emailService->saveEmail($email);
 
         if ($save) {
             Craft::$app->getSession()->setNotice('Email saved.');
@@ -123,7 +122,7 @@ class EmailsController extends Controller
 
         $ids = Json::decode(Craft::$app->getRequest()->getRequiredBodyParam('ids'));
 
-        if ($success = EmailService::reorderEmails($ids)) {
+        if ($success = Support::getInstance()->emailService->reorderEmails($ids)) {
             return $this->asJson(['success' => $success]);
         }
 
@@ -136,7 +135,7 @@ class EmailsController extends Controller
 
         $emailId = Craft::$app->getRequest()->getRequiredParam('id');
 
-        if ($success = EmailService::deleteEmailById($emailId)) {
+        if ($success = Support::getInstance()->emailService->deleteEmailById($emailId)) {
             return $this->asJson(['success' => true]);
         }
 

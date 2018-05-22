@@ -12,8 +12,6 @@ namespace lukeyouell\support\elements;
 
 use lukeyouell\support\Support;
 use lukeyouell\support\elements\db\TicketQuery;
-use lukeyouell\support\services\MessageService;
-use lukeyouell\support\services\TicketStatusService;
 
 use Craft;
 use craft\base\Element;
@@ -110,7 +108,7 @@ class Ticket extends Element
 
         $sources[] = ['heading' => 'Ticket Status'];
 
-        $statuses = TicketStatusService::getAllTicketStatuses();
+        $statuses = Support::getInstance()->ticketStatusService->getAllTicketStatuses();
 
         foreach ($statuses as $status) {
             $sources[] = [
@@ -240,7 +238,7 @@ class Ticket extends Element
             return null;
         }
 
-        $this->_ticketStatus = TicketStatusService::getTicketStatusById($this->ticketStatusId);
+        $this->_ticketStatus = Support::getInstance()->ticketStatusService->getTicketStatusById($this->ticketStatusId);
 
         return $this->_ticketStatus;
     }
@@ -268,7 +266,7 @@ class Ticket extends Element
             return $this->_messages;
         }
 
-        $this->_messages = MessageService::getMessagesByTicketId($this->id);
+        $this->_messages = Support::getInstance()->messageService->getMessagesByTicketId($this->id);
 
         return $this->_messages;
     }

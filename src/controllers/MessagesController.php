@@ -11,8 +11,6 @@
 namespace lukeyouell\support\controllers;
 
 use lukeyouell\support\Support;
-use lukeyouell\support\services\MessageService;
-use lukeyouell\support\services\TicketService;
 
 use Craft;
 use craft\web\Controller;
@@ -51,13 +49,13 @@ class MessagesController extends Controller
             Craft::$app->getSession()->setError('Message field is required.');
         } else {
             // First check ticket exists
-            $ticket = TicketService::getTicketById($ticketId);
+            $ticket = Support::getInstance()->ticketService->getTicketById($ticketId);
 
             if (!$ticket) {
                 Craft::$app->getSession()->setError('Couldn’t find the ticket.');
             } else {
                 // Ticket exists, now create message
-                $message = MessageService::createMessage($ticket->id, $request);
+                $message = Support::getInstance()->messageService->createMessage($ticket->id, $request);
 
                 if (!$message) {
                     Craft::$app->getSession()->setError('Couldn’t send the message.');
@@ -78,7 +76,7 @@ class MessagesController extends Controller
         $messageId = $request->post('messageId');
 
         if ($messageId) {
-            $res = MessageService::deleteMessage($messageId);
+            $res = Support::getInstance()->messageService->deleteMessage($messageId);
 
             if (!$res) {
                 Craft::$app->getSession()->setError('Couldn’t delete the message.');

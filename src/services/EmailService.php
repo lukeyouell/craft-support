@@ -24,12 +24,12 @@ use yii\base\Exception;
 
 class EmailService extends Component
 {
-    // Public Static Methods
+    // Public Methods
     // =========================================================================
 
-    public static function getAllEmails()
+    public function getAllEmails()
     {
-        $rows = self::_createEmailQuery()->all();
+        $rows = $this->_createEmailQuery()->all();
 
         $emails = [];
 
@@ -40,9 +40,9 @@ class EmailService extends Component
         return $emails;
     }
 
-    public static function getAllEmailsByTicketStatusId(int $id): array
+    public function getAllEmailsByTicketStatusId(int $id): array
     {
-        $results = self::_createEmailQuery()
+        $results = $this->_createEmailQuery()
             ->innerJoin('{{%support_ticketstatus_emails}} statusEmails', '[[emails.id]] = [[statusEmails.emailId]]')
             ->innerJoin('{{%support_ticketstatuses}} ticketStatuses', '[[statusEmails.ticketStatusId]] = [[ticketStatuses.id]]')
             ->where(['ticketStatuses.id' => $id])
@@ -57,16 +57,16 @@ class EmailService extends Component
         return $emails;
     }
 
-    public static function getEmailById($id)
+    public function getEmailById($id)
     {
-        $result = self::_createEmailQuery()
+        $result = $this->_createEmailQuery()
             ->where(['id' => $id])
             ->one();
 
         return new EmailModel($result);
     }
 
-    public static function saveEmail(EmailModel $model, bool $runValidation = true)
+    public function saveEmail(EmailModel $model, bool $runValidation = true)
     {
         if ($model->id) {
             $record = EmailRecord::findOne($model->id);
@@ -102,7 +102,7 @@ class EmailService extends Component
         return true;
     }
 
-    public static function reorderEmails(array $ids)
+    public function reorderEmails(array $ids)
     {
         foreach ($ids as $sortOrder => $id) {
             Craft::$app->getDb()->createCommand()
@@ -113,7 +113,7 @@ class EmailService extends Component
         return true;
     }
 
-    public static function deleteEmailById($id)
+    public function deleteEmailById($id)
     {
         $email = EmailRecord::findOne($id);
 
@@ -124,10 +124,10 @@ class EmailService extends Component
         return false;
     }
 
-    // Private Static Methods
+    // Private Methods
     // =========================================================================
 
-    private static function _createEmailQuery()
+    private function _createEmailQuery()
     {
         return (new Query())
             ->select([
