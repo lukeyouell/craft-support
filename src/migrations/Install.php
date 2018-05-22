@@ -248,7 +248,7 @@ class Install extends Migration
         // Default emails
         $data = [
             'name'          => 'Ticket Created',
-            'subject'       => LitEmoji::unicodeToShortcode('📥 A new ticket has been created'),
+            'subject'       => LitEmoji::unicodeToShortcode('📥 A new ticket has been created (#{id})'),
             'recipientType' => 'custom',
             'to'            => Craft::$app->systemSettings->getSetting('email', 'fromEmail'),
             'templatePath'  => 'support/_emails/ticketCreated',
@@ -259,7 +259,7 @@ class Install extends Migration
 
         $data = [
             'name'          => 'Ticket Status Change',
-            'subject'       => LitEmoji::unicodeToShortcode('ℹ️ Ticket status has changed'),
+            'subject'       => LitEmoji::unicodeToShortcode('ℹ️ Ticket status has changed (#{id})'),
             'recipientType' => 'custom',
             'to'            => Craft::$app->systemSettings->getSetting('email', 'fromEmail'),
             'templatePath'  => 'support/_emails/ticketStatusChange',
