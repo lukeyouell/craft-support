@@ -75,6 +75,15 @@ class Message extends Element
     // Public Methods
     // -------------------------------------------------------------------------
 
+    public function __toString()
+    {
+        if ($this->content) {
+            return (string)$this->content;
+        }
+
+        return (string)$this->id;
+    }
+
     public function extraFields()
     {
         $names = parent::extraFields();
