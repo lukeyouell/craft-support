@@ -14,6 +14,11 @@ Simple support system for tracking, prioritising and solving customer support ti
 
 - [General Config](docs/generalconfig.md)
 
+### Core Concepts
+
+- [Tickets](docs/tickets.md)
+- [Messages](docs/messages.md)
+
 ## Support Roadmap
 
 Some things to do, and ideas for potential features:
