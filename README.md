@@ -18,6 +18,7 @@ Simple support system for tracking, prioritising and solving customer support ti
 
 - [Tickets](docs/tickets.md)
 - [Messages](docs/messages.md)
+- [Custom Ticket Statuses](docs/customticketstatuses.md)
 
 ## Support Roadmap
 
