@@ -31,6 +31,7 @@ Simple support system for tracking, prioritising and solving customer support ti
 - [Available Variables](docs/availablevariables.md)
 - [Create a Ticket](docs/createaticket.md)
 - [Post a Message](docs/postamessage.md)
+- [Default Templates](docs/defaulttemplates.md)
 
 ## Support Roadmap
 
