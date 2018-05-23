@@ -4,6 +4,8 @@
 
 Simple support system for tracking, prioritising and solving customer support tickets.
 
+![Screenshot](resources/screenshots/tickets.png)
+
 ## Documentation
 
 ### Installation
