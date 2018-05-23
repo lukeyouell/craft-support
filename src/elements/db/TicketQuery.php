@@ -24,6 +24,8 @@ class TicketQuery extends ElementQuery
 
     public $author;
 
+    public $ticketStatus;
+
     public function ticketStatusId($value)
     {
         $this->ticketStatusId = $value;

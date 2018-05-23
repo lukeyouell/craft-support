@@ -20,6 +20,11 @@ Simple support system for tracking, prioritising and solving customer support ti
 - [Messages](docs/messages.md)
 - [Custom Ticket Statuses](docs/customticketstatuses.md)
 
+### Getting Elements
+
+- [craft.support.tickets](docs/craftsupporttickets.md)
+- [craft.support.messages](docs/craftsupportmessages.md)
+
 ## Support Roadmap
 
 Some things to do, and ideas for potential features:
