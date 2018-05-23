@@ -1,5 +1,4 @@
 {% macro message(message) %}
-  {% set isUsersMessage = message.authorId == currentUser.id ? true : false %}
   {% set attachments = message.attachmentIds ? craft.assets.id(message.attachmentIds).all() : null %}
 
   <div class="message-container">

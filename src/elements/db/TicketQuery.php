@@ -10,6 +10,9 @@
 
 namespace lukeyouell\support\elements\db;
 
+use lukeyouell\support\models\TicketStatus as TicketStatusModel;
+
+use craft\elements\User;
 use craft\elements\db\ElementQuery;
 use craft\helpers\Db;
 
@@ -18,6 +21,8 @@ class TicketQuery extends ElementQuery
     public $ticketStatusId;
 
     public $authorId;
+
+    public $author;
 
     public function ticketStatusId($value)
     {
@@ -29,6 +34,32 @@ class TicketQuery extends ElementQuery
     public function authorId($value)
     {
         $this->authorId = $value;
+
+        return $this;
+    }
+
+    public function author($value)
+    {
+        if ($value instanceof User) {
+            $this->authorId = $value->id;
+        } elseif ($value !== null) {
+            $this->authorId = $value;
+        } else {
+            $this->authorId = null;
+        }
+
+        return $this;
+    }
+
+    public function ticketStatus($value)
+    {
+        if ($value instanceof TicketStatusModel) {
+            $this->ticketStatusId = $value->id;
+        } elseif ($value !== null) {
+            $this->ticketStatusId = $value;
+        } else {
+            $this->ticketStatusId = null;
+        }
 
         return $this;
     }

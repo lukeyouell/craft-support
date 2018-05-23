@@ -38,4 +38,19 @@ class SupportVariable
 
         return $query;
     }
+
+    public function ticketStatuses()
+    {
+        return Support::getInstance()->ticketStatusService->getAllTicketStatuses();
+    }
+
+    public function defaultTicketStatus()
+    {
+        return Support::getInstance()->ticketStatusService->getDefaultTicketStatus();
+    }
+
+    public function getTicketStatusById($id)
+    {
+        return Support::getInstance()->ticketStatusService->getTicketStatusById($id);
+    }
 }

@@ -19,6 +19,9 @@
 
   <h2 class="first">Attachments</h2>
 
+  <p>Coming soon.</p>
+
+  {#
   {{ forms.lightswitchField({
       first:    true,
       label:    'Allow Attachments'|t,
@@ -46,5 +49,6 @@
           label: "Attachment Location"
       }, '<p class="error">' ~ "No volumes exist yet." ~ '</p>') }}
   {% endif %}
+  #}
 
 {% endblock %}
