@@ -7,7 +7,7 @@ Whenever you're dealing with a message in your template, you're actually working
 Outputting a MessageModel object without attaching a property or method will return the message's content.
 
 ```twig
-<h1>{{ message }}</h1>
+<p>{{ message }}</p>
 ```
 
 ## Properties
