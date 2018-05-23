@@ -11,6 +11,7 @@
 namespace lukeyouell\support\elements;
 
 use lukeyouell\support\Support;
+use lukeyouell\support\elements\db\TicketQuery;
 
 use Craft;
 use craft\base\Element;
@@ -18,66 +19,23 @@ use craft\elements\actions\Delete;
 use craft\elements\db\ElementQueryInterface;
 use craft\helpers\UrlHelper;
 
-use lukeyouell\support\elements\db\TicketQuery;
+use yii\base\Exception;
+use yii\base\InvalidConfigException;
 
-/**
- * Ticket Element
- *
- * Element is the base class for classes representing elements in terms of objects.
- *
- * @property FieldLayout|null      $fieldLayout           The field layout used by this element
- * @property array                 $htmlAttributes        Any attributes that should be included in the element’s DOM representation in the Control Panel
- * @property int[]                 $supportedSiteIds      The site IDs this element is available in
- * @property string|null           $uriFormat             The URI format used to generate this element’s URL
- * @property string|null           $url                   The element’s full URL
- * @property \Twig_Markup|null     $link                  An anchor pre-filled with this element’s URL and title
- * @property string|null           $ref                   The reference string to this element
- * @property string                $indexHtml             The element index HTML
- * @property bool                  $isEditable            Whether the current user can edit the element
- * @property string|null           $cpEditUrl             The element’s CP edit URL
- * @property string|null           $thumbUrl              The URL to the element’s thumbnail, if there is one
- * @property string|null           $iconUrl               The URL to the element’s icon image, if there is one
- * @property string|null           $status                The element’s status
- * @property Element               $next                  The next element relative to this one, from a given set of criteria
- * @property Element               $prev                  The previous element relative to this one, from a given set of criteria
- * @property Element               $parent                The element’s parent
- * @property mixed                 $route                 The route that should be used when the element’s URI is requested
- * @property int|null              $structureId           The ID of the structure that the element is associated with, if any
- * @property ElementQueryInterface $ancestors             The element’s ancestors
- * @property ElementQueryInterface $descendants           The element’s descendants
- * @property ElementQueryInterface $children              The element’s children
- * @property ElementQueryInterface $siblings              All of the element’s siblings
- * @property Element               $prevSibling           The element’s previous sibling
- * @property Element               $nextSibling           The element’s next sibling
- * @property bool                  $hasDescendants        Whether the element has descendants
- * @property int                   $totalDescendants      The total number of descendants that the element has
- * @property string                $title                 The element’s title
- * @property string|null           $serializedFieldValues Array of the element’s serialized custom field values, indexed by their handles
- * @property array                 $fieldParamNamespace   The namespace used by custom field params on the request
- * @property string                $contentTable          The name of the table this element’s content is stored in
- * @property string                $fieldColumnPrefix     The field column prefix this element’s content uses
- * @property string                $fieldContext          The field context this element’s content uses
- *
- * http://pixelandtonic.com/blog/craft-element-types
- *
- * @author    Luke Youell
- * @package   Support
- * @since     1.0.0
- */
 class Ticket extends Element
 {
-    // Constants
-    // =========================================================================
-
-    const STATUS_NEW = 'new';
-    const STATUS_IN_PROGRESS = 'inProgress';
-    const STATUS_SOLVED = 'solved';
-    const STATUS_CLOSED = 'closed';
-
     // Public Properties
     // =========================================================================
 
-    public $subject;
+    public $ticketStatusId;
+
+    public $authorId;
+
+    public $_ticketStatus;
+
+    public $_author;
+
+    public $_messages;
 
     // Static Methods
     // =========================================================================
@@ -99,7 +57,7 @@ class Ticket extends Element
 
     public static function hasTitles(): bool
     {
-        return false;
+        return true;
     }
 
     public static function isLocalized(): bool
@@ -109,17 +67,12 @@ class Ticket extends Element
 
     public static function hasStatuses(): bool
     {
-        return true;
+        return false;
     }
 
     public static function statuses(): array
     {
-        return [
-            self::STATUS_NEW => Craft::t('support', 'New'),
-            self::STATUS_IN_PROGRESS => Craft::t('support', 'In Progress'),
-            self::STATUS_SOLVED => Craft::t('support', 'Solved'),
-            self::STATUS_CLOSED => Craft::t('support', 'Closed')
-        ];
+        return [];
     }
 
     public static function find(): ElementQueryInterface
@@ -129,55 +82,141 @@ class Ticket extends Element
 
     protected static function defineSources(string $context = null): array
     {
+        $userSessionService = Craft::$app->getUser();
+        $userId = $userSessionService->getIdentity()->id;
+        $canManageTickets = $userSessionService->checkPermission('support-manageTickets');
+
         $sources = [
-            [
-                'key'      => '*',
-                'label'    => 'All tickets',
-                'criteria' => [],
+            '*' => [
+                'key'         => '*',
+                'label'       => 'All Tickets',
+                'criteria'    => [
+                    'authorId' => $canManageTickets ? '' : $userId,
+                ],
+                'defaultSort' => ['dateCreated', 'desc'],
             ],
         ];
+
+        $sources[] = [
+            'key'         => 'myTickets',
+            'label'       => 'My Tickets',
+            'criteria'    => [
+                'authorId' => $userId,
+            ],
+            'defaultSort' => ['dateCreated', 'desc'],
+        ];
+
+        $sources[] = ['heading' => 'Ticket Status'];
+
+        $statuses = Support::getInstance()->ticketStatusService->getAllTicketStatuses();
+
+        foreach ($statuses as $status) {
+            $sources[] = [
+                'key'         => 'status:'.$status['handle'],
+                'status'      => $status['colour'],
+                'label'       => $status['name'],
+                'criteria'    => [
+                    'authorId' => $canManageTickets ? '' : $userId,
+                    'ticketStatusId' => $status['id'],
+                ],
+                'defaultSort' => ['dateCreated', 'desc'],
+            ];
+        }
 
         return $sources;
     }
 
     protected static function defineSearchableAttributes(): array
     {
-        return ['subject'];
+        return ['title', 'ticketStatusId'];
     }
 
     protected static function defineActions(string $source = null): array
     {
+        $userSessionService = Craft::$app->getUser();
+        $canDeleteTickets = $userSessionService->checkPermission('support-deleteTickets');
+
         $actions = [];
-        $actions[] = Craft::$app->getElements()->createAction([
-            'type'                => Delete::class,
-            'confirmationMessage' => Craft::t('support', 'Are you sure you want to delete the selected tickets?'),
-            'successMessage'      => Craft::t('support', 'Tickets deleted.'),
-        ]);
+
+        if ($canDeleteTickets) {
+            $actions[] = Craft::$app->getElements()->createAction([
+                'type'                => Delete::class,
+                'confirmationMessage' => Craft::t('support', 'Are you sure you want to delete the selected tickets?'),
+                'successMessage'      => Craft::t('support', 'Tickets deleted.'),
+            ]);
+        }
 
         return $actions;
     }
 
     protected static function defineTableAttributes(): array
     {
-        $attributes = [
-            'id'     => Craft::t('support', 'ID'),
-            'subject'     => Craft::t('support', 'Subject'),
-            'dateCreated' => Craft::t('support', 'Date Created'),
-            'dateUpdated' => Craft::t('support', 'Date Updated'),
-        ];
+        $userSessionService = Craft::$app->getUser();
+        $canManageTickets = $userSessionService->checkPermission('support-manageTickets');
+
+        if ($canManageTickets) {
+            $attributes = [
+                'title'          => Craft::t('support', 'Title'),
+                'ticketStatus'   => Craft::t('support', 'Status'),
+                'author'         => Craft::t('support', 'Author'),
+                'dateCreated'    => Craft::t('support', 'Date Created'),
+                'dateUpdated'    => Craft::t('support', 'Date Updated'),
+            ];
+        } else {
+            $attributes = [
+                'title'        => Craft::t('support', 'Title'),
+                'ticketStatus' => Craft::t('support', 'Status'),
+                'dateCreated'  => Craft::t('support', 'Date Created'),
+                'dateUpdated'  => Craft::t('support', 'Date Updated'),
+            ];
+        }
 
         return $attributes;
     }
 
     protected static function defineDefaultTableAttributes(string $source): array
     {
-        $attributes = ['id', 'subject', 'dateCreated', 'dateUpdated'];
+        $userSessionService = Craft::$app->getUser();
+        $canManageTickets = $userSessionService->checkPermission('support-manageTickets');
+
+        if ($canManageTickets) {
+            $attributes = ['title', 'ticketStatus', 'dateCreated', 'dateUpdated', 'author'];
+        } else {
+            $attributes = ['title', 'ticketStatus', 'dateCreated', 'dateUpdated'];
+        }
 
         return $attributes;
     }
 
+    public function getTableAttributeHtml(string $attribute): string
+    {
+        switch ($attribute) {
+            case 'ticketStatus':
+                $status = $this->getTicketStatus();
+
+                return '<span class="status '.$status['colour'].'"></span>'.$status['name'];
+            case 'author':
+                $author = $this->getAuthor();
+
+                return $author ? Craft::$app->getView()->renderTemplate('_elements/element', ['element' => $author]) : '';
+            default:
+                {
+                    return parent::tableAttributeHtml($attribute);
+                }
+        }
+    }
+
     // Public Methods
     // =========================================================================
+
+    public function extraFields()
+    {
+        $names = parent::extraFields();
+        $names[] = 'ticketStatus';
+        $names[] = 'author';
+        $names[] = 'messages';
+        return $names;
+    }
 
     public function getIsEditable(): bool
     {
@@ -189,16 +228,60 @@ class Ticket extends Element
         return UrlHelper::cpUrl('support/tickets/'.$this->id);
     }
 
+    public function getTicketStatus()
+    {
+        if ($this->_ticketStatus !== null) {
+            return $this->_ticketStatus;
+        }
+
+        if ($this->ticketStatusId === null) {
+            return null;
+        }
+
+        $this->_ticketStatus = Support::getInstance()->ticketStatusService->getTicketStatusById($this->ticketStatusId);
+
+        return $this->_ticketStatus;
+    }
+
+    public function getAuthor()
+    {
+        if ($this->_author !== null) {
+            return $this->_author;
+        }
+
+        if ($this->authorId === null) {
+            return null;
+        }
+
+        if (($this->_author = Craft::$app->getUsers()->getUserById($this->authorId)) === null) {
+            throw new InvalidConfigException('Invalid author ID: '.$this->authorId);
+        }
+
+        return $this->_author;
+    }
+
+    public function getMessages()
+    {
+        if ($this->_messages !== null) {
+            return $this->_messages;
+        }
+
+        $this->_messages = Support::getInstance()->messageService->getMessagesByTicketId($this->id);
+
+        return $this->_messages;
+    }
+
     // Indexes, etc.
     // -------------------------------------------------------------------------
 
-    protected function tableAttributeHtml(string $attribute): string
+    protected static function defineSortOptions(): array
     {
-        switch ($attribute) {
-            case 'subject':
-                $author = $this->subject;
-        }
-        return parent::tableAttributeHtml($attribute);
+        $sortOptions = [
+            'support_tickets.dateCreated' => 'Date Created',
+            'support_tickets.dateUpdated' => 'Date Updated',
+        ];
+
+        return $sortOptions;
     }
 
     // Events
@@ -209,14 +292,15 @@ class Ticket extends Element
         if ($isNew) {
             Craft::$app->db->createCommand()
                 ->insert('{{%support_tickets}}', [
-                    'id'        => $this->id,
-                    'subject'   => $this->subject,
+                    'id'             => $this->id,
+                    'ticketStatusId' => $this->ticketStatusId,
+                    'authorId'       => $this->authorId,
                 ])
                 ->execute();
         } else {
             Craft::$app->db->createCommand()
                 ->update('{{%support_tickets}}', [
-                    'subject'   => $this->subject,
+                    'ticketStatusId'  => $this->ticketStatusId,
                 ], ['id' => $this->id])
                 ->execute();
         }

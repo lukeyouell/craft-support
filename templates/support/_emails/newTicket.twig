@@ -1,0 +1,42 @@
+<table style="font-family:system-ui,BlinkMacSystemFont,-apple-system,sans-serif;font-size:14px;text-align:left;">
+  <tbody>
+    <tr>
+      <td colspan="2" style="padding:0 0 10px 0;">A new support ticket has been created.</td>
+    </tr>
+    <tr>
+      <td>
+        <table style="background:#fbfcfd;padding:10px;border:1px solid #e3e5e8;border-radius:4px;border-spacing:0;">
+          <tbody>
+            <tr>
+              <td style="padding:10px;border-bottom:1px solid #e3e5e8;"><strong>ID</strong></td>
+              <td style="padding:10px;border-bottom:1px solid #e3e5e8;">{{ ticket.id }}</td>
+            </tr>
+            <tr>
+              <td style="padding:10px;border-bottom:1px solid #e3e5e8;"><strong>Status</strong></td>
+              <td style="padding:10px;border-bottom:1px solid #e3e5e8;">{{ ticket.ticketStatus.name }}</td>
+            </tr>
+            <tr>
+              <td style="padding:10px;border-bottom:1px solid #e3e5e8;"><strong>Title</strong></td>
+              <td style="padding:10px;border-bottom:1px solid #e3e5e8;">{{ ticket.title }}</td>
+            </tr>
+            <tr>
+              <td style="padding:10px;border-bottom:1px solid #e3e5e8;"><strong>Author</strong></td>
+              <td style="padding:10px;border-bottom:1px solid #e3e5e8;"><a href="{{ ticket.author.cpEditUrl }}">{{ ticket.author.name }}</a></td>
+            </tr>
+            <tr>
+              <td style="padding:10px;" colspan="2"><strong>Message</strong></td>
+            </tr>
+            {% for message in ticket.messages %}
+            <tr>
+              <td style="padding:0 10px 10px 10px;" colspan="2">{{ message.content|nl2br }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding:10px 0 0 0;"><a href="{{ ticket.cpEditUrl }}">View ticket</a></td>
+    </tr>
+  </tbody>
+</table>

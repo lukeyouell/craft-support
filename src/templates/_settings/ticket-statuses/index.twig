@@ -1,0 +1,73 @@
+{% extends "support/_layouts/settings" %}
+
+{% block content %}
+
+  <h2 class="first">Ticket Statuses</h2>
+
+  <p>Define the ticket statuses that can be set.</p>
+
+  <table id="ticket-statuses" class="data fullwidth collapsible">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Handle</th>
+        <th>Emails</th>
+        <th>Default</th>
+        <th>New Message</th>
+        <td class="thin"></td>
+        <td class="thin"></td>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for status in ticketStatuses %}
+        <tr data-id="{{ status.id }}" data-name="{{ status.handle }}">
+          <th data-title="Name">
+            {{ status.labelHtml|raw }}
+          </th>
+          <td class="code" data-title="Handle">
+            {{ status.handle }}
+          </td>
+          <td data-title="Emails">
+            {{ status.emails|length ?: '' }}
+          </td>
+          <td>
+            {% if status.default %}
+              <span data-icon="check" title="Yes"></span>
+            {% endif %}
+          </td>
+          <td>
+            {% if status.newMessage %}
+              <span data-icon="check" title="Yes"></span>
+            {% endif %}
+          </td>
+          <td class="thin">
+            <a class="move icon" title="Reorder" role="button"></a>
+          </td>
+          <td class="thin">
+            <a class="delete icon" title="Delete" role="button"></a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="buttons">
+    <a class="btn submit icon add" href="{{ cpUrl('support/settings/ticket-statuses/new') }}">New ticket status</a>
+  </buttons>
+
+{% endblock %}
+
+{% js %}
+    new Craft.AdminTable({
+    tableSelector: '#ticket-statuses',
+    deleteAction: 'support/ticket-statuses/delete',
+    deleteSuccessMessage: 'Ticket status deleted.',
+    deleteFailMessage: 'Couldn’t delete ticket status.',
+    minObjects: 1,
+    sortable: true,
+    reorderAction: 'support/ticket-statuses/reorder',
+    reorderSuccessMessage: 'Ticket statuses reordered.' ,
+    reorderFailMessage:    'Couldn’t reorder ticket statuses.',
+    });
+{% endjs %}

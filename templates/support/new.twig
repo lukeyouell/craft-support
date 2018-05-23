@@ -1,0 +1,47 @@
+{% extends "support/_layouts/main" %}
+
+{% block menuLinks %}
+
+  {% for status in allStatuses %}
+    {% set ticketCount = craft.support.tickets.author(currentUser).ticketStatus(status).count() %}
+
+    <li class="mb-2">
+      <a class="block text-grey-darkest hover:text-blue no-underline" href="tickets?status={{ status.id }}">
+        <div class="flex items-center">
+          <div class="flex-grow">
+            {{ status.name }}
+          </div>
+
+          <div class="flex-shrink">
+            <div class="px-2 py-1">
+              {{ ticketCount }}
+            </div>
+          </div>
+        </div>
+      </a>
+    </li>
+  {% endfor %}
+
+{% endblock %}
+
+{% block content %}
+
+  <div class="bg-blue-lightest text-xl p-4 border-grey-light border-solid border-b">
+    New Ticket
+  </div>
+
+  <div class="p-4 border-grey-light border-solid border-b">
+    <form method="post" accept-charset="UTF-8">
+      {{ csrfInput() }}
+      {{ redirectInput('support/tickets') }}
+      <input type="hidden" name="action" value="support/tickets/create">
+
+      <input class="appearance-none w-full p-4 mb-4 border-grey-light border-solid border" type="text" name="title" placeholder="Title" required>
+
+      <textarea class="appearance-none resize-none w-full h-32 p-4 mb-4 border-grey-light border-solid border" name="message" placeholder="Message" required></textarea>
+
+      <input class="cursor-pointer bg-green hover:bg-green-dark px-4 py-3 text-white" type="submit" value="Submit">
+    </form>
+  </div>
+
+{% endblock %}

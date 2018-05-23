@@ -1,0 +1,166 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{#
+/**
+ * Support plugin for Craft CMS 3.x
+ *
+ * Support index.twig
+ *
+ * @author    Luke Youell
+ * @copyright Copyright (c) 2018 Luke Youell
+ * @link      https://github.com/lukeyouell
+ * @package   Support
+ * @since     1.0.0
+ */
+#}
+
+{% extends "_layouts/cp" %}
+
+{% import "_includes/forms" as forms %}
+{% import "support/_tickets/includes/ticket" as macros %}
+
+{% set title = ticket.title %}
+
+{% set crumbs = [
+    { label: 'Tickets', url: cpUrl('support/tickets') }
+] %}
+
+{% do view.registerAssetBundle("lukeyouell\\support\\assetbundles\\TicketBundle") %}
+
+{% block content %}
+  <div class="new-message">
+    <form method="post" accept-charset="UTF-8">
+      {{ csrfInput() }}
+
+      {{ forms.hidden({
+          name:  'action',
+          value: 'support/messages/new-message',
+      })}}
+
+      {{ forms.hidden({
+          name:  'ticketId',
+          value: ticket.id|hash,
+      })}}
+
+      {{ forms.textareaField({
+          first:       true,
+          required:    true,
+          id:          'message',
+          name:        'message',
+          placeholder: 'Post a message...',
+      })}}
+
+      <div class="new-message-controls">
+        {% if settings.attachments and volume %}
+          {% include "_components/fieldtypes/Assets/input" with {
+            id:                   'attachments',
+            fieldId:              'attachments',
+            name:                 'attachments',
+            selectionLabel:       'Attachment',
+            elementType:          assetElementType,
+            sourceElementId:      volume.id,
+            viewMode:             'list',
+            limit:                4,
+            defaultFieldLayoutId: volume.fieldLayoutId,
+            hideSidebar:          true,
+          } %}
+        {% endif %}
+
+        <input class="btn submit" type="submit" value="Post message">
+      </div>
+    </form>
+  </div>
+
+  <div class="messages">
+    {% for message in ticket.messages %}
+      {{ macros.message(message) }}
+    {% endfor %}
+  </div>
+{% endblock %}
+
+{% block details %}
+  {% if currentUser.can('support-manageTickets') %}
+    <form method="post" accept-charset="UTF-8">
+      <div class="meta">
+        {{ csrfInput() }}
+
+        {{ forms.hidden({
+            name:  'action',
+            value: 'support/tickets/save',
+        })}}
+
+        {{ forms.hidden({
+            name:  'ticketId',
+            value: ticket.id|hash,
+        })}}
+
+        {% set statusOptions = [] %}
+        {% for status in ticketStatuses %}
+            {% set statusOptions = statusOptions|merge([{'value': status.id, 'label': status.name}]) %}
+        {% endfor %}
+
+        {{ forms.selectField({
+            label:   'Ticket Status',
+            id:      'ticketStatusId',
+            name:    'ticketStatusId',
+            value:   ticket.ticketStatusId,
+            options: statusOptions,
+        })}}
+
+        <input class="btn submit" type="submit" value="Update ticket">
+      </div>
+    </form>
+
+    <hr>
+  {% endif %}
+
+  <div class="meta read-only">
+    <div class="data">
+      <div class="heading">
+        ID
+      </div>
+      <div class="value">
+        #{{ ticket.id }}
+      </div>
+    </div>
+
+    <div class="data">
+      <div class="heading">
+        Status
+      </div>
+      <div class="value">
+        {{ ticket.ticketStatus.name }}
+      </div>
+    </div>
+
+    {% if currentUser.can('support-manageTickets') %}
+      <div class="data">
+        <div class="heading">
+          Author
+        </div>
+        <div class="value">
+          <a href="{{ ticket.author.cpEditUrl }}">{{ ticket.author.name }}</a>
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="data">
+      <div class="heading">
+        Created
+      </div>
+      <div class="value">
+        {{ ticket.dateCreated|datetime('short') }}
+      </div>
+    </div>
+
+    <div class="data">
+      <div class="heading">
+        Updated
+      </div>
+      <div class="value">
+        {{ ticket.dateUpdated|datetime('short') }}
+      </div>
+    </div>
+  </div>
+
+  <hr>
+{% endblock %}

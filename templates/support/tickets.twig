@@ -1,0 +1,80 @@
+{% extends "support/_layouts/main" %}
+
+{% set defaultStatus = craft.support.defaultTicketStatus() %}
+{% set currentStatusId = craft.app.request.getQueryParam('status') %}
+{% set currentStatus = currentStatusId ? craft.support.getTicketStatusById(currentStatusId) : defaultStatus %}
+{% set tickets = craft.support.tickets.author(currentUser).ticketStatus(currentStatus).all() %}
+
+{% block menuLinks %}
+
+  {% for status in allStatuses %}
+    {% set ticketCount = craft.support.tickets.author(currentUser).ticketStatus(status).count() %}
+
+    <li class="mb-2">
+      <a class="block text-grey-darkest hover:text-blue no-underline" href="tickets?status={{ status.id }}">
+        <div class="flex items-center">
+          <div class="flex-grow">
+            {{ status.name }}
+          </div>
+
+          <div class="flex-shrink">
+            {% if status == currentStatus %}
+              <div class="bg-blue text-white px-2 py-1 rounded">
+                {{ ticketCount }}
+              </div>
+            {% else %}
+              <div class="px-2 py-1">
+                {{ ticketCount }}
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </a>
+    </li>
+  {% endfor %}
+
+{% endblock %}
+
+{% block content %}
+
+  <div class="bg-blue-lightest text-xl p-4 border-grey-light border-solid border-b">
+    {{ currentStatus.name }} Tickets ({{ tickets|length }})
+  </div>
+
+  {% if tickets|length %}
+    {% for ticket in tickets %}
+      {% set message = ticket.messages|first %}
+
+      <a class="block hover:bg-grey-lightest text-grey-darkest no-underline border-grey-light border-solid border-b" href="ticket?id={{ ticket.id }}">
+        <div class="flex items-center">
+          <div class="flex-grow p-4">
+            <div class="font-bold">{{ ticket.title }}</div>
+
+            {% if message %}
+              <div class="text-sm text-grey mt-2">
+                {{ message.content[:80] }}&hellip;
+              </div>
+            {% endif %}
+          </div>
+
+          <div class="flex-shrink p-4 text-sm text-grey">
+            <div class="bg-grey-lighter px-2 py-1 text-sm text-grey-dark rounded">
+              {{ ticket.dateUpdated|timestamp('short') }}
+            </div>
+          </div>
+
+          <div class="flex-shrink p-4">
+            <div class="bg-grey-lighter px-2 py-1 text-sm text-grey-dark rounded">
+              #{{ ticket.id }}
+            </div>
+          </div>
+        </div>
+      </a>
+    {% endfor %}
+  {% else %}
+    <div class="bg-red-dark text-white p-4">
+      No tickets were found with this status.
+    </div>
+  {% endif %}
+
+{% endblock %}

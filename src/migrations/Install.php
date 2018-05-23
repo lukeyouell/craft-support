@@ -11,10 +11,16 @@
 namespace lukeyouell\support\migrations;
 
 use lukeyouell\support\Support;
+use lukeyouell\support\records\Email as EmailRecord;
+use lukeyouell\support\records\TicketStatus as TicketStatusRecord;
+use lukeyouell\support\records\TicketStatusEmail as TicketStatusEmailRecord;
 
 use Craft;
 use craft\config\DbConfig;
 use craft\db\Migration;
+use craft\helpers\MigrationHelper;
+
+use LitEmoji\LitEmoji;
 
 /**
  * Support Install Migration
@@ -35,24 +41,11 @@ class Install extends Migration
     // Public Properties
     // =========================================================================
 
-    /**
-     * @var string The database driver to use
-     */
     public $driver;
 
     // Public Methods
     // =========================================================================
 
-    /**
-     * This method contains the logic to be executed when applying this migration.
-     * This method differs from [[up()]] in that the DB logic implemented here will
-     * be enclosed within a DB transaction.
-     * Child classes may implement this method instead of [[up()]] if the DB logic
-     * needs to be within a transaction.
-     *
-     * @return boolean return a false value to indicate the migration fails
-     * and should not proceed further. All other return values mean the migration succeeds.
-     */
     public function safeUp()
     {
         $this->driver = Craft::$app->getConfig()->getDb()->driver;
@@ -66,20 +59,11 @@ class Install extends Migration
         return true;
     }
 
-    /**
-     * This method contains the logic to be executed when removing this migration.
-     * This method differs from [[down()]] in that the DB logic implemented here will
-     * be enclosed within a DB transaction.
-     * Child classes may implement this method instead of [[down()]] if the DB logic
-     * needs to be within a transaction.
-     *
-     * @return boolean return a false value to indicate the migration fails
-     * and should not proceed further. All other return values mean the migration succeeds.
-     */
     public function safeDown()
     {
         $this->driver = Craft::$app->getConfig()->getDb()->driver;
-        $this->removeTables();
+        $this->dropForeignKeys();
+        $this->dropTables();
 
         return true;
     }
@@ -87,11 +71,6 @@ class Install extends Migration
     // Protected Methods
     // =========================================================================
 
-    /**
-     * Creates the tables needed for the Records used by the plugin
-     *
-     * @return bool
-     */
     protected function createTables()
     {
         $tablesCreated = false;
@@ -100,15 +79,81 @@ class Install extends Migration
         $tableSchema = Craft::$app->db->schema->getTableSchema('{{%support_tickets}}');
         if ($tableSchema === null) {
             $tablesCreated = true;
+
+            $this->createTable(
+                '{{%support_emails}}',
+                [
+                    'id'            => $this->primaryKey(),
+                    'dateCreated'   => $this->dateTime()->notNull(),
+                    'dateUpdated'   => $this->dateTime()->notNull(),
+                    'uid'           => $this->uid(),
+                    // Custom columns in the table
+                    'name'          => $this->string()->notNull(),
+                    'subject'       => $this->string()->notNull(),
+                    'recipientType' => $this->enum('recipientType', ['author', 'custom'])->defaultValue('custom'),
+                    'to'            => $this->string(),
+                    'bcc'           => $this->string(),
+                    'templatePath'  => $this->string()->notNull(),
+                    'sortOrder'   => $this->integer(),
+                    'enabled'       => $this->boolean(),
+                ]
+            );
+
+            $this->createTable(
+                '{{%support_messages}}',
+                [
+                    'id'            => $this->primaryKey(),
+                    'dateCreated'   => $this->dateTime()->notNull(),
+                    'dateUpdated'   => $this->dateTime()->notNull(),
+                    'uid'           => $this->uid(),
+                    // Custom columns in the table
+                    'ticketId'      => $this->integer(),
+                    'authorId'      => $this->integer(),
+                    'attachmentIds' => $this->text(),
+                    'content'       => $this->text()->notNull(),
+                ]
+            );
+
             $this->createTable(
                 '{{%support_tickets}}',
                 [
-                    'id' => $this->primaryKey(),
+                    'id'             => $this->primaryKey(),
+                    'dateCreated'    => $this->dateTime()->notNull(),
+                    'dateUpdated'    => $this->dateTime()->notNull(),
+                    'uid'            => $this->uid(),
+                    // Custom columns in the table
+                    'ticketStatusId' => $this->integer(),
+                    'authorId'       => $this->integer(),
+                ]
+            );
+
+            $this->createTable(
+                '{{%support_ticketstatuses}}',
+                [
+                    'id'          => $this->primaryKey(),
                     'dateCreated' => $this->dateTime()->notNull(),
                     'dateUpdated' => $this->dateTime()->notNull(),
-                    'uid' => $this->uid(),
+                    'uid'         => $this->uid(),
                     // Custom columns in the table
-                    'subject' => $this->string()->notNull(),
+                    'name'        => $this->string()->notNull(),
+                    'handle'      => $this->string()->notNull(),
+                    'colour'      => $this->enum('colour', ['green', 'orange', 'red', 'blue', 'yellow', 'pink', 'purple', 'turquoise', 'light', 'grey', 'black'])->notNull()->defaultValue('green'),
+                    'sortOrder'   => $this->integer(),
+                    'default'     => $this->boolean(),
+                    'newMessage'  => $this->boolean(),
+                ]
+            );
+
+            $this->createTable(
+                '{{%support_ticketstatus_emails}}',
+                [
+                    'id'             => $this->primaryKey(),
+                    'dateCreated'    => $this->dateTime()->notNull(),
+                    'dateUpdated'    => $this->dateTime()->notNull(),
+                    'uid'            => $this->uid(),
+                    // Custom columns in the table
+                    'ticketStatusId' => $this->integer()->notNull(),
+                    'emailId'        => $this->integer()->notNull(),
                 ]
             );
         }
@@ -116,42 +161,141 @@ class Install extends Migration
         return $tablesCreated;
     }
 
-    /**
-     * Creates the foreign keys needed for the Records used by the plugin
-     *
-     * @return void
-     */
     protected function addForeignKeys()
     {
-        // support_tickets table
-        $this->addForeignKey(
-            $this->db->getForeignKeyName('{{%support_tickets}}', 'id'),
-            '{{%support_tickets}}',
-            'id',
-            '{{%elements}}',
-            'id',
-            'CASCADE',
-            null
-        );
+        $this->addForeignKey(null, '{{%support_messages}}', ['id'], '{{%elements}}', ['id'], 'CASCADE');
+        $this->addForeignKey(null, '{{%support_messages}}', ['authorId'], '{{%users}}', ['id'], null, 'CASCADE');
+        $this->addForeignKey(null, '{{%support_messages}}', ['ticketId'], '{{%support_tickets}}', ['id'], 'CASCADE');
+
+        $this->addForeignKey(null, '{{%support_tickets}}', ['id'], '{{%elements}}', ['id'], 'CASCADE');
+        $this->addForeignKey(null, '{{%support_tickets}}', ['authorId'], '{{%users}}', ['id'], null, 'CASCADE');
+        $this->addForeignKey(null, '{{%support_tickets}}', ['ticketStatusId'], '{{%support_ticketstatuses}}', ['id'], null, 'CASCADE');
+
+        $this->addForeignKey(null, '{{%support_ticketstatus_emails}}', ['emailId'], '{{%support_emails}}', ['id'], 'CASCADE', 'CASCADE');
+        $this->addForeignKey(null, '{{%support_ticketstatus_emails}}', ['ticketStatusId'], '{{%support_ticketstatuses}}', ['id'], 'CASCADE', 'CASCADE');
     }
 
-    /**
-     * Populates the DB with the default data.
-     *
-     * @return void
-     */
+    protected function dropForeignKeys()
+    {
+        MigrationHelper::dropAllForeignKeysOnTable('{{%support_messages}}', $this);
+        MigrationHelper::dropAllForeignKeysOnTable('{{%support_tickets}}', $this);
+        MigrationHelper::dropAllForeignKeysOnTable('{{%support_ticketstatuses}}', $this);
+        MigrationHelper::dropAllForeignKeysOnTable('{{%support_ticketstatus_emails}}', $this);
+    }
+
+    protected function dropTables()
+    {
+        $this->dropTable('{{%support_emails}}');
+        $this->dropTable('{{%support_messages}}');
+        $this->dropTable('{{%support_tickets}}');
+        $this->dropTable('{{%support_ticketstatuses}}');
+        $this->dropTable('{{%support_ticketstatus_emails}}');
+    }
+
     protected function insertDefaultData()
     {
+        $this->_defaultTicketStatuses();
     }
 
-    /**
-     * Removes the tables needed for the Records used by the plugin
-     *
-     * @return void
-     */
-    protected function removeTables()
+    // Private Methods
+    // =========================================================================
+
+    private function _defaultTicketStatuses()
     {
-        // support_tickets table
-        $this->dropTableIfExists('{{%support_tickets}}');
+        // Default ticket statuses
+        $data = [
+            'name'      => 'New',
+            'handle'    => 'new',
+            'colour'    => 'blue',
+            'sortOrder' => 1,
+            'default'   => true
+        ];
+        $this->insert(TicketStatusRecord::tableName(), $data);
+
+        $data = [
+            'name'       => 'In Progress',
+            'handle'     => 'inProgress',
+            'colour'     => 'orange',
+            'sortOrder'  => 2,
+            'newMessage' => true,
+        ];
+        $this->insert(TicketStatusRecord::tableName(), $data);
+
+        $data = [
+            'name'      => 'Solved',
+            'handle'    => 'solved',
+            'colour'    => 'green',
+            'sortOrder' => 3,
+        ];
+        $this->insert(TicketStatusRecord::tableName(), $data);
+
+        $data = [
+            'name'      => 'Closed',
+            'handle'    => 'closed',
+            'colour'    => 'red',
+            'sortOrder' => 4,
+        ];
+        $this->insert(TicketStatusRecord::tableName(), $data);
+
+        $data = [
+            'name'      => 'Archived',
+            'handle'    => 'archived',
+            'colour'    => 'grey',
+            'sortOrder' => 5,
+        ];
+        $this->insert(TicketStatusRecord::tableName(), $data);
+
+        // Default emails
+        $data = [
+            'name'          => 'New Ticket',
+            'subject'       => LitEmoji::unicodeToShortcode('[📥 New Support Ticket] {title} (#{id})'),
+            'recipientType' => 'custom',
+            'to'            => Craft::$app->systemSettings->getSetting('email', 'fromEmail'),
+            'templatePath'  => 'support/_emails/newTicket',
+            'sortOrder'     => 1,
+            'enabled'       => true,
+        ];
+        $this->insert(EmailRecord::tableName(), $data);
+
+        $data = [
+            'name'          => 'New Message',
+            'subject'       => LitEmoji::unicodeToShortcode('[📥 New Message] {title} (#{id})'),
+            'recipientType' => 'custom',
+            'to'            => Craft::$app->systemSettings->getSetting('email', 'fromEmail'),
+            'templatePath'  => 'support/_emails/newMessage',
+            'sortOrder'     => 2,
+            'enabled'       => true,
+        ];
+        $this->insert(EmailRecord::tableName(), $data);
+
+        $data = [
+            'name'          => 'Ticket Closed',
+            'subject'       => LitEmoji::unicodeToShortcode('[📕 Ticket Closed] {title} (#{id})'),
+            'recipientType' => 'custom',
+            'to'            => Craft::$app->systemSettings->getSetting('email', 'fromEmail'),
+            'templatePath'  => 'support/_emails/ticketClosed',
+            'sortOrder'     => 3,
+            'enabled'       => true,
+        ];
+        $this->insert(EmailRecord::tableName(), $data);
+
+        // Default ticket status / email links
+        $data = [
+            'ticketStatusId' => 1,
+            'emailId'        => 1,
+        ];
+        $this->insert(TicketStatusEmailRecord::tableName(), $data);
+
+        $data = [
+            'ticketStatusId' => 2,
+            'emailId'        => 2,
+        ];
+        $this->insert(TicketStatusEmailRecord::tableName(), $data);
+
+        $data = [
+            'ticketStatusId' => 4,
+            'emailId'        => 3,
+        ];
+        $this->insert(TicketStatusEmailRecord::tableName(), $data);
     }
 }

@@ -14,6 +14,7 @@ use lukeyouell\support\Support;
 
 use Craft;
 use craft\base\Model;
+use craft\base\VolumeInterface;
 
 /**
  * Support Settings Model
@@ -34,12 +35,17 @@ class Settings extends Model
     // Public Properties
     // =========================================================================
 
-    /**
-     * Some field model attribute
-     *
-     * @var string
-     */
-    public $someAttribute = 'Some Default';
+    public $pluginNameOverride;
+
+    public $fromEmail;
+
+    public $fromName;
+
+    public $attachments = false;
+
+    public $volumeId;
+
+    public $volumeSubpath = 'attachments/{id}';
 
     // Public Methods
     // =========================================================================
@@ -57,8 +63,9 @@ class Settings extends Model
     public function rules()
     {
         return [
-            ['someAttribute', 'string'],
-            ['someAttribute', 'default', 'value' => 'Some Default'],
+            [['attachments'], 'boolean'],
+            [['pluginNameOverride', 'fromEmail', 'fromName', 'volumeSubpath'], 'string'],
+            [['volumeId'], 'number', 'integerOnly' => true]
         ];
     }
 }

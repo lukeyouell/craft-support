@@ -10,39 +10,26 @@
 
 namespace lukeyouell\support;
 
-use lukeyouell\support\services\SupportService as SupportServiceService;
-use lukeyouell\support\models\Settings;
 use lukeyouell\support\elements\Ticket as TicketElement;
+use lukeyouell\support\models\Settings;
+use lukeyouell\support\services\SupportService as SupportServiceService;
+use lukeyouell\support\variables\SupportVariable;
 
 use Craft;
 use craft\base\Plugin;
-use craft\services\Plugins;
 use craft\events\PluginEvent;
-use craft\web\UrlManager;
-use craft\services\Elements;
 use craft\events\RegisterComponentTypesEvent;
 use craft\events\RegisterUrlRulesEvent;
+use craft\events\RegisterUserPermissionsEvent;
+use craft\helpers\UrlHelper;
+use craft\services\Elements;
+use craft\services\Plugins;
+use craft\services\UserPermissions;
+use craft\web\UrlManager;
+use craft\web\twig\variables\CraftVariable;
 
 use yii\base\Event;
 
-/**
- * Craft plugins are very much like little applications in and of themselves. We’ve made
- * it as simple as we can, but the training wheels are off. A little prior knowledge is
- * going to be required to write a plugin.
- *
- * For the purposes of the plugin docs, we’re going to assume that you know PHP and SQL,
- * as well as some semi-advanced concepts like object-oriented programming and PHP namespaces.
- *
- * https://craftcms.com/docs/plugins/introduction
- *
- * @author    Luke Youell
- * @package   Support
- * @since     1.0.0
- *
- * @property  SupportServiceService $supportService
- * @property  Settings $settings
- * @method    Settings getSettings()
- */
 class Support extends Plugin
 {
     // Static Properties
@@ -64,22 +51,11 @@ class Support extends Plugin
      *
      * @var string
      */
-    public $schemaVersion = '1.0.0';
+    public $schemaVersion = '0.1.0';
 
     // Public Methods
     // =========================================================================
 
-    /**
-     * Set our $plugin static property to this class so that it can be accessed via
-     * Support::$plugin
-     *
-     * Called after the plugin class is instantiated; do any one-time initialization
-     * here such as hooks and events.
-     *
-     * If you have a '/vendor/autoload.php' file, it will be loaded for you automatically;
-     * you do not need to load it in your init() method.
-     *
-     */
     public function init()
     {
         parent::init();
@@ -90,7 +66,21 @@ class Support extends Plugin
             UrlManager::class,
             UrlManager::EVENT_REGISTER_CP_URL_RULES,
             function (RegisterUrlRulesEvent $event) {
-                $event->rules['support/tickets/<ticketId:\d+>'] = 'support/tickets/show-ticket';
+                $event->rules['support/tickets'] = 'support/tickets/index';
+                $event->rules['support/tickets/new'] = 'support/tickets/new';
+                $event->rules['support/tickets/<ticketId:\d+>'] = 'support/tickets/view';
+
+                $event->rules['support/settings/general'] = 'support/settings/index';
+
+                $event->rules['support/settings/ticket-statuses'] = 'support/ticket-statuses/index';
+                $event->rules['support/settings/ticket-statuses/new'] = 'support/ticket-statuses/edit';
+                $event->rules['support/settings/ticket-statuses/<id:\d+>'] = 'support/ticket-statuses/edit';
+
+                $event->rules['support/settings/emails'] = 'support/emails/index';
+                $event->rules['support/settings/emails/new'] = 'support/emails/edit';
+                $event->rules['support/settings/emails/<id:\d+>'] = 'support/emails/edit';
+
+                $event->rules['support/settings/attachments'] = 'support/attachments/index';
             }
         );
 
@@ -99,7 +89,30 @@ class Support extends Plugin
             Elements::class,
             Elements::EVENT_REGISTER_ELEMENT_TYPES,
             function (RegisterComponentTypesEvent $event) {
+                $event->types[] = MessageElement::class;
                 $event->types[] = TicketElement::class;
+            }
+        );
+
+        // Register user permissions
+        Event::on(
+            UserPermissions::class,
+            UserPermissions::EVENT_REGISTER_PERMISSIONS,
+            function(RegisterUserPermissionsEvent $event) {
+                $event->permissions[$this->name] = [
+                    'support-manageTickets' => ['label' => \Craft::t('support', 'Manage Tickets')],
+                    'support-deleteTickets' => ['label' => \Craft::t('support', 'Delete Tickets')],
+                ];
+            }
+        );
+
+        // Register variables
+        Event::on(
+            CraftVariable::class,
+            CraftVariable::EVENT_INIT,
+            function (Event $event) {
+                $variable = $event->sender;
+                $variable->set($this->handle, SupportVariable::class);
             }
         );
 
@@ -109,29 +122,11 @@ class Support extends Plugin
             Plugins::EVENT_AFTER_INSTALL_PLUGIN,
             function (PluginEvent $event) {
                 if ($event->plugin === $this) {
-                    // We were just installed
+                    Craft::$app->getResponse()->redirect(UrlHelper::cpUrl('settings/plugins/support'))->send();
                 }
             }
         );
 
-/**
- * Logging in Craft involves using one of the following methods:
- *
- * Craft::trace(): record a message to trace how a piece of code runs. This is mainly for development use.
- * Craft::info(): record a message that conveys some useful information.
- * Craft::warning(): record a warning message that indicates something unexpected has happened.
- * Craft::error(): record a fatal error that should be investigated as soon as possible.
- *
- * Unless `devMode` is on, only Craft::warning() & Craft::error() will log to `craft/storage/logs/web.log`
- *
- * It's recommended that you pass in the magic constant `__METHOD__` as the second parameter, which sets
- * the category to the method (prefixed with the fully qualified class name) where the constant appears.
- *
- * To enable the Yii debug toolbar, go to your user account in the AdminCP and check the
- * [] Show the debug toolbar on the front end & [] Show the debug toolbar on the Control Panel
- *
- * http://www.yiiframework.com/doc-2.0/guide-runtime-logging.html
- */
         Craft::info(
             Craft::t(
                 'support',
@@ -140,6 +135,35 @@ class Support extends Plugin
             ),
             __METHOD__
         );
+
+        $this->setComponents([
+            'emailService' => \lukeyouell\support\services\EmailService::class,
+            'mailService' => \lukeyouell\support\services\MailService::class,
+            'messageService' => \lukeyouell\support\services\MessageService::class,
+            'ticketService' => \lukeyouell\support\services\TicketService::class,
+            'ticketStatusService' => \lukeyouell\support\services\TicketStatusService::class,
+        ]);
+    }
+
+    public function getCpNavItem()
+    {
+        $ret = parent::getCpNavItem();
+
+        $ret['label'] = $this->getSettings()->pluginNameOverride ?: $this->name;
+
+        $ret['subnav']['tickets'] = [
+            'label' => 'Tickets',
+            'url'   => 'support/tickets',
+        ];
+
+        if (Craft::$app->getUser()->getIsAdmin()) {
+            $ret['subnav']['settings'] = [
+                'label' => 'Settings',
+                'url'   => 'support/settings/general',
+            ];
+        }
+
+        return $ret;
     }
 
     // Protected Methods
@@ -163,10 +187,17 @@ class Support extends Plugin
      */
     protected function settingsHtml(): string
     {
+        // Get and pre-validate the settings
+        $settings = $this->getSettings();
+        $settings->validate();
+        // Get the settings that are being defined by the config file
+        $overrides = Craft::$app->getConfig()->getConfigFromFile(strtolower($this->handle));
+
         return Craft::$app->view->renderTemplate(
             'support/settings',
             [
-                'settings' => $this->getSettings()
+                'settings' => $settings,
+                'overrides' => array_keys($overrides)
             ]
         );
     }

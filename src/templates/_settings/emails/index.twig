@@ -1,0 +1,67 @@
+{% extends "support/_layouts/settings" %}
+
+{% block content %}
+
+  <h2 class="first">Emails</h2>
+
+  <table id="emails" class="data fullwidth collapsible">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Subject</th>
+        <th>To</th>
+        <th>Bcc</th>
+        <th>Template Path</th>
+        <td class="thin"></td>
+        <td class="thin"></td>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for email in emails %}
+        <tr data-id="{{ email.id }}" data-name="{{ email.name }}">
+          <th data-title="Name">
+            {{ email.labelHtml|raw }}
+          </th>
+          <td data-title="Subject">
+            {{ email.subject }}
+          </td>
+          <td data-title="To">
+            {{ email.to ?: 'Author' }}
+          </td>
+          <td data-title="Bcc">
+            {{ email.bcc }}
+          </td>
+          <td data-title="Template Path">
+            {{ email.templatePath }}
+          </td>
+          <td class="thin">
+            <a class="move icon" title="Reorder" role="button"></a>
+          </td>
+          <td class="thin">
+            <a class="delete icon" title="Delete" role="button"></a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="buttons">
+    <a class="btn submit icon add" href="{{ cpUrl('support/settings/emails/new') }}">New email</a>
+  </buttons>
+
+{% endblock %}
+
+{% js %}
+    new Craft.AdminTable({
+    tableSelector: '#emails',
+    deleteAction: 'support/emails/delete',
+    deleteSuccessMessage: 'Email deleted.',
+    deleteFailMessage: 'Couldn’t delete email.',
+    minObjects: 1,
+    sortable: true,
+    reorderAction: 'support/emails/reorder',
+    reorderSuccessMessage: 'Emails reordered.' ,
+    reorderFailMessage:    'Couldn’t reorder emails.',
+    });
+{% endjs %}

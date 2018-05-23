@@ -1,0 +1,94 @@
+/* Craft overrides */
+
+#main-container #main #main-content #content-container #content {
+  padding: 0;
+}
+
+.meta .btn.submit {
+  margin: 16px 0 8px;
+}
+
+/* Plugin css */
+
+.new-message {
+  background: #f8fafc;
+  padding: 24px;
+  border-bottom: 1px solid #e3e5e8;
+}
+
+.new-message .field {
+  margin: 0;
+}
+
+.new-message.active .field {
+  margin-bottom: 16px;
+}
+
+.new-message .field .text {
+  height: 62px;
+}
+
+.new-message.active .field .text {
+  height: 100px;
+}
+
+.new-message-controls {
+  display: none;
+}
+
+.new-message.active .new-message-controls {
+  display: block;
+}
+
+.new-message .elementselect {
+  margin: 0 0 16px;
+}
+
+.messages {
+  padding: 4px 24px;
+}
+
+.message {
+  padding: 20px 0;
+  border-bottom: 1px solid #e3e5e8;
+}
+
+.message-container .flex {
+  align-items: flex-start;
+}
+
+.message-photo > div {
+  margin: 0 7px 0 0;
+}
+
+.message-photo img {
+  display: block;
+  width: 44px;
+  height: 44px;
+  border-radius: 4px;
+}
+
+.message-photo svg {
+  width: 44px;
+  height: 44px;
+  fill: #8795a1;
+}
+
+.message-details {
+  font-weight: 700;
+}
+
+.message-details .small {
+  font-size: 75%;
+}
+
+.message-attachments {
+  margin-top: 7px;
+}
+
+.message-details,
+.message-body,
+.message-attachments {
+  font-size: 14px;
+  line-height: 1.6;
+}

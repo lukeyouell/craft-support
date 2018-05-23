@@ -1,43 +1,42 @@
+<img src="src/icon.svg" alt="icon" width="100" height="100">
+
 # Support plugin for Craft CMS 3.x
 
 Simple support system for tracking, prioritising and solving customer support tickets.
 
-![Screenshot](resources/img/plugin-logo.png)
+## Documentation
 
-## Requirements
+### Installation
 
-This plugin requires Craft CMS 3.0.0-beta.23 or later.
+- [Installation](docs/installation.md)
 
-## Installation
+### Configuration
 
-To install the plugin, follow these instructions.
+- [General Config](docs/generalconfig.md)
+- [User Permissions](docs/userpermissions.md)
 
-1. Open your terminal and go to your Craft project:
+### Core Concepts
 
-        cd /path/to/project
+- [Tickets](docs/tickets.md)
+- [Messages](docs/messages.md)
+- [Custom Ticket Statuses](docs/customticketstatuses.md)
 
-2. Then tell Composer to load the plugin:
+### Getting Elements
 
-        composer require craft-support/support
+- [craft.support.tickets](docs/craftsupporttickets.md)
+- [craft.support.messages](docs/craftsupportmessages.md)
 
-3. In the Control Panel, go to Settings → Plugins and click the “Install” button for Support.
+### Template Guides
 
-## Support Overview
-
--Insert text here-
-
-## Configuring Support
-
--Insert text here-
-
-## Using Support
-
--Insert text here-
+- [Available Variables](docs/availablevariables.md)
+- [Create a Ticket](docs/createaticket.md)
+- [Post a Message](docs/postamessage.md)
+- [Default Templates](docs/defaulttemplates.md)
 
 ## Support Roadmap
 
 Some things to do, and ideas for potential features:
 
-* Release it
+- Message attachments
 
 Brought to you by [Luke Youell](https://github.com/lukeyouell)

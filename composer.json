@@ -2,7 +2,7 @@
     "name": "lukeyouell/craft-support",
     "description": "Simple support system for tracking, prioritising and solving customer support tickets.",
     "type": "craft-plugin",
-    "version": "1.0.0",
+    "version": "1.0.0-beta.1",
     "keywords": [
         "craft",
         "cms",

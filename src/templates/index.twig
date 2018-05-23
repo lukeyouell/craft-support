@@ -1,25 +1,4 @@
-{# @var craft \craft\web\twig\variables\CraftVariable #}
-{#
-/**
- * Support plugin for Craft CMS 3.x
- *
- * Support index.twig
- *
- * @author    Luke Youell
- * @copyright Copyright (c) 2018 Luke Youell
- * @link      https://github.com/lukeyouell
- * @package   Support
- * @since     1.0.0
- */
-#}
+{% redirect 'support/tickets' %}
 
-{% extends "_layouts/elementindex" %}
-{% set elementType = 'lukeyouell\\support\\elements\\Ticket' %}
-
-{% set title = "Tickets" %}
-
-{% if crumbs is not defined %}
-    {% set crumbs = [
-        { label: "Support", url: url('support') }
-    ] %}
-{% endif %}
+{% extends "403" %}
+{% set message = 'You don’t have permission to access to any of the Support sub-sections. Please contact an admin.' %}

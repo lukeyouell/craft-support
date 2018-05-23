@@ -1,0 +1,56 @@
+{% extends "support/_layouts/settings" %}
+
+{% set fullPageForm = true %}
+
+{% import "_includes/forms" as forms %}
+{% import "support/_macros/settings" as macros %}
+
+{% block content %}
+
+  {{ forms.hidden({
+      name: 'action',
+      value: 'plugins/save-plugin-settings'
+  })}}
+
+  {{ forms.hidden({
+      name: 'pluginHandle',
+      value: plugin.handle
+  })}}
+
+  <h2 class="first">General Settings</h2>
+
+  {{ forms.textField({
+      first:        true,
+      label:        'Plugin Name Override',
+      instructions: 'The plugin name as you’d like it to be displayed in the CP.',
+      id:           'pluginNameOverride',
+      name:         'settings[pluginNameOverride]',
+      placeholder:  plugin.name,
+      value:        settings.pluginNameOverride,
+      disabled:     'pluginNameOverride' in overrides,
+      warning:      'pluginNameOverride' in overrides ? macros.configWarning('pluginNameOverride'),
+  })}}
+
+  {{ forms.textField({
+      label:        'Support Email Address',
+      instructions: 'The email address that ticket notification emails are sent from. Leave blank to use the System Email Address defined in Craft’s General Settings.',
+      id:           'fromEmail',
+      name:         'settings[fromEmail]',
+      placeholder:  systemEmail,
+      value:        settings.fromEmail,
+      disabled:     'fromEmail' in overrides,
+      warning:      'fromEmail' in overrides ? macros.configWarning('fromEmail'),
+  })}}
+
+  {{ forms.textField({
+      label:        'From Name',
+      instructions: 'The "From" name that will be used when sending ticket notification emails. Leave blank to use the Sender Name defined in Craft’s General Settings.',
+      id:           'fromName',
+      name:         'settings[fromName]',
+      placeholder:  systemSender,
+      value:        settings.fromName,
+      disabled:     'fromName' in overrides,
+      warning:      'fromName' in overrides ? macros.configWarning('fromName'),
+  })}}
+
+{% endblock %}
