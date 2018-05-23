@@ -4,23 +4,15 @@
 
 Simple support system for tracking, prioritising and solving customer support tickets.
 
-## Requirements
+## Documentation
 
-This plugin requires Craft CMS 3.0.0, or later.
+### Installation
 
-## Installation
+- [Installation](docs/installation.md)
 
-To install the plugin, either install via the plugin store or follow these instructions.
+### Configuration
 
-1. Open your terminal and go to your Craft project:
-
-        cd /path/to/project
-
-2. Then tell Composer to load the plugin:
-
-        composer require lukeyouell/craft-support
-
-3. In the Control Panel, go to Settings → Plugins and click the “Install” button for Support.
+- [General Config](docs/generalconfig.md)
 
 ## Support Roadmap
 
