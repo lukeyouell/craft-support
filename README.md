@@ -1,6 +1,6 @@
 <img src="src/icon.svg" alt="icon" width="100" height="100">
 
-# Support plugin for Craft CMS 3.x
+# Support plugin for Craft CMS 3
 
 Simple support system for tracking, prioritising and solving customer support tickets.
 
