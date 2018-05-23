@@ -1,14 +1,14 @@
 # Installation
 
-## Requirements
+### Requirements
 
 This plugin requires Craft CMS 3.0.0, or later.
 
-## Plugin Store
+### Plugin Store
 
 Log into your control panel and click on 'Plugin Store'. Search for 'Support'.
 
-## Composer
+### Composer
 
 1. Open your terminal and go to your Craft project:
 
