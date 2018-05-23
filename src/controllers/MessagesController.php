@@ -64,10 +64,7 @@ class MessagesController extends Controller
                     $newStatus = Support::getInstance()->ticketStatusService->getNewMessageTicketStatus();
 
                     if ($newStatus->id) {
-                        // Only change status if it differs from current
-                        if ($newStatus->id !== $ticket->ticketStatus->id) {
-                          Support::getInstance()->ticketService->changeTicketStatus($ticket, $newStatus->id);
-                        }
+                        Support::getInstance()->ticketService->changeTicketStatus($ticket, $newStatus->id);
                     }
 
                     Craft::$app->getSession()->setNotice('Message sent.');
