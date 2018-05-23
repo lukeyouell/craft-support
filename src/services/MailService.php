@@ -113,9 +113,19 @@ class MailService extends Component
             $variables = [
                 'ticket' => $ticket,
             ];
-            Craft::$app->view->setTemplateMode(View::TEMPLATE_MODE_CP);
 
-            return Craft::$app->view->renderTemplate($email->templatePath, $variables);
+            // Set Craft to the site template mode
+            $view = Craft::$app->getView();
+            $oldTemplateMode = $view->getTemplateMode();
+            $view->setTemplateMode($view::TEMPLATE_MODE_SITE);
+
+            // Render template
+            $html = Craft::$app->view->renderTemplate($email->templatePath, $variables);
+
+            // Set Craft back to the previous template mode
+            $view->setTemplateMode($oldTemplateMode);
+
+            return $html;
         }
 
         return null;
