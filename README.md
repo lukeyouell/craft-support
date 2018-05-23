@@ -13,6 +13,7 @@ Simple support system for tracking, prioritising and solving customer support ti
 ### Configuration
 
 - [General Config](docs/generalconfig.md)
+- [User Permissions](docs/userpermissions.md)
 
 ### Core Concepts
 
