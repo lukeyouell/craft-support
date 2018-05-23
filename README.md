@@ -25,6 +25,12 @@ Simple support system for tracking, prioritising and solving customer support ti
 - [craft.support.tickets](docs/craftsupporttickets.md)
 - [craft.support.messages](docs/craftsupportmessages.md)
 
+### Template Guides
+
+- [Available Variables](docs/availablevariables.md)
+- [Create a Ticket](docs/createaticket.md)
+- [Post a Message](docs/postamessage.md)
+
 ## Support Roadmap
 
 Some things to do, and ideas for potential features:
