@@ -14,7 +14,7 @@ Outputting a TicketModel object without attaching a property or method will retu
 
 ### `author`
 
-Returns a [UserModel](https://docs.craftcms.com/v2/templating/usermodel.html) object representing the ticket's author.
+Returns a [UserModel](https://docs.craftcms.com/api/v3/craft-elements-user.html) object representing the ticket's author.
 
 ### `authorId`
 
@@ -26,11 +26,11 @@ Returns the URL to the ticket's edit page within the control panel.
 
 ### `dateCreated`
 
-A [DateTime](https://docs.craftcms.com/v2/templating/datetime.html) object of the date the ticket was created.
+A [DateTime](http://php.net/manual/en/class.datetime.php) object of the date the ticket was created.
 
 ### `dateUpdated`
 
-A [DateTime](https://docs.craftcms.com/v2/templating/datetime.html) object of the date the ticket was last updated.
+A [DateTime](http://php.net/manual/en/class.datetime.php) object of the date the ticket was last updated.
 
 ### `id`
 
