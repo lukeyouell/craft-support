@@ -40,5 +40,6 @@ Simple support system for tracking, prioritising and solving customer support ti
 Some things to do, and ideas for potential features:
 
 - Message attachments
+- Dashboard widget to submit ticket
 
 Brought to you by [Luke Youell](https://github.com/lukeyouell)
