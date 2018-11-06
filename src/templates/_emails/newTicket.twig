@@ -1,0 +1,38 @@
+<table style="font-family:system-ui,BlinkMacSystemFont,-apple-system,sans-serif;font-size:14px;text-align:left;">
+	<tbody>
+		<tr>
+			<td>
+				<table style="background:#fbfcfd;padding:10px;border:1px solid #e3e5e8;border-radius:4px;border-spacing:0;">
+					<tbody>
+						<tr>
+							<td style="padding:10px;border-bottom:1px solid #e3e5e8;"><strong>ID</strong>: {{ ticket.id }}</td>
+						</tr>
+						<tr>
+							<td style="padding:10px;border-bottom:1px solid #e3e5e8;"><strong>Priority</strong>: {{ ticket.ticketPriority.name }}</td>
+						</tr>
+						<tr>
+							<td style="padding:10px;border-bottom:1px solid #e3e5e8;"><strong>Status</strong>: {{ ticket.ticketStatus.name }}</td>
+						</tr>
+						<tr>
+							<td style="padding:10px;border-bottom:1px solid #e3e5e8;"><strong>Title</strong>: {{ ticket.title }}</td>
+						</tr>
+						<tr>
+							<td style="padding:10px;border-bottom:1px solid #e3e5e8;"><strong>Author</strong>: {{ ticket.author.name }}</td>
+						</tr>
+						<tr>
+							<td style="padding:10px;"><strong>Message</strong></td>
+						</tr>
+						{% for message in ticket.messages %}
+							<tr>
+								<td style="padding:0 10px 10px 10px;">{{ message.content|nl2br }}</td>
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</td>
+		</tr>
+		<tr>
+			<td style="padding:10px 0 0 0;"><a href="{{ ticket.cpEditUrl }}">View ticket</a></td>
+		</tr>
+	</tbody>
+</table>

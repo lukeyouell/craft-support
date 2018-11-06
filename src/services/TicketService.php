@@ -26,10 +26,11 @@ class TicketService extends Component
 
     public function createTicket($submission = null) {
         if ($submission) {
-          $defaultTicketStatus = Support::getInstance()->ticketStatusService->getDefaultTicketStatus();
+		  $defaultTicketStatus = Support::getInstance()->ticketStatusService->getDefaultTicketStatus();
 
           $ticket = new Ticket();
           $ticket->ticketStatusId = $defaultTicketStatus['id'];
+          $ticket->ticketPriorityId = $submission->post('ticketPriorityId');
           $ticket->title = $submission->post('title');
           $ticket->authorId = Craft::$app->getUser()->getIdentity()->id;
 
@@ -77,6 +78,25 @@ class TicketService extends Component
             if ($status->emails) {
                 Support::getInstance()->mailService->handleEmail($ticket->id);
             }
+
+            return true;
+        }
+
+        return false;
+	}
+	
+	public function changeTicketPriority($ticket = null, $ticketPriorityId = null)
+    {
+        if ($ticket->id && $ticketPriorityId) {
+            $priority = Support::getInstance()->ticketPriorityService->getTicketPriorityById($ticketPriorityId);
+
+            if (!$priority->id) {
+                throw new NotFoundHttpException('Ticket priority not found');
+            }
+
+            $ticket->ticketPriorityId = $priority->id;
+
+            Craft::$app->getElements()->saveElement($ticket, false);
 
             return true;
         }

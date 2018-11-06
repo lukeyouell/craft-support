@@ -103,7 +103,8 @@ class MailService extends Component
     public function getSubject($email, $ticket)
     {
         // Replace keys with ticket values
-        $subject = Craft::$app->getView()->renderObjectTemplate($email->subject, $ticket);
+		$subject = Craft::$app->getView()->renderObjectTemplate($email->subject, $ticket);
+		
         return $subject;
     }
 
@@ -117,7 +118,8 @@ class MailService extends Component
             // Set Craft to the site template mode
             $view = Craft::$app->getView();
             $oldTemplateMode = $view->getTemplateMode();
-            $view->setTemplateMode($view::TEMPLATE_MODE_SITE);
+			// $view->setTemplateMode($view::TEMPLATE_MODE_SITE);
+			$view->setTemplateMode($view::TEMPLATE_MODE_CP);
 
             // Render template
             $html = Craft::$app->view->renderTemplate($email->templatePath, $variables);
