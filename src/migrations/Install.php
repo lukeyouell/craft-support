@@ -270,11 +270,10 @@ class Install extends Migration
 		// Default emails
         $data = [
             'name'          => 'New Ticket',
-			// 'subject'       => LitEmoji::unicodeToShortcode('[📥 New Support Ticket] {title} (#{id})'),
-			'subject'		=> "{{siteName}}: {title} {% if ticketPriority.handle == 'critical' %}{ticketPriority.name}{% endif %}",
-            'recipientType' => 'author',
-			// 'to'            => Craft::$app->systemSettings->getSetting('email', 'fromEmail'),
-            'templatePath'  => '_emails/support/newTicket',
+			'subject'       => LitEmoji::unicodeToShortcode('[📥 New Support Ticket] {title} (#{id})'),
+            'recipientType' => 'custom',
+			'to'            => Craft::$app->systemSettings->getSetting('email', 'fromEmail'),
+            'templatePath'  => 'support/_emails/newTicket',
             'sortOrder'     => 1,
             'enabled'       => true,
         ];
@@ -282,11 +281,10 @@ class Install extends Migration
 
         $data = [
             'name'          => 'New Message',
-			// 'subject'       => LitEmoji::unicodeToShortcode('[📥 New Message] {title} (#{id})'),
-			'subject'		=> "{{siteName}}: {title}",
-            'recipientType' => 'author',
-			// 'to'            => Craft::$app->systemSettings->getSetting('email', 'fromEmail'),
-            'templatePath'  => '_emails/support/newMessage',
+			'subject'       => LitEmoji::unicodeToShortcode('[📥 New Message] {title} (#{id})'),
+            'recipientType' => 'custom',
+			'to'            => Craft::$app->systemSettings->getSetting('email', 'fromEmail'),
+            'templatePath'  => 'support/_emails/newMessage',
             'sortOrder'     => 2,
             'enabled'       => true,
         ];
@@ -294,11 +292,10 @@ class Install extends Migration
 
         $data = [
             'name'          => 'Ticket Closed',
-			// 'subject'       => LitEmoji::unicodeToShortcode('[📕 Ticket Closed] {title} (#{id})'),
-			'subject'		=> "{{siteName}}: {title}",
-            'recipientType' => 'author',
-			// 'to'            => Craft::$app->systemSettings->getSetting('email', 'fromEmail'),
-            'templatePath'  => '_emails/support/ticketClosed',
+			'subject'       => LitEmoji::unicodeToShortcode('[📕 Ticket Closed] {title} (#{id})'),
+            'recipientType' => 'custom',
+			'to'            => Craft::$app->systemSettings->getSetting('email', 'fromEmail'),
+            'templatePath'  => 'support/_emails/ticketClosed',
             'sortOrder'     => 3,
             'enabled'       => true,
         ];
