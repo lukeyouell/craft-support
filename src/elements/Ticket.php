@@ -27,11 +27,15 @@ class Ticket extends Element
     // Public Properties
     // =========================================================================
 
-    public $ticketStatusId;
+	public $ticketStatusId;
+	
+    public $ticketPriorityId;
 
     public $authorId;
 
-    public $_ticketStatus;
+	public $_ticketStatus;
+	
+    public $_ticketPriority;
 
     public $_author;
 
@@ -63,6 +67,15 @@ class Ticket extends Element
     public static function isLocalized(): bool
     {
         return true;
+	}
+	
+	public function rules()
+    {
+        $rules = parent::rules();
+
+        $rules[] = [['ticketPriorityId'], 'required'];
+
+        return $rules;
     }
 
     public static function hasStatuses(): bool
@@ -121,6 +134,23 @@ class Ticket extends Element
                 ],
                 'defaultSort' => ['dateCreated', 'desc'],
             ];
+		}
+		
+		$sources[] = ['heading' => 'Ticket Priority'];
+
+        $priorities = Support::getInstance()->ticketPriorityService->getAllTicketPriorities();
+
+        foreach ($priorities as $priority) {
+            $sources[] = [
+                'key'         => 'priority:'.$priority['handle'],
+                'status'      => $priority['colour'],
+                'label'       => $priority['name'],
+                'criteria'    => [
+                    'authorId' => $canManageTickets ? '' : $userId,
+                    'ticketPriorityId' => $priority['id'],
+                ],
+                'defaultSort' => ['dateCreated', 'desc'],
+            ];
         }
 
         return $sources;
@@ -158,16 +188,18 @@ class Ticket extends Element
             $attributes = [
                 'title'          => Craft::t('support', 'Title'),
                 'ticketStatus'   => Craft::t('support', 'Status'),
+                'ticketPriority' => Craft::t('support', 'Priority'),
                 'author'         => Craft::t('support', 'Author'),
                 'dateCreated'    => Craft::t('support', 'Date Created'),
                 'dateUpdated'    => Craft::t('support', 'Date Updated'),
             ];
         } else {
             $attributes = [
-                'title'        => Craft::t('support', 'Title'),
-                'ticketStatus' => Craft::t('support', 'Status'),
-                'dateCreated'  => Craft::t('support', 'Date Created'),
-                'dateUpdated'  => Craft::t('support', 'Date Updated'),
+                'title'          => Craft::t('support', 'Title'),
+				'ticketStatus'   => Craft::t('support', 'Status'),
+				'ticketPriority' => Craft::t('support', 'Priority'),
+                'dateCreated'    => Craft::t('support', 'Date Created'),
+                'dateUpdated'    => Craft::t('support', 'Date Updated'),
             ];
         }
 
@@ -180,9 +212,9 @@ class Ticket extends Element
         $canManageTickets = $userSessionService->checkPermission('support-manageTickets');
 
         if ($canManageTickets) {
-            $attributes = ['title', 'ticketStatus', 'dateCreated', 'dateUpdated', 'author'];
+            $attributes = ['title', 'ticketStatus', 'ticketPriority', 'dateCreated', 'dateUpdated', 'author'];
         } else {
-            $attributes = ['title', 'ticketStatus', 'dateCreated', 'dateUpdated'];
+            $attributes = ['title', 'ticketStatus', 'ticketPriority', 'dateCreated', 'dateUpdated'];
         }
 
         return $attributes;
@@ -194,7 +226,11 @@ class Ticket extends Element
             case 'ticketStatus':
                 $status = $this->getTicketStatus();
 
-                return '<span class="status '.$status['colour'].'"></span>'.$status['name'];
+				return '<span class="status '.$status['colour'].'"></span>'.$status['name'];
+			case 'ticketPriority':
+                $priority = $this->getTicketPriority();
+
+                return '<span class="status '.$priority['colour'].'"></span>'.$priority['name'];
             case 'author':
                 $author = $this->getAuthor();
 
@@ -213,6 +249,7 @@ class Ticket extends Element
     {
         $names = parent::extraFields();
         $names[] = 'ticketStatus';
+        $names[] = 'ticketPriority';
         $names[] = 'author';
         $names[] = 'messages';
         return $names;
@@ -241,6 +278,21 @@ class Ticket extends Element
         $this->_ticketStatus = Support::getInstance()->ticketStatusService->getTicketStatusById($this->ticketStatusId);
 
         return $this->_ticketStatus;
+	}
+	
+	public function getTicketPriority()
+    {
+        if ($this->_ticketPriority !== null) {
+            return $this->_ticketPriority;
+        }
+
+        if ($this->ticketPriorityId === null) {
+            return null;
+        }
+
+        $this->_ticketPriority = Support::getInstance()->ticketPriorityService->getTicketPriorityById($this->ticketPriorityId);
+
+        return $this->_ticketPriority;
     }
 
     public function getAuthor()
@@ -289,11 +341,14 @@ class Ticket extends Element
 
     public function afterSave(bool $isNew)
     {
-        if ($isNew) {
+		
+		
+		if ($isNew) {
             Craft::$app->db->createCommand()
                 ->insert('{{%support_tickets}}', [
                     'id'             => $this->id,
                     'ticketStatusId' => $this->ticketStatusId,
+                    'ticketPriorityId' => $this->ticketPriorityId,
                     'authorId'       => $this->authorId,
                 ])
                 ->execute();
@@ -301,6 +356,7 @@ class Ticket extends Element
             Craft::$app->db->createCommand()
                 ->update('{{%support_tickets}}', [
                     'ticketStatusId'  => $this->ticketStatusId,
+                    'ticketPriorityId'  => $this->ticketPriorityId,
                 ], ['id' => $this->id])
                 ->execute();
         }

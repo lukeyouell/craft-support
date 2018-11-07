@@ -14,6 +14,7 @@ use lukeyouell\support\Support;
 use lukeyouell\support\records\Email as EmailRecord;
 use lukeyouell\support\records\TicketStatus as TicketStatusRecord;
 use lukeyouell\support\records\TicketStatusEmail as TicketStatusEmailRecord;
+use lukeyouell\support\records\TicketPriority as TicketPriorityRecord;
 
 use Craft;
 use craft\config\DbConfig;
@@ -123,6 +124,7 @@ class Install extends Migration
                     'uid'            => $this->uid(),
                     // Custom columns in the table
                     'ticketStatusId' => $this->integer(),
+                    'ticketPriorityId' => $this->integer(),
                     'authorId'       => $this->integer(),
                 ]
             );
@@ -141,6 +143,22 @@ class Install extends Migration
                     'sortOrder'   => $this->integer(),
                     'default'     => $this->boolean(),
                     'newMessage'  => $this->boolean(),
+                ]
+			);
+			
+			$this->createTable(
+                '{{%support_ticketpriorities}}',
+                [
+                    'id'          => $this->primaryKey(),
+                    'dateCreated' => $this->dateTime()->notNull(),
+                    'dateUpdated' => $this->dateTime()->notNull(),
+                    'uid'         => $this->uid(),
+                    // Custom columns in the table
+                    'name'        => $this->string()->notNull(),
+                    'handle'      => $this->string()->notNull(),
+                    'colour'      => $this->enum('colour', ['green', 'orange', 'red', 'blue', 'yellow', 'pink', 'purple', 'turquoise', 'light', 'grey', 'black'])->notNull()->defaultValue('green'),
+                    'sortOrder'   => $this->integer(),
+                    'default'     => $this->boolean()
                 ]
             );
 
@@ -170,6 +188,7 @@ class Install extends Migration
         $this->addForeignKey(null, '{{%support_tickets}}', ['id'], '{{%elements}}', ['id'], 'CASCADE');
         $this->addForeignKey(null, '{{%support_tickets}}', ['authorId'], '{{%users}}', ['id'], null, 'CASCADE');
         $this->addForeignKey(null, '{{%support_tickets}}', ['ticketStatusId'], '{{%support_ticketstatuses}}', ['id'], null, 'CASCADE');
+        $this->addForeignKey(null, '{{%support_tickets}}', ['ticketpriorityId'], '{{%support_ticketpriorities}}', ['id'], null, 'CASCADE');
 
         $this->addForeignKey(null, '{{%support_ticketstatus_emails}}', ['emailId'], '{{%support_emails}}', ['id'], 'CASCADE', 'CASCADE');
         $this->addForeignKey(null, '{{%support_ticketstatus_emails}}', ['ticketStatusId'], '{{%support_ticketstatuses}}', ['id'], 'CASCADE', 'CASCADE');
@@ -180,6 +199,7 @@ class Install extends Migration
         MigrationHelper::dropAllForeignKeysOnTable('{{%support_messages}}', $this);
         MigrationHelper::dropAllForeignKeysOnTable('{{%support_tickets}}', $this);
         MigrationHelper::dropAllForeignKeysOnTable('{{%support_ticketstatuses}}', $this);
+        MigrationHelper::dropAllForeignKeysOnTable('{{%support_ticketpriorities}}', $this);
         MigrationHelper::dropAllForeignKeysOnTable('{{%support_ticketstatus_emails}}', $this);
     }
 
@@ -189,12 +209,14 @@ class Install extends Migration
         $this->dropTable('{{%support_messages}}');
         $this->dropTable('{{%support_tickets}}');
         $this->dropTable('{{%support_ticketstatuses}}');
+        $this->dropTable('{{%support_ticketpriorities}}');
         $this->dropTable('{{%support_ticketstatus_emails}}');
     }
 
     protected function insertDefaultData()
     {
-        $this->_defaultTicketStatuses();
+		$this->_defaultTicketStatuses();
+		$this->_defaultTicketPriority();
     }
 
     // Private Methods
@@ -245,12 +267,12 @@ class Install extends Migration
         ];
         $this->insert(TicketStatusRecord::tableName(), $data);
 
-        // Default emails
+		// Default emails
         $data = [
             'name'          => 'New Ticket',
-            'subject'       => LitEmoji::unicodeToShortcode('[📥 New Support Ticket] {title} (#{id})'),
+			'subject'       => LitEmoji::unicodeToShortcode('[📥 New Support Ticket] {title} (#{id})'),
             'recipientType' => 'custom',
-            'to'            => Craft::$app->systemSettings->getSetting('email', 'fromEmail'),
+			'to'            => Craft::$app->systemSettings->getSetting('email', 'fromEmail'),
             'templatePath'  => 'support/_emails/newTicket',
             'sortOrder'     => 1,
             'enabled'       => true,
@@ -259,9 +281,9 @@ class Install extends Migration
 
         $data = [
             'name'          => 'New Message',
-            'subject'       => LitEmoji::unicodeToShortcode('[📥 New Message] {title} (#{id})'),
+			'subject'       => LitEmoji::unicodeToShortcode('[📥 New Message] {title} (#{id})'),
             'recipientType' => 'custom',
-            'to'            => Craft::$app->systemSettings->getSetting('email', 'fromEmail'),
+			'to'            => Craft::$app->systemSettings->getSetting('email', 'fromEmail'),
             'templatePath'  => 'support/_emails/newMessage',
             'sortOrder'     => 2,
             'enabled'       => true,
@@ -270,9 +292,9 @@ class Install extends Migration
 
         $data = [
             'name'          => 'Ticket Closed',
-            'subject'       => LitEmoji::unicodeToShortcode('[📕 Ticket Closed] {title} (#{id})'),
+			'subject'       => LitEmoji::unicodeToShortcode('[📕 Ticket Closed] {title} (#{id})'),
             'recipientType' => 'custom',
-            'to'            => Craft::$app->systemSettings->getSetting('email', 'fromEmail'),
+			'to'            => Craft::$app->systemSettings->getSetting('email', 'fromEmail'),
             'templatePath'  => 'support/_emails/ticketClosed',
             'sortOrder'     => 3,
             'enabled'       => true,
@@ -297,5 +319,41 @@ class Install extends Migration
             'emailId'        => 3,
         ];
         $this->insert(TicketStatusEmailRecord::tableName(), $data);
-    }
+	}
+	
+	private function _defaultTicketPriority()
+	{
+		 // Default ticket priorities
+		 $data = [
+            'name'      => 'Critical',
+            'handle'    => 'critical',
+            'colour'    => 'red',
+            'sortOrder' => 1
+        ];
+        $this->insert(TicketPriorityRecord::tableName(), $data);
+
+        $data = [
+            'name'       => 'Major',
+            'handle'     => 'major',
+            'colour'     => 'orange',
+            'sortOrder'  => 2,
+        ];
+        $this->insert(TicketPriorityRecord::tableName(), $data);
+
+        $data = [
+            'name'      => 'Minor',
+            'handle'    => 'minor',
+            'colour'    => 'green',
+            'sortOrder' => 3,
+        ];
+        $this->insert(TicketPriorityRecord::tableName(), $data);
+
+        $data = [
+            'name'      => 'Enhancement',
+            'handle'    => 'enhancement',
+            'colour'    => 'blue',
+            'sortOrder' => 4,
+        ];
+        $this->insert(TicketPriorityRecord::tableName(), $data);
+	}
 }

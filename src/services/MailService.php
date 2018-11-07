@@ -62,19 +62,24 @@ class MailService extends Component
 
     public function sendEmail($email, $ticket)
     {
-        $mailer = Craft::$app->getMailer();
-
+		$mailer = Craft::$app->getMailer();
+		
         $message = (new Message())
             ->setFrom([$this->getFromEmail() => $this->getFromName()])
             ->setSubject($this->getSubject($email, $ticket))
             ->setHtmlBody($this->getTemplateHtml($email, $ticket));
 
-        $toEmails = $this->getToEmails($email, $ticket);
+		//get bcc emails
+		$bccEmail = $this->getBccEmails($email, $ticket);
+        if($bccEmail) {
+            $message->setBcc($bccEmail);
+		}
 
-        foreach ($toEmails as $toEmail) {
-            $message->setTo($toEmail);
-            $mailer->send($message);
-        }
+		$toEmails = $this->getToEmails($email, $ticket);
+
+		$message->setTo($toEmails);
+        $mailer->send($message);
+		
     }
 
     public function getFromEmail()
@@ -100,6 +105,14 @@ class MailService extends Component
         return is_string($toEmail) ? StringHelper::split($toEmail) : $toEmail;
     }
 
+    public function getBccEmails($email, $ticket)
+    {
+
+        $bccEmail = $email->bcc ?? '';
+
+        return is_string($bccEmail) ? StringHelper::split($bccEmail) : $bccEmail;
+    }
+
     public function getSubject($email, $ticket)
     {
         // Replace keys with ticket values
@@ -117,7 +130,7 @@ class MailService extends Component
             // Set Craft to the site template mode
             $view = Craft::$app->getView();
             $oldTemplateMode = $view->getTemplateMode();
-            $view->setTemplateMode($view::TEMPLATE_MODE_SITE);
+			$view->setTemplateMode($view::TEMPLATE_MODE_SITE);
 
             // Render template
             $html = Craft::$app->view->renderTemplate($email->templatePath, $variables);
