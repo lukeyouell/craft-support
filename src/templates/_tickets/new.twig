@@ -23,31 +23,44 @@
 {% do view.registerAssetBundle("craft\\web\\assets\\fileupload\\FileUploadAsset") %}
 
 {% block content %}
-  {{ forms.hidden({
-      name: 'action',
-      value: 'support/tickets/create',
-  })}}
+	{{ forms.hidden({
+    	 name: 'action',
+    	value: 'support/tickets/create',
+  	})}}
 
-  {{ redirectInput('support/tickets') }}
+	{{ redirectInput('support/tickets') }}
 
-  {{ forms.textField({
-      first:       true,
-      required:    true,
-      label:       'Title',
-      id:          'title',
-      name:        'title',
-      placeholder: 'Title',
-      autofocus:   true,
-  })}}
+	{{ forms.textField({
+		first:       true,
+		required:    true,
+		label:       'Title',
+		id:          'title',
+		name:        'title',
+		placeholder: 'Title',
+		autofocus:   true,
+	})}}
 
-  {{ forms.textareaField({
-      required:    true,
-      label:       'Message',
-      id:          'message',
-      name:        'message',
-      placeholder: 'Message',
-      rows:        8,
-  })}}
+	{{ forms.textareaField({
+		required:    true,
+		label:       'Message',
+		id:          'message',
+		name:        'message',
+		placeholder: 'Message',
+		rows:        8,
+	})}}
+
+	{% set priorityOptions = [{'value': null, 'label': 'Please Select'}] %}
+	{% for priority in ticketPriorities %}
+		{% set priorityOptions = priorityOptions|merge([{'value': priority.id, 'label': priority.name}]) %}
+	{% endfor %}
+
+	{{ forms.selectField({
+		required:    true,
+		label:   'Ticket priority',
+		id:      'ticketPriorityId',
+		name:    'ticketPriorityId',
+		options: priorityOptions,
+	})}}
 
   {% if settings.attachments and volume %}
     {% include "_components/fieldtypes/Assets/input" with {

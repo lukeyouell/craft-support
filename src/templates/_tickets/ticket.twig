@@ -106,6 +106,19 @@
             options: statusOptions,
         })}}
 
+		{% set priorityOptions = [] %}
+        {% for priority in ticketPriorities %}
+            {% set priorityOptions = priorityOptions|merge([{'value': priority.id, 'label': priority.name}]) %}
+        {% endfor %}
+
+        {{ forms.selectField({
+            label:   'Ticket Priority',
+            id:      'ticketPriorityId',
+            name:    'ticketPriorityId',
+            value:   ticket.ticketPriorityId,
+            options: priorityOptions,
+        })}}
+
         <input class="btn submit" type="submit" value="Update ticket">
       </div>
     </form>
