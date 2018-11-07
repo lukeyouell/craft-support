@@ -102,13 +102,13 @@
     }) }}
   {% endif %} #}
 
-  {{ forms.checkboxField({
+  {# {{ forms.checkboxField({
       label:   'New tickets get this priority by default',
       name:    'default',
       value:   1,
       checked: ticketPriority.default,
       errors:  ticketPriority.getErrors('default')
-  })}}
+  })}} #}
 
 {% endblock %}
 

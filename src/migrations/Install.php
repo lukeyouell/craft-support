@@ -14,6 +14,7 @@ use lukeyouell\support\Support;
 use lukeyouell\support\records\Email as EmailRecord;
 use lukeyouell\support\records\TicketStatus as TicketStatusRecord;
 use lukeyouell\support\records\TicketStatusEmail as TicketStatusEmailRecord;
+use lukeyouell\support\records\TicketPriority as TicketPriorityRecord;
 
 use Craft;
 use craft\config\DbConfig;
@@ -214,7 +215,8 @@ class Install extends Migration
 
     protected function insertDefaultData()
     {
-        $this->_defaultTicketStatuses();
+		$this->_defaultTicketStatuses();
+		$this->_defaultTicketPriority();
     }
 
     // Private Methods
@@ -265,12 +267,14 @@ class Install extends Migration
         ];
         $this->insert(TicketStatusRecord::tableName(), $data);
 
-        // Default emails
+		// Default emails
         $data = [
             'name'          => 'New Ticket',
-            'subject'       => LitEmoji::unicodeToShortcode('[📥 New Support Ticket] {title} (#{id})'),
-            'recipientType' => 'custom',
-            'to'            => Craft::$app->systemSettings->getSetting('email', 'fromEmail'),
+			// 'subject'       => LitEmoji::unicodeToShortcode('[📥 New Support Ticket] {title} (#{id})'),
+			'subject'		=> "{{siteName}}: {title} {% if ticketPriority.handle == 'critical' %}{ticketPriority.name}{% endif %}",
+            'recipientType' => 'author',
+			// 'to'            => Craft::$app->systemSettings->getSetting('email', 'fromEmail'),
+			'bcc'			=> 'help@kurious.agency',
             'templatePath'  => 'support/_emails/newTicket',
             'sortOrder'     => 1,
             'enabled'       => true,
@@ -279,9 +283,11 @@ class Install extends Migration
 
         $data = [
             'name'          => 'New Message',
-            'subject'       => LitEmoji::unicodeToShortcode('[📥 New Message] {title} (#{id})'),
-            'recipientType' => 'custom',
-            'to'            => Craft::$app->systemSettings->getSetting('email', 'fromEmail'),
+			// 'subject'       => LitEmoji::unicodeToShortcode('[📥 New Message] {title} (#{id})'),
+			'subject'		=> "{{siteName}}: {title}",
+            'recipientType' => 'author',
+			// 'to'            => Craft::$app->systemSettings->getSetting('email', 'fromEmail'),
+			'bcc'			=> 'help@kurious.agency',
             'templatePath'  => 'support/_emails/newMessage',
             'sortOrder'     => 2,
             'enabled'       => true,
@@ -290,9 +296,11 @@ class Install extends Migration
 
         $data = [
             'name'          => 'Ticket Closed',
-            'subject'       => LitEmoji::unicodeToShortcode('[📕 Ticket Closed] {title} (#{id})'),
-            'recipientType' => 'custom',
-            'to'            => Craft::$app->systemSettings->getSetting('email', 'fromEmail'),
+			// 'subject'       => LitEmoji::unicodeToShortcode('[📕 Ticket Closed] {title} (#{id})'),
+			'subject'		=> "{{siteName}}: {title}",
+            'recipientType' => 'author',
+			// 'to'            => Craft::$app->systemSettings->getSetting('email', 'fromEmail'),
+			// 'bcc'			=> 'help@kurious.agency',
             'templatePath'  => 'support/_emails/ticketClosed',
             'sortOrder'     => 3,
             'enabled'       => true,
@@ -321,6 +329,37 @@ class Install extends Migration
 	
 	private function _defaultTicketPriority()
 	{
+		 // Default ticket priorities
+		 $data = [
+            'name'      => 'Critical',
+            'handle'    => 'critical',
+            'colour'    => 'red',
+            'sortOrder' => 1
+        ];
+        $this->insert(TicketPriorityRecord::tableName(), $data);
 
+        $data = [
+            'name'       => 'Major',
+            'handle'     => 'major',
+            'colour'     => 'orange',
+            'sortOrder'  => 2,
+        ];
+        $this->insert(TicketPriorityRecord::tableName(), $data);
+
+        $data = [
+            'name'      => 'Minor',
+            'handle'    => 'minor',
+            'colour'    => 'green',
+            'sortOrder' => 3,
+        ];
+        $this->insert(TicketPriorityRecord::tableName(), $data);
+
+        $data = [
+            'name'      => 'Enhancement',
+            'handle'    => 'enhancement',
+            'colour'    => 'blue',
+            'sortOrder' => 4,
+        ];
+        $this->insert(TicketPriorityRecord::tableName(), $data);
 	}
 }
