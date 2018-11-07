@@ -49,18 +49,47 @@
 		rows:        8,
 	})}}
 
-	{% set priorityOptions = [{'value': null, 'label': 'Please Select'}] %}
+	{# {% set priorityOptions = [{'value': null, 'label': 'Please Select'}] %}
 	{% for priority in ticketPriorities %}
 		{% set priorityOptions = priorityOptions|merge([{'value': priority.id, 'label': priority.name}]) %}
-	{% endfor %}
+	{% endfor %} #}
 
-	{{ forms.selectField({
+	{# {{ forms.selectField({
 		required:    true,
 		label:   'Ticket priority',
 		id:      'ticketPriorityId',
 		name:    'ticketPriorityId',
 		options: priorityOptions,
-	})}}
+	})}} #}
+
+	<div class="field" id="ticketPriorityId-field">
+		<div class="heading">
+			<label id="ticketPriorityId-label" class="required" for="ticketPriorityId">Ticket priority</label>
+		</div>
+        <div class="input ltr">
+            <input type="hidden" id="ticketPriorityId" name="ticketPriorityId" value="" />
+			<a class="btn menubtn" id="ticketPriority" href="#">Please Select</a>
+			<div class="menu">
+				<ul class="padded">
+				{% for priority in ticketPriorities %}
+					<li><a data-id="{{ priority.id }}" data-color="{{ priority.colour }}" data-name="{{ priority.name }}" class=""><span class="status {{ priority.colour }}"></span> {{ priority.name }}</a></li>
+					{% endfor %}
+				</ul>
+			<div>
+    	</div>
+	</div>
+
+{% js %}
+	var $ticketPriority = $('#ticketPriority');
+if ($ticketPriority[0]) {
+	new Garnish.MenuBtn($ticketPriority, {
+		onOptionSelect: function(option) {
+			$('#ticketPriorityId').val($(option).data('id'))
+			$ticketPriority.html('<span class="status ' + $(option).data('color') + '"></span> ' + $(option).data('name'));
+		}
+	});
+}
+{% endjs %}
 
   {% if settings.attachments and volume %}
     {% include "_components/fieldtypes/Assets/input" with {
