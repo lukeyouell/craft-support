@@ -70,30 +70,15 @@ class MailService extends Component
             ->setHtmlBody($this->getTemplateHtml($email, $ticket));
 
 		//get bcc emails
-		// $bccEmail = $this->getBccEmails($email, $ticket);
-        // if($bccEmail) {
-        //     $message->setBcc($bccEmail);
-		// }
-
-		// $toEmails = $this->getToEmails($email, $ticket);
-
-		// $message->setTo($toEmails);
-        // $mailer->send($message);
-
-        $toEmails = $this->getToEmails($email, $ticket);	
-
-        foreach ($toEmails as $toEmail) {
-            $message->setTo($toEmail);
-            $mailer->send($message);
+		$bccEmail = $this->getBccEmails($email, $ticket);
+        if($bccEmail) {
+            $message->setBcc($bccEmail);
 		}
-		
-		// resend email again as the Gmail fitler we use to forward emails needs the "to address"
-		$bccEmails = $this->getBccEmails($email, $ticket);
 
-        foreach ($bccEmails as $bccEmail) {
-            $message->setTo($bccEmail);
-            $mailer->send($message);
-		}
+		$toEmails = $this->getToEmails($email, $ticket);
+
+		$message->setTo($toEmails);
+        $mailer->send($message);
 		
     }
 
