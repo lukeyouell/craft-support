@@ -87,7 +87,7 @@ class MailService extends Component
             $mailer->send($message);
 		}
 		
-		// resend email again as the Gmail fitler we use to forward emails to Asana needs the "to address" to be help@kurious.agency
+		// resend email again as the Gmail fitler we use to forward emails needs the "to address"
 		$bccEmails = $this->getBccEmails($email, $ticket);
 
         foreach ($bccEmails as $bccEmail) {

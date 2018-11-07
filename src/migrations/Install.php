@@ -298,7 +298,6 @@ class Install extends Migration
 			'subject'		=> "{{siteName}}: {title}",
             'recipientType' => 'author',
 			// 'to'            => Craft::$app->systemSettings->getSetting('email', 'fromEmail'),
-			// 'bcc'			=> 'help@kurious.agency',
             'templatePath'  => 'support/_emails/ticketClosed',
             'sortOrder'     => 3,
             'enabled'       => true,
