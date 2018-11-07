@@ -274,7 +274,7 @@ class Install extends Migration
 			'subject'		=> "{{siteName}}: {title} {% if ticketPriority.handle == 'critical' %}{ticketPriority.name}{% endif %}",
             'recipientType' => 'author',
 			// 'to'            => Craft::$app->systemSettings->getSetting('email', 'fromEmail'),
-            'templatePath'  => 'support/_emails/newTicket',
+            'templatePath'  => '_emails/support/newTicket',
             'sortOrder'     => 1,
             'enabled'       => true,
         ];
@@ -286,7 +286,7 @@ class Install extends Migration
 			'subject'		=> "{{siteName}}: {title}",
             'recipientType' => 'author',
 			// 'to'            => Craft::$app->systemSettings->getSetting('email', 'fromEmail'),
-            'templatePath'  => 'support/_emails/newMessage',
+            'templatePath'  => '_emails/support/newMessage',
             'sortOrder'     => 2,
             'enabled'       => true,
         ];
@@ -298,7 +298,7 @@ class Install extends Migration
 			'subject'		=> "{{siteName}}: {title}",
             'recipientType' => 'author',
 			// 'to'            => Craft::$app->systemSettings->getSetting('email', 'fromEmail'),
-            'templatePath'  => 'support/_emails/ticketClosed',
+            'templatePath'  => '_emails/support/ticketClosed',
             'sortOrder'     => 3,
             'enabled'       => true,
         ];
