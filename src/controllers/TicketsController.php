@@ -142,15 +142,15 @@ class TicketsController extends Controller
 
             if (!$ticket) {
                 throw new NotFoundHttpException('Ticket not found');
-            }
-
-            if ($request->post('ticketStatusId')) {
-                Support::getInstance()->ticketService->changeTicketStatus($ticket, $ticketStatusId);
 			}
 			
 			if ($request->post('ticketPriorityId')) {
                 Support::getInstance()->ticketService->changeTicketPriority($ticket, $ticketPriorityId);
             }
+
+            if ($request->post('ticketStatusId')) {
+                Support::getInstance()->ticketService->changeTicketStatus($ticket, $ticketStatusId);
+			}
 
             Craft::$app->getElements()->saveElement($ticket, false);
 

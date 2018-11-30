@@ -78,7 +78,7 @@
 {% endblock %}
 
 {% block details %}
-  {% if currentUser.can('support-manageTickets') %}
+  {% if currentUser.admin %}
     <form method="post" accept-charset="UTF-8">
       <div class="meta">
         {{ csrfInput() }}
@@ -142,6 +142,15 @@
       </div>
       <div class="value">
         {{ ticket.ticketStatus.name }}
+      </div>
+    </div>
+
+	<div class="data">
+      <div class="heading">
+        Priority
+      </div>
+      <div class="value">
+        {{ ticket.ticketPriority.name }}
       </div>
     </div>
 
