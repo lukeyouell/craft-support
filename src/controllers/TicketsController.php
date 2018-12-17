@@ -159,4 +159,22 @@ class TicketsController extends Controller
 
         return $this->redirectToPostedUrl();
     }
+
+    public function actionCloseTicket() {
+
+        $request = Craft::$app->getRequest();
+        $ticketId= $request->post('ticketId');
+
+        if ($ticketId) {
+
+            $ticket = Support::getInstance()->ticketService->getTicketById($ticketId);
+            $ticketStatus = Support::getInstance()->ticketStatusService->getTicketStatusByHandle("closed");
+
+            Support::getInstance()->ticketService->changeTicketStatus($ticket, $ticketStatus->id);
+            Craft::$app->getElements()->saveElement($ticket, false);
+            Craft::$app->getSession()->setNotice('Ticket updated.');
+        }
+
+
+    }
 }

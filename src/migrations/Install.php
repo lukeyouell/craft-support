@@ -239,7 +239,7 @@ class Install extends Migration
             'handle'     => 'inProgress',
             'colour'     => 'orange',
             'sortOrder'  => 2,
-            'newMessage' => true,
+            // 'newMessage' => true,
         ];
         $this->insert(TicketStatusRecord::tableName(), $data);
 

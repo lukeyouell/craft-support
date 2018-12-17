@@ -63,6 +63,15 @@ class TicketStatusService extends Component
         return new TicketStatusModel($result);
     }
 
+    public function getTicketStatusByHandle($handle)
+    {
+        $result = $this->_createTicketStatusQuery()
+            ->where(['handle' => $handle])
+            ->one();
+
+        return new TicketStatusModel($result);
+    }
+
     public function getDefaultTicketStatus()
     {
         $result = $this->_createTicketStatusQuery()
