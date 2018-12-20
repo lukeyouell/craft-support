@@ -79,12 +79,17 @@
 
 {% block details %}
 	
-	<form method="post" accept-charset="UTF-8">
-		<div class="meta">
-			{{ csrfInput() }}
-			<a class="btn formsubmit" data-action="support/tickets/close-ticket" data-param="ticketId" data-value="{{ ticket.id }}" data-confirm="Are you sure you want to close this ticket?">Close Ticket</a>
-		</div>
-	</form>
+  {% if not currentUser.admin and ticket.ticketStatus.handle != "closed "%}
+  
+    <form method="post" accept-charset="UTF-8">
+      <div class="meta">
+        {{ csrfInput() }}
+        <a class="btn formsubmit" data-action="support/tickets/close-ticket" data-param="ticketId" data-value="{{ ticket.id }}" data-confirm="Are you sure you want to close this ticket?">Close Ticket</a>
+      </div>
+    </form>
+
+  {% endif %}
+
 	{% if currentUser.admin %}
 		<form method="post" accept-charset="UTF-8">
 			<div class="meta">
