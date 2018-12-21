@@ -79,7 +79,7 @@
 
 {% block details %}
 	
-  {% if not currentUser.admin and ticket.ticketStatus.handle != "closed "%}
+  {% if not currentUser.admin and ticket.ticketStatus.handle != "closed" %}
   
     <form method="post" accept-charset="UTF-8">
       <div class="meta">
