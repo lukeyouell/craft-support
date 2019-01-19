@@ -10,6 +10,7 @@
 
 namespace lukeyouell\support;
 
+use lukeyouell\support\elements\Message as MessageElement;
 use lukeyouell\support\elements\Ticket as TicketElement;
 use lukeyouell\support\models\Settings;
 use lukeyouell\support\services\SupportService as SupportServiceService;
