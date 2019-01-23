@@ -78,37 +78,63 @@
 {% endblock %}
 
 {% block details %}
-  {% if currentUser.can('support-manageTickets') %}
+	
+  {% if not currentUser.admin and ticket.ticketStatus.handle != "closed" %}
+  
     <form method="post" accept-charset="UTF-8">
       <div class="meta">
         {{ csrfInput() }}
-
-        {{ forms.hidden({
-            name:  'action',
-            value: 'support/tickets/save',
-        })}}
-
-        {{ forms.hidden({
-            name:  'ticketId',
-            value: ticket.id|hash,
-        })}}
-
-        {% set statusOptions = [] %}
-        {% for status in ticketStatuses %}
-            {% set statusOptions = statusOptions|merge([{'value': status.id, 'label': status.name}]) %}
-        {% endfor %}
-
-        {{ forms.selectField({
-            label:   'Ticket Status',
-            id:      'ticketStatusId',
-            name:    'ticketStatusId',
-            value:   ticket.ticketStatusId,
-            options: statusOptions,
-        })}}
-
-        <input class="btn submit" type="submit" value="Update ticket">
+        <a class="btn formsubmit" data-action="support/tickets/close-ticket" data-param="ticketId" data-value="{{ ticket.id }}" data-confirm="Are you sure you want to close this ticket?">Close Ticket</a>
       </div>
     </form>
+
+  {% endif %}
+
+	{% if currentUser.admin %}
+		<form method="post" accept-charset="UTF-8">
+			<div class="meta">
+
+				{{ csrfInput() }}
+
+				{{ forms.hidden({
+					name:  'action',
+					value: 'support/tickets/save',
+				})}}
+
+				{{ forms.hidden({
+					name:  'ticketId',
+					value: ticket.id|hash,
+				})}}
+
+				{% set statusOptions = [] %}
+				{% for status in ticketStatuses %}
+					{% set statusOptions = statusOptions|merge([{'value': status.id, 'label': status.name}]) %}
+				{% endfor %}
+
+				{{ forms.selectField({
+					label:   'Ticket Status',
+					id:      'ticketStatusId',
+					name:    'ticketStatusId',
+					value:   ticket.ticketStatusId,
+					options: statusOptions,
+				})}}
+
+				{% set priorityOptions = [] %}
+				{% for priority in ticketPriorities %}
+					{% set priorityOptions = priorityOptions|merge([{'value': priority.id, 'label': priority.name}]) %}
+				{% endfor %}
+
+				{{ forms.selectField({
+					label:   'Ticket Priority',
+					id:      'ticketPriorityId',
+					name:    'ticketPriorityId',
+					value:   ticket.ticketPriorityId,
+					options: priorityOptions,
+				})}}
+
+				<input class="btn submit" type="submit" value="Update ticket">
+			</div>
+		</form>
 
     <hr>
   {% endif %}
@@ -129,6 +155,15 @@
       </div>
       <div class="value">
         {{ ticket.ticketStatus.name }}
+      </div>
+    </div>
+
+	<div class="data">
+      <div class="heading">
+        Priority
+      </div>
+      <div class="value">
+        {{ ticket.ticketPriority.name }}
       </div>
     </div>
 

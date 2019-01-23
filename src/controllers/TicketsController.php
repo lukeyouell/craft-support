@@ -51,7 +51,8 @@ class TicketsController extends Controller
         $volume = $this->settings->volumeId ? Craft::$app->getVolumes()->getVolumeById($this->settings->volumeId) : null;
 
         $variables = [
-            'volume' => $volume,
+			'volume' => $volume,
+			'ticketPriorities' => Support::getInstance()->ticketPriorityService->getAllTicketPriorities(),
             'elementType' => Asset::class,
             'settings' => $this->settings,
         ];
@@ -72,6 +73,7 @@ class TicketsController extends Controller
         $variables = [
             'ticket'   => $ticket,
             'ticketStatuses' => Support::getInstance()->ticketStatusService->getAllTicketStatuses(),
+            'ticketPriorities' => Support::getInstance()->ticketPriorityService->getAllTicketPriorities(),
             'volume' => $volume,
             'assetElementType' => Asset::class,
             'settings' => $this->settings,
@@ -133,17 +135,22 @@ class TicketsController extends Controller
         $request = Craft::$app->getRequest();
         $ticketId = Craft::$app->security->validateData($request->post('ticketId'));
         $ticketStatusId = $request->post('ticketStatusId');
+        $ticketPriorityId = $request->post('ticketPriorityId');
 
         if ($ticketId) {
             $ticket = Support::getInstance()->ticketService->getTicketById($ticketId);
 
             if (!$ticket) {
                 throw new NotFoundHttpException('Ticket not found');
+			}
+			
+			if ($request->post('ticketPriorityId')) {
+                Support::getInstance()->ticketService->changeTicketPriority($ticket, $ticketPriorityId);
             }
 
             if ($request->post('ticketStatusId')) {
                 Support::getInstance()->ticketService->changeTicketStatus($ticket, $ticketStatusId);
-            }
+			}
 
             Craft::$app->getElements()->saveElement($ticket, false);
 
@@ -151,5 +158,23 @@ class TicketsController extends Controller
         }
 
         return $this->redirectToPostedUrl();
+    }
+
+    public function actionCloseTicket() {
+
+        $request = Craft::$app->getRequest();
+        $ticketId= $request->post('ticketId');
+
+        if ($ticketId) {
+
+            $ticket = Support::getInstance()->ticketService->getTicketById($ticketId);
+            $ticketStatus = Support::getInstance()->ticketStatusService->getTicketStatusByHandle("closed");
+
+            Support::getInstance()->ticketService->changeTicketStatus($ticket, $ticketStatus->id);
+            Craft::$app->getElements()->saveElement($ticket, false);
+            Craft::$app->getSession()->setNotice('Ticket updated.');
+        }
+
+
     }
 }

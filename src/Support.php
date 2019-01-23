@@ -10,6 +10,7 @@
 
 namespace lukeyouell\support;
 
+use lukeyouell\support\elements\Message as MessageElement;
 use lukeyouell\support\elements\Ticket as TicketElement;
 use lukeyouell\support\models\Settings;
 use lukeyouell\support\services\SupportService as SupportServiceService;
@@ -74,7 +75,11 @@ class Support extends Plugin
 
                 $event->rules['support/settings/ticket-statuses'] = 'support/ticket-statuses/index';
                 $event->rules['support/settings/ticket-statuses/new'] = 'support/ticket-statuses/edit';
-                $event->rules['support/settings/ticket-statuses/<id:\d+>'] = 'support/ticket-statuses/edit';
+				$event->rules['support/settings/ticket-statuses/<id:\d+>'] = 'support/ticket-statuses/edit';
+				
+				$event->rules['support/settings/ticket-priorities'] = 'support/ticket-priorities/index';
+                $event->rules['support/settings/ticket-priorities/new'] = 'support/ticket-priorities/edit';
+                $event->rules['support/settings/ticket-priorities/<id:\d+>'] = 'support/ticket-priorities/edit';
 
                 $event->rules['support/settings/emails'] = 'support/emails/index';
                 $event->rules['support/settings/emails/new'] = 'support/emails/edit';
@@ -141,7 +146,8 @@ class Support extends Plugin
             'mailService' => \lukeyouell\support\services\MailService::class,
             'messageService' => \lukeyouell\support\services\MessageService::class,
             'ticketService' => \lukeyouell\support\services\TicketService::class,
-            'ticketStatusService' => \lukeyouell\support\services\TicketStatusService::class,
+			'ticketStatusService' => \lukeyouell\support\services\TicketStatusService::class,
+			'ticketPriorityService' => \lukeyouell\support\services\TicketPriorityService::class,
         ]);
     }
 
