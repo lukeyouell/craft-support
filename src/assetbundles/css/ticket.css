@@ -57,6 +57,10 @@
   align-items: flex-start;
 }
 
+.message-container {
+  position: unset;
+}
+
 .message-photo > div {
   margin: 0 7px 0 0;
 }
